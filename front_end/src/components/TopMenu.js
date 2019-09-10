@@ -20,22 +20,6 @@ const LOGO = '/images/storyQuest.png'
 
 class TopMenu extends Component {
 
-    constructor(props) {
-        super(props);
-
-        this.toggle = this.toggle.bind(this);
-        this.state = {
-            isOpen: true
-        };
-    }
-
-    // Toggle function to switch state depending on whether to expand nav menu or not
-    toggle() {
-        this.setState({
-            isOpen: !this.state.isOpen
-        });
-    }
-
     render() {
         return(
             <header>

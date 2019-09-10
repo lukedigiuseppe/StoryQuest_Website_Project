@@ -4,6 +4,7 @@ import { Container, Row, Col } from 'reactstrap';
 import TopMenu from './components/TopMenu'
 import MainSearch from './components/MainSearch';
 import MobileMenu from './components/MobileMenu';
+import Welcome from './components/Welcome';
 
 class App extends Component {
     render() {
@@ -20,6 +21,7 @@ class App extends Component {
                         </Col>
                     </Row>
                 </Container>
+                <Welcome />
             </div>
         )
     }
