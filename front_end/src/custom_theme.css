@@ -63,7 +63,8 @@ body {
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: rgba(100, 72, 72, 0);
+  background-image: url('/backgrounds/stone_background.jpg');
 }
 
 [tabindex="-1"]:focus {
