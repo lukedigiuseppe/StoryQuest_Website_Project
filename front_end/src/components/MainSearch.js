@@ -1,17 +1,26 @@
 import React, {Component} from 'react';
 import {Button, Container, Row, Col, Form, Input} from 'reactstrap';
 
+
+const searchBG = './backgrounds/search_bg.jpg';
+
 class MainSearch extends Component {
 
     render() {
         return(
-            <Container className="pt-md-5 pb-md-5" style={{backgroundColor: "#f1f1f1"}}>
+            <Container className="pt-md-5 pb-md-5 rounded-lg" style={{backgroundImage: `url(${searchBG})`}} fluid>
                 <h1 className="display-3 text-center">Find an artifact</h1>
-                    <Row noGutters className="position-relative w-100 align-items-center">
-                        <Col className="d-none d-flex justify-content-center">
-                            <Form className="form" inline>
-                                <Input type="search" className="mr-3" placeholder="Enter keyword or Artifact ID" />
-                                <Button type="submit" color="secondary" outline>Search</Button>
+                <br/>
+                    <Row>
+                        {/* Create two columns, one to hold the search bar and the other for the button */}
+                        <Col sm={{size: 7, offset: 2}}>
+                            <Form>
+                                <Input type="search" className="mr-2" placeholder="Enter keyword or Artifact ID"/>
+                            </Form>
+                        </Col>
+                        <Col>
+                            <Form>
+                                <Button type="submit" className="btn btn-primary">Search</Button>
                             </Form>
                         </Col>
                     </Row>
