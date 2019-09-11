@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Container, Row, Col } from 'reactstrap';
+import {Helmet} from 'react-helmet';
 
 import TopMenu from './components/TopMenu'
 import MainSearch from './components/MainSearch';
@@ -10,6 +11,11 @@ class App extends Component {
     render() {
         return(
             <div>
+                {/* Change the header for the home menu */}
+                <Helmet>
+                    <title>Home - Story Quest</title>
+                </Helmet>
+
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
                 <Container className="d-none d-lg-flex"><TopMenu /></Container>
                 <Container className="d-lg-none"><MobileMenu /></Container>

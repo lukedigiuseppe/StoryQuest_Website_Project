@@ -33,7 +33,6 @@ class TopMenu extends Component {
                                     <NavItem className="d-flex align-items-center">
                                         <NavLink className="font-weight-bold " href="/">About</NavLink>
                                     </NavItem>
-                                    
                                     <NavItem className="d-flex align-items-center">
                                         <NavLink className="font-weight-bold " href="/">Getting Started</NavLink>
                                     </NavItem>
@@ -51,7 +50,7 @@ class TopMenu extends Component {
                                     <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
                                         <DropdownToggle className="font-weight-bold" nav caret><img src={AVATAR} alt="avatar" className="img-fluid rounded-circle" style={{width: 36 }} /></DropdownToggle>
                                         <DropdownMenu right>
-                                        <DropdownItem>Login</DropdownItem>
+                                        <DropdownItem href="/login">Login</DropdownItem>
                                         <DropdownItem>Register</DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>

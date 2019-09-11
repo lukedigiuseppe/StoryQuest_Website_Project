@@ -1,11 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './custom_theme.css'
-import App from './App';
+import {Route, BrowserRouter as Router} from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// Import CSS files
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './css/custom_theme.css'
+
+// Import our React components
+import App from './App';
+import Login from './components/Login';
+
+// Add the routes to the different pages from that you can access from the Navbar
+const routing = (
+    <Router>
+        <div>
+            <Route exact path="/" component={App} />  
+            <Route path="/login" component={Login} />
+        </div>
+    </Router>
+)
+   
+ReactDOM.render(routing, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
