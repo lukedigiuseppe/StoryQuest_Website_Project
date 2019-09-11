@@ -5,16 +5,13 @@ var mongoose = require('mongoose');
 var userSchema = mongoose.Schema(
     {
         // should username and email be the same?
-        "userName": String,
         "email" : String,
-        // How should we store "password"
         "publicName": String,
         "firstName": String,
         "lastName": String,
         "DOB": Date,
-        "location": String,
-        // assuming we use random generator URL
-        "pictureURL": String
+        "pictureURL": [{type: mongoose.Schema.Types.ObjectId, ref: 'media',default : null}],
+        "password" : String
     }
 );
 
