@@ -15,7 +15,6 @@ import {
 } from 'reactstrap';
 import RegisterModal from './RegisterModal';
 
-const AVATAR = '/images/profile_icon.png';
 const LOGO = '/images/storyQuest.png'
 
 class MobileMenu extends Component {
@@ -39,7 +38,7 @@ class MobileMenu extends Component {
     render() {
         return(
             <header>
-                <Navbar fixed="top" color="light" light className="border-bottom border-gray">
+                <Navbar fixed="top" color="secondary" light className="border-bottom border-gray">
                     <NavbarBrand href="/" className="d-inline-block p-1" style={{width: 70}}>
                         <img src={LOGO} alt="Logo" className="position-relative img-fluid rounded-sm" />
                     </NavbarBrand>
@@ -54,7 +53,7 @@ class MobileMenu extends Component {
                             </NavItem>
                             <NavItem>
                                 <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
-                                    <DropdownToggle className="font-weight-bold" nav caret><img src={AVATAR} alt="avatar" className="img-fluid rounded-circle" style={{width: 36 }} /> Account</DropdownToggle>
+                                    <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
                                     <DropdownMenu right>
                                     <DropdownItem href="/login"><Button>Login</Button></DropdownItem>
                                     <DropdownItem><RegisterModal buttonLabel="Register" /></DropdownItem>
