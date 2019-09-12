@@ -1,17 +1,19 @@
 import React, {Component} from 'react';
 import {
-  Navbar,
-  NavbarBrand,
-  NavbarToggler,
-  Nav,
-  NavItem,
-  NavLink,
-  DropdownMenu,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownItem,
-  Collapse
+    Button,
+    Navbar,
+    NavbarBrand,
+    NavbarToggler,
+    Nav,
+    NavItem,
+    NavLink,
+    DropdownMenu,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownItem,
+    Collapse
 } from 'reactstrap';
+import RegisterModal from './RegisterModal';
 
 const AVATAR = '/images/profile_icon.png';
 const LOGO = '/images/storyQuest.png'
@@ -54,8 +56,8 @@ class MobileMenu extends Component {
                                 <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
                                     <DropdownToggle className="font-weight-bold" nav caret><img src={AVATAR} alt="avatar" className="img-fluid rounded-circle" style={{width: 36 }} /> Account</DropdownToggle>
                                     <DropdownMenu right>
-                                    <DropdownItem href="/login">Login</DropdownItem>
-                                    <DropdownItem>Register</DropdownItem>
+                                    <DropdownItem href="/login"><Button>Login</Button></DropdownItem>
+                                    <DropdownItem><RegisterModal buttonLabel="Register" /></DropdownItem>
                                     </DropdownMenu>
                                 </UncontrolledDropdown>
                             </NavItem>
