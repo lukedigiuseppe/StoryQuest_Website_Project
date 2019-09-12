@@ -1,4 +1,5 @@
-/*! `Tequila` Bootstrap 4 theme */
+/* Created with Themestr.app */
+/*! `Custom` Bootstrap 4 theme */
 @import url(https://use.fontawesome.com/releases/v5.0.10/css/all.css);
 @import url(https://fonts.googleapis.com/css?family=Voltaire:200,300,400,700);
 /*!
@@ -63,8 +64,7 @@ body {
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-color: rgba(100, 72, 72, 0);
-  background-image: url('/backgrounds/stone_background.jpg');
+  background-color: #fff;
 }
 
 [tabindex="-1"]:focus {
@@ -5384,7 +5384,7 @@ button.bg-danger:focus {
 }
 
 .bg-light {
-  background-color: #b1ad95 !important;
+  background-color: #eef0f2 !important;
 }
 
 a.bg-light:hover, a.bg-light:focus,

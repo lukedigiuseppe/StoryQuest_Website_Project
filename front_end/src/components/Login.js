@@ -17,7 +17,7 @@ class Login extends Component {
                     <title>Login to Story Quest</title>
                 </Helmet>
                 {/* The main signin form */}
-                <div className="text-center signin-box">
+                <div className="text-center signin-box bg-light">
                     <Form className="form-signin">
                         <img className="mb-4" src={LOGO} alt="" width="72" height="72" />
                         <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>

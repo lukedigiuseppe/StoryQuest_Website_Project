@@ -5,7 +5,7 @@ import * as serviceWorker from './serviceWorker';
 
 // Import CSS files
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './css/custom_theme.css'
+import './css/customTheme.css'
 
 // Import our React components
 import App from './App';
