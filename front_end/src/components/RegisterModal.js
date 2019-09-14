@@ -12,6 +12,8 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
+// Pop up window that presents a registration form to the user.
+
 const INPUTWIDTH = 10;
 const DESCWIDTH = 2;
 

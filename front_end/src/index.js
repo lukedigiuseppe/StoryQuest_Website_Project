@@ -10,6 +10,7 @@ import './css/customTheme.css'
 // Import our React components
 import App from './App';
 import Login from './components/Login';
+import Register from './components/Register';
 
 // Add the routes to the different pages from that you can access from the Navbar
 const routing = (
@@ -17,6 +18,7 @@ const routing = (
         <div>
             <Route exact path="/" component={App} />  
             <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
         </div>
     </Router>
 )

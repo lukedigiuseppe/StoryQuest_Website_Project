@@ -16,8 +16,6 @@ import {
     DropdownItem,
 } from 'reactstrap';
 
-import RegisterModal from './RegisterModal';
-
 const LOGO = '/images/storyQuest.png'
 
 class TopMenu extends Component {
@@ -53,7 +51,7 @@ class TopMenu extends Component {
                                         <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
                                         <DropdownMenu right>
                                         <DropdownItem href="/login"><Button>Login</Button></DropdownItem>
-                                        <DropdownItem><RegisterModal buttonLabel="Register" /></DropdownItem>
+                                        <DropdownItem href="/register"><Button>Register</Button></DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                 </Nav>
