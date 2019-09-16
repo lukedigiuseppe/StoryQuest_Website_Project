@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 
+// Pull in the routes that users will need to access
+const users = require("./routes/api/users");
+
 const app = express();
 
 // Bodyparser middleware
@@ -31,10 +34,10 @@ mongoose
 app.use(passport.initialize());
 
 // Make passport use our config setup
-// require("./config/passport")(passport);
+require("./config/passport")(passport);
 
 // Routes
-// app.use("/api/users", users);
+app.use("/api/users", users);
 
 // process.env.PORT is Heroku's port if we choose to deploy the APP there
 const port = process.env.PORT || 5000
