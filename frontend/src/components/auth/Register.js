@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
+// import {withRouter}  from 'react-router-dom';
 import {
     Container,
     Col,
@@ -22,7 +23,58 @@ const BANNER = "/images/cover.png"
 
 class Register extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            name: "",
+            email: "",
+            password: "",
+            confirmPass: "",
+            errors: {}
+        }
+    }
+
+    // Prevent user from navigating to this page if already logged in
+    // componentDidMount() {
+    //     // If logged in and user navigates to Register page, should redirect them to homepage
+    //     if (this.props.auth.isAuthenticated) {
+    //         this.props.history.push("/");
+    //     }
+    // }
+
+    // This allows us to display errors on the form
+    // componentDidUpdate(prevProps) {
+    //     if (this.props.errors !== prevProps.errors) {
+    //         this.setState({
+    //             errors: this.props.errors
+    //         });
+    //     }
+    // }
+
+    onChange = (e) => {
+        this.setState({ [e.target.id]: e.target.value });
+    };
+
+    onSubmit = (e) => {
+        e.preventDefault();
+        
+        const newUser = {
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password,
+            password2: this.state.confirmPass
+        };
+
+        // Register the user by using the passed in registerUser action from redux
+        // this.props.registerUser(newUser, this.props.history);
+        console.log(newUser);
+    };
+
     render() {
+
+        const { errors } = this.state;
+
         return (
             <div>
                 {/* Change the title of the page */}
@@ -31,52 +83,83 @@ class Register extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Register an account</title>
                 </Helmet>
+
                 <Container className="justify-content-center" fluid>
                     <Row>
                         <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
                     </Row>
                 </Container>
+                {/* The form container */}
                 <Container className="text-center register-box bg-light rounded-lg">
                     <h1 className="text-left" style={{paddingLeft: "30px"}}>Create an account</h1>
-                    <Form className="register-form">
-                        <FormGroup row>
-                            <Label for="emailAddress" sm={DESCWIDTH}>Email</Label>
-                            <Col sm={INPUTWIDTH}>
-                                <Input type="email" name="email" id="emailAddress" placeholder="Enter your email" />
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Label for="confirmEmail" sm={DESCWIDTH}>Confirm Email</Label>
-                            <Col sm={INPUTWIDTH}>
-                                <Input type="email" name="email" id="confirmEmail" placeholder="Confirm your email"  />
-                            </Col>
-                        </FormGroup>
+                    <Form noValidate className="register-form" onSubmit={this.onSubmit}>
                         <FormGroup row>
                             <Label for="username" sm={DESCWIDTH}>Username</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input type="text" name="username" id="username" placeholder="Enter your username" />
+                                <Input 
+                                    type="text" 
+                                    id="username" 
+                                    placeholder="Enter your username" 
+                                />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="password" sm={DESCWIDTH}>Password</Label>
+                            <Label htmlFor="emailAddress" sm={DESCWIDTH}>Email</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input type="password" name="password" id="password" placeholder="Enter a password" />
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.email}
+                                    error={errors.email}
+                                    id="email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                />
                             </Col>
                         </FormGroup>
-                        <FormGroup row>
-                            <Label for="confirmPass" sm={DESCWIDTH}>Confirm Password</Label>
+                        {/* <FormGroup row>
+                            <Label for="confirmEmail" sm={DESCWIDTH}>Confirm Email</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input type="password" name="password" id="confirmPass" placeholder="Confirm your password" />
+                                <Input 
+                                    type="email" 
+                                    id="confirmEmail" 
+                                    placeholder="Confirm your email"  
+                                />
+                            </Col>
+                        </FormGroup> */}
+                        <FormGroup row>
+                            <Label htmlFor="password" sm={DESCWIDTH}>Password</Label>
+                            <Col sm={INPUTWIDTH}>
+                                <Input 
+                                    onChange={this.onChange}
+                                    value={this.state.password}
+                                    error={errors.password}
+                                    type="password" 
+                                    id="password" 
+                                    placeholder="Enter a password" 
+                                />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
+                            <Label htmlFor="confirmPass" sm={DESCWIDTH}>Confirm Password</Label>
+                            <Col sm={INPUTWIDTH}>
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.confirmPass}
+                                    error={errors.password}
+                                    type="password"
+                                    id="confirmPass"
+                                    placeholder="Confirm your password"
+                                />
+                            </Col>
+                        </FormGroup>
+                        {/* <FormGroup row>
                             <Label for="birthDate" sm={DESCWIDTH}>Date of Birth</Label>
                             <Col sm={INPUTWIDTH}>
                                 <Input type="date" name="birthDate" id="birthDate" />
                             </Col>
-                        </FormGroup>
+                        </FormGroup> */}
                         <br />
-                        <Button className="btn-lg btn-primary rounded-lg" block>Create account</Button>
+                        <Button className="btn-lg btn-primary rounded-lg" type="submit" block>Create account</Button>
                     </Form>
                     <p className="mt-5 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
                 </Container>

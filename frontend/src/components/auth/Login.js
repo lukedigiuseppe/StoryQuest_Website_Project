@@ -8,7 +8,36 @@ const LOGO = '/images/storyQuest.png';
 
 class Login extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state={
+            email: "",
+            password: "",
+            errors: {}
+        };
+    }
+
+    onChange = (e) => {
+        this.setState({[e.target.id]: e.target.value});
+    }
+
+    onSubmit = (e) => {
+        e.preventDefault();
+
+        const userData = {
+            email: this.state.email,
+            password: this.state.password
+        };
+        
+        // Redirect is handled by the component (or redux action) so we don't need to use this.props.history
+        console.log(userData);
+    };
+
     render() {
+
+        const { errors } = this.state;
+
         return (
             <div>
                 <Helmet> 
@@ -16,15 +45,34 @@ class Login extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Login to Story Quest</title>
                 </Helmet>
+
                 {/* The main signin form */}
                 <div className="text-center signin-box bg-light">
-                    <Form className="form-signin">
+                    <Form noValidate className="form-signin" onSubmit={this.onSubmit}>
                         <img className="mb-4" src={LOGO} alt="" width="72" height="72" />
                         <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
-                        <Label for="inputEmail" className="sr-only">Email address</Label>
-                        <Input type="email" id="inputEmail" className="form-control" placeholder="Email address" required autoFocus />
-                        <Label for="inputPassword" className="sr-only">Password</Label>
-                        <Input type="password" id="inputPassword" className="form-control" placeholder="Password" required />
+                        <Label htmlFor="email" className="sr-only">Email address</Label>
+                        <Input 
+                            onChange={this.onChange}
+                            value={this.state.email}
+                            error={errors.email}
+                            type="email" 
+                            id="email" 
+                            className="form-control" 
+                            placeholder="Email address" 
+                            required autoFocus 
+                        />
+                        <Label htmlFor="password" className="sr-only">Password</Label>
+                        <Input 
+                            onChange={this.onChange}
+                            value={this.state.password}
+                            error={errors.password}
+                            type="password" 
+                            id="password" 
+                            className="form-control" 
+                            placeholder="Password" 
+                            required 
+                        />
                         <div className="checkbox mb-3">
                             <Label>
                                 {/* Remember me functionality currently does not work */}

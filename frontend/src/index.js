@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import {Route, BrowserRouter as Router} from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 
+import { Provider } from "react-redux";
+import store from "./store";
+
 // Import CSS files
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/customTheme.css'
@@ -14,13 +17,15 @@ import Register from './components/auth/Register';
 
 // Add the routes to the different pages from that you can access from the Navbar
 const routing = (
-    <Router>
-        <div>
-            <Route exact path="/" component={App} />  
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-        </div>
-    </Router>
+    <Provider store={store}>
+        <Router>
+            <div>
+                <Route exact path="/" component={App} />  
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/register" component={Register} />
+            </div>
+        </Router>
+    </Provider>
 )
    
 ReactDOM.render(routing, document.getElementById('root'));
