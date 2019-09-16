@@ -1,29 +1,42 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-const cors = require('cors');
-const path = require('path');
+// This is the main server file that pulls in the required dependencies, applies middleware and starts the server.
 
-// Not needed in new version of express
-// app.use(bodyParser.json());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-//const path = require('path');
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const passport = require("passport");
 
+const app = express();
 
-require('dotenv').config();
-app.use(cors());
+// Bodyparser middleware
+app.use(
+    bodyParser.urlencoded({
+        extended: false
+    })
+);
+app.use(bodyParser.json());
 
-// Database setup
-require('./models/db.js');
+// DB config
+const db = require("./config/keys").mongoURI;
 
-//Start the server, listen at port 5000
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, function(){
-    console.log('Express serving on port ${PORT}');
-});
+// Connect to MongoDB
+mongoose
+    .connect(
+        db,
+        { useNewUrlParser: true }
+    )
+    .then( () => console.log("MongoDB successfully connected."))
+    .catch( err => console.log(err));
 
+// Add in passport to the backend server as middleware
+app.use(passport.initialize());
 
-//load view engine
-app.use(express.static(path.join(__dirname, '../public')));
-app.set('view engine', 'html');
+// Make passport use our config setup
+// require("./config/passport")(passport);
+
+// Routes
+// app.use("/api/users", users);
+
+// process.env.PORT is Heroku's port if we choose to deploy the APP there
+const port = process.env.PORT || 5000
+
+app.listen(port, () => console.log(`Server up and running on port ${port}!`));
