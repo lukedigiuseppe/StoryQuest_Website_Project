@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-// import {withRouter}  from 'react-router-dom';
+import {withRouter}  from 'react-router-dom';
+import PropTypes from "prop-types";
+import {connect} from 'react-redux';
+import {registerUser} from '../../actions/authActions';
+import classnames from 'classnames';
 import {
     Container,
     Col,
@@ -36,21 +40,21 @@ class Register extends Component {
     }
 
     // Prevent user from navigating to this page if already logged in
-    // componentDidMount() {
-    //     // If logged in and user navigates to Register page, should redirect them to homepage
-    //     if (this.props.auth.isAuthenticated) {
-    //         this.props.history.push("/");
-    //     }
-    // }
+    componentDidMount() {
+        // If logged in and user navigates to Register page, should redirect them to homepage
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/");
+        }
+    }
 
     // This allows us to display errors on the form
-    // componentDidUpdate(prevProps) {
-    //     if (this.props.errors !== prevProps.errors) {
-    //         this.setState({
-    //             errors: this.props.errors
-    //         });
-    //     }
-    // }
+    componentDidUpdate(prevProps) {
+        if (this.props.errors !== prevProps.errors) {
+            this.setState({
+                errors: this.props.errors
+            });
+        }
+    }
 
     onChange = (e) => {
         this.setState({ [e.target.id]: e.target.value });
@@ -67,8 +71,7 @@ class Register extends Component {
         };
 
         // Register the user by using the passed in registerUser action from redux
-        // this.props.registerUser(newUser, this.props.history);
-        console.log(newUser);
+        this.props.registerUser(newUser, this.props.history);
     };
 
     render() {
@@ -113,7 +116,11 @@ class Register extends Component {
                                     id="email"
                                     type="email"
                                     placeholder="Enter your email"
+                                    className={classnames("", {
+                                        invalid: errors.email
+                                    })}
                                 />
+                            <span className="red-text">{errors.email}</span>
                             </Col>
                         </FormGroup>
                         {/* <FormGroup row>
@@ -136,7 +143,11 @@ class Register extends Component {
                                     type="password" 
                                     id="password" 
                                     placeholder="Enter a password" 
+                                    className={classnames("", {
+                                        invalid: errors.password
+                                    })}
                                 />
+                                <span className="red-text">{errors.password}</span>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -149,7 +160,11 @@ class Register extends Component {
                                     type="password"
                                     id="confirmPass"
                                     placeholder="Confirm your password"
+                                    className={classnames("", {
+                                        invalid: errors.confirmPass
+                                    })}
                                 />
+                                <span className="red-text">{errors.confirmPass}</span>
                             </Col>
                         </FormGroup>
                         {/* <FormGroup row>
@@ -168,4 +183,24 @@ class Register extends Component {
     }
 }
 
-export default Register;
+// We define prop types here as good convention. And also because we aren't able to define types within the constructor so they
+// go here
+Register.propTypes = {
+    registerUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired
+};
+
+// The below declaration eanbles us to get our states from Redux and then map it to props which will
+// be used by the component
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+
+// This statement connects our component to the redux action we specify
+// withRouter is used here to enable routing within actions 
+export default connect(
+    mapStateToProps,
+    {registerUser}
+)(withRouter(Register));

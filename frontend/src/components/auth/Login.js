@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import {Button, Label, Input, Form} from 'reactstrap';
 import {Helmet} from 'react-helmet';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/authActions";
+import classnames from "classnames";
+
 
 import '../../css/login.css'
 
@@ -18,6 +23,27 @@ class Login extends Component {
         };
     }
 
+    // Prevent user from navigating to this page if already logged in
+    componentDidMount() {
+        // If logged in and user navigates to Login page, should redirect them to dashboard
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/dashboard");
+        }
+    }
+
+    // Push user to dashboard when they login
+    componentDidUpdate(prevProps) {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/dashboard");
+        }
+
+        if (this.props.errors !== prevProps.errors) {
+            this.setState({
+                errors: this.props.errors
+            });
+        }
+    }
+
     onChange = (e) => {
         this.setState({[e.target.id]: e.target.value});
     }
@@ -31,7 +57,7 @@ class Login extends Component {
         };
         
         // Redirect is handled by the component (or redux action) so we don't need to use this.props.history
-        console.log(userData);
+        this.props.loginUser(userData);
     };
 
     render() {
@@ -58,7 +84,9 @@ class Login extends Component {
                             error={errors.email}
                             type="email" 
                             id="email" 
-                            className="form-control" 
+                            className={classnames("form-control", {
+                                        invalid: errors.email || errors.emailnotfound
+                                    })}
                             placeholder="Email address" 
                             required autoFocus 
                         />
@@ -69,7 +97,9 @@ class Login extends Component {
                             error={errors.password}
                             type="password" 
                             id="password" 
-                            className="form-control" 
+                            className={classnames("form-control", {
+                                        invalid: errors.email || errors.emailnotfound
+                                    })}
                             placeholder="Password" 
                             required 
                         />
@@ -89,4 +119,18 @@ class Login extends Component {
     }
 }
 
-export default Login;
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+
+export default connect(
+    mapStateToProps,
+    { loginUser }
+)(Login);
