@@ -1,0 +1,1 @@
+This folder contains the Javascript files that contain custom validation rules on the input received from the frontend.
