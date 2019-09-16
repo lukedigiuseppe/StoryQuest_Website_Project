@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import {Helmet} from 'react-helmet';
 
-import TopMenu from './components/TopMenu'
-import MainSearch from './components/MainSearch';
-import MobileMenu from './components/MobileMenu';
-import Welcome from './components/Welcome';
+import TopMenu from './components/layout/TopMenu'
+import MainSearch from './components/layout/MainSearch';
+import MobileMenu from './components/layout/MobileMenu';
+import Welcome from './components/layout/Welcome';
 
 class App extends Component {
     render() {

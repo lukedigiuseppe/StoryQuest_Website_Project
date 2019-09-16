@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button, Label, Input, Form} from 'reactstrap';
 import {Helmet} from 'react-helmet';
 
-import '../css/login.css'
+import '../../css/login.css'
 
 const LOGO = '/images/storyQuest.png';
 
@@ -27,6 +27,7 @@ class Login extends Component {
                         <Input type="password" id="inputPassword" className="form-control" placeholder="Password" required />
                         <div className="checkbox mb-3">
                             <Label>
+                                {/* Remember me functionality currently does not work */}
                                 <Input type="checkbox" value="rememberMe" />
                                 Remember me
                             </Label>
