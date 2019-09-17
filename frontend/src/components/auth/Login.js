@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import {Button, Label, Input, Form} from 'reactstrap';
 import {Helmet} from 'react-helmet';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/authActions";
+import classnames from "classnames";
+
 
 import '../../css/login.css'
 
@@ -8,7 +13,57 @@ const LOGO = '/images/storyQuest.png';
 
 class Login extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state={
+            email: "",
+            password: "",
+            errors: {}
+        };
+    }
+
+    // Prevent user from navigating to this page if already logged in
+    componentDidMount() {
+        // If logged in and user navigates to Login page, should redirect them to dashboard
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/dashboard");
+        }
+    }
+
+    // Push user to dashboard when they login
+    componentDidUpdate(prevProps) {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/dashboard");
+        }
+
+        if (this.props.errors !== prevProps.errors) {
+            this.setState({
+                errors: this.props.errors
+            });
+        }
+    }
+
+    onChange = (e) => {
+        this.setState({[e.target.id]: e.target.value});
+    }
+
+    onSubmit = (e) => {
+        e.preventDefault();
+
+        const userData = {
+            email: this.state.email,
+            password: this.state.password
+        };
+        
+        // Redirect is handled by the component (or redux action) so we don't need to use this.props.history
+        this.props.loginUser(userData);
+    };
+
     render() {
+
+        const { errors } = this.state;
+
         return (
             <div>
                 <Helmet> 
@@ -16,15 +71,38 @@ class Login extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Login to Story Quest</title>
                 </Helmet>
+
                 {/* The main signin form */}
                 <div className="text-center signin-box bg-light">
-                    <Form className="form-signin">
+                    <Form noValidate className="form-signin" onSubmit={this.onSubmit}>
                         <img className="mb-4" src={LOGO} alt="" width="72" height="72" />
                         <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
-                        <Label for="inputEmail" className="sr-only">Email address</Label>
-                        <Input type="email" id="inputEmail" className="form-control" placeholder="Email address" required autoFocus />
-                        <Label for="inputPassword" className="sr-only">Password</Label>
-                        <Input type="password" id="inputPassword" className="form-control" placeholder="Password" required />
+                        <Label htmlFor="email" className="sr-only">Email address</Label>
+                        <Input 
+                            onChange={this.onChange}
+                            value={this.state.email}
+                            error={errors.email}
+                            type="email" 
+                            id="email" 
+                            className={classnames("form-control", {
+                                        invalid: errors.email || errors.emailnotfound
+                                    })}
+                            placeholder="Email address" 
+                            required autoFocus 
+                        />
+                        <Label htmlFor="password" className="sr-only">Password</Label>
+                        <Input 
+                            onChange={this.onChange}
+                            value={this.state.password}
+                            error={errors.password}
+                            type="password" 
+                            id="password" 
+                            className={classnames("form-control", {
+                                        invalid: errors.email || errors.emailnotfound
+                                    })}
+                            placeholder="Password" 
+                            required 
+                        />
                         <div className="checkbox mb-3">
                             <Label>
                                 {/* Remember me functionality currently does not work */}
@@ -41,4 +119,18 @@ class Login extends Component {
     }
 }
 
-export default Login;
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+
+export default connect(
+    mapStateToProps,
+    { loginUser }
+)(Login);

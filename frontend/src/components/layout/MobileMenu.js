@@ -51,7 +51,7 @@ class MobileMenu extends Component {
                                 <NavLink className="font-weight-bold" href="/">Getting Started</NavLink>
                             </NavItem>
                             <NavItem>
-                                <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
+                                <UncontrolledDropdown className="d-flex align-items-center">
                                     <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
                                     <DropdownMenu right>
                                     <DropdownItem href="/login"><Button>Login</Button></DropdownItem>
