@@ -13,7 +13,7 @@ module.exports = function validateRegisterInput(data) {
     data.email = !isEmpty(data.email) ? data.email: "";
     data.confirmEmail = !isEmpty(data.confirmEmail) ? data.confirmEmail: "";
     data.password = !isEmpty(data.password) ? data.password: "";
-    data.confirmPassword = !isEmpty(data.confirmPassword) ? data.confirmPassword: "";
+    data.confirmPass = !isEmpty(data.confirmPass) ? data.confirmPass: "";
     data.birthDate = !isEmpty(data.birthDate) ? data.birthDate : "";
 
     // Name checks
@@ -42,16 +42,16 @@ module.exports = function validateRegisterInput(data) {
         errors.password = "Password field is required.";
     }
 
-    if (Validator.isEmpty(data.confirmPassword)) {
-        errors.password2 = "Confirm password field is required.";
+    if (Validator.isEmpty(data.confirmPass)) {
+        errors.confirmPass = "Confirm password field is required.";
     }
 
     if (!Validator.isLength(data.password, {min: 6, max: 30})) {
         errors.password = "Password must be at least 6 characters.";
     }
 
-    if (!Validator.equals(data.password, data.confirmPassword)) {
-        errors.confirmPassword = "Passwords must match";
+    if (!Validator.equals(data.password, data.confirmPass)) {
+        errors.confirmPass = "Passwords must match.";
     }
 
     // Birthdate checks

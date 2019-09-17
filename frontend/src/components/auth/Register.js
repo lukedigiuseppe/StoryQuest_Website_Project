@@ -16,6 +16,8 @@ import {
     Input
 } from 'reactstrap';
 
+import ErrorAlert from '../alerts/ErrorAlert';
+
 import '../../css/register.css';
 
 // Compononent that creates the regsitration page for new users.
@@ -38,7 +40,7 @@ class Register extends Component {
             password: "",
             confirmPass: "",
             birthDate: "",
-            errors: {}
+            errors: {},
         }
     }
 
@@ -73,11 +75,10 @@ class Register extends Component {
             email: this.state.email,
             confirmEmail: this.state.confirmEmail,
             password: this.state.password,
-            confirmPassword: this.state.confirmPass,
+            confirmPass: this.state.confirmPass,
             birthDate: this.state.birthDate
         };
         
-        console.log(this.state);
         // Register the user by using the passed in registerUser action from redux
         this.props.registerUser(newUser, this.props.history);
     };
@@ -115,6 +116,7 @@ class Register extends Component {
                                     id="firstName" 
                                     placeholder="Enter your given name" 
                                 />
+                                <ErrorAlert errorMsg={errors.firstName} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -128,6 +130,7 @@ class Register extends Component {
                                     id="lastName" 
                                     placeholder="Enter your family name" 
                                 />
+                                <ErrorAlert errorMsg={errors.lastName} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -144,7 +147,7 @@ class Register extends Component {
                                         invalid: errors.email
                                     })}
                                 />
-                            <span className="red-text">{errors.email}</span>
+                                <ErrorAlert errorMsg={errors.email} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -158,6 +161,7 @@ class Register extends Component {
                                     id="confirmEmail" 
                                     placeholder="Confirm your email"  
                                 />
+                                <ErrorAlert errorMsg={errors.confirmEmail} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -174,7 +178,7 @@ class Register extends Component {
                                         invalid: errors.password
                                     })}
                                 />
-                                <span className="red-text">{errors.password}</span>
+                                <ErrorAlert errorMsg={errors.password} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -191,7 +195,7 @@ class Register extends Component {
                                         invalid: errors.confirmPass
                                     })}
                                 />
-                                <span className="red-text">{errors.confirmPass}</span>
+                                <ErrorAlert errorMsg={errors.confirmPass} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -205,6 +209,7 @@ class Register extends Component {
                                     name="birthDate" 
                                     id="birthDate" 
                                 />
+                                <ErrorAlert errorMsg={errors.birthDate} />
                             </Col>
                         </FormGroup>
                         <br />
