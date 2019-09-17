@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import {withRouter}  from 'react-router-dom';
+import {Link, withRouter}  from 'react-router-dom';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
 import {registerUser} from '../../actions/authActions';
@@ -102,7 +102,12 @@ class Register extends Component {
                     </Row>
                 </Container>
                 {/* The form container */}
-                <Container className="text-center register-box bg-light rounded-lg">
+                <Container className="register-box bg-light rounded-lg">
+                    <Row>
+                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
+                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
+                        </Link>
+                    </Row>
                     <h1 className="text-left" style={{paddingLeft: "30px"}}>Create an account</h1>
                     <Form noValidate className="register-form" onSubmit={this.onSubmit}>
                         <FormGroup row>
@@ -215,7 +220,8 @@ class Register extends Component {
                         <br />
                         <Button className="btn-lg btn-primary rounded-lg" type="submit" block>Create account</Button>
                     </Form>
-                    <p className="mt-5 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
+                    <p className="text-center mt-3 text-muted">Already have an account? <Link style={{color: "blue"}} to="/login">Login</Link></p>
+                    <p className="text-center mt-3 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
                 </Container>
             </div>
         )

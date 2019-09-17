@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import {Button, Label, Input, Form} from 'reactstrap';
 import {Helmet} from 'react-helmet';
+import {Link} from 'react-router-dom';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
 
+import ErrorAlert from "../alerts/ErrorAlert";
 
 import '../../css/login.css'
 
@@ -71,7 +73,11 @@ class Login extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Login to Story Quest</title>
                 </Helmet>
-
+                <div className="home-link">
+                    <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
+                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
+                    </Link> 
+                </div>
                 {/* The main signin form */}
                 <div className="text-center signin-box bg-light">
                     <Form noValidate className="form-signin" onSubmit={this.onSubmit}>
@@ -90,10 +96,8 @@ class Login extends Component {
                             placeholder="Email address" 
                             required autoFocus 
                         />
-                        <span className="text-red">
-                            {errors.email}
-                            {errors.emailnotfound}
-                        </span>
+                        <ErrorAlert errorMsg={errors.email} />
+                        <ErrorAlert errorMsg={errors.emailnotfound} />
                         <Label htmlFor="password" className="sr-only">Password</Label>
                         <Input 
                             onChange={this.onChange}
@@ -102,14 +106,13 @@ class Login extends Component {
                             type="password" 
                             id="password" 
                             className={classnames("form-control", {
-                                        invalid: errors.password
+                                        invalid: errors.password || errors.passwordincorrect
                                     })}
                             placeholder="Password" 
                             required 
                         />
-                        <span className="text-red">
-                            {errors.password}
-                        </span>
+                        <ErrorAlert errorMsg={errors.password} />
+                        <ErrorAlert errorMsg={errors.passwordincorrect} />
                         <div className="checkbox mb-3">
                             <Label>
                                 {/* Remember me functionality currently does not work */}
