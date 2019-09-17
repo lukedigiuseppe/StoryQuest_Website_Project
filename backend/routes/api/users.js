@@ -19,7 +19,6 @@ const User = require("../../models/User");
 router.post("/register", (req, res) => {
     // Form validation
     const {errors, isValid} = validateRegisterInput(req.body);
-
     // Check the validation
     if (!isValid) {
         return res.status(400).json(errors);
@@ -31,9 +30,11 @@ router.post("/register", (req, res) => {
             return(res.status(400).json({email: "Email already exists."}));
         } else {
             const newUser = new User({
-                name: req.body.name,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                birthDate: req.body.birthDate
             });
 
             newUser
@@ -70,9 +71,10 @@ router.post("/login", (req, res) => {
         bcrypt.compare(password, user.password).then(isMatch => {
             if (isMatch) {
                 // User is matched so create the JWT payload
+                const fullName = user.firstName + " " + user.LastName;
                 const payload = {
                     id: user.id,
-                    name: user.name
+                    name: fullName
                 };
 
                 // Now sign the token with the secret and user info

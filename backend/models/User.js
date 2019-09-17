@@ -13,17 +13,21 @@ const UserSchema = new Schema(
             type: String,
             isRequired: true
         },
-        // Change this later, just for testing login
-        "name": {
+        "firstName": {
             type: String,
             isRequired: true
         },
-        "firstName": String,
-        "lastName": String,
-        "DOB": Date,
+        "lastName": {
+            type: String,
+            isRequired: true
+        },
         "pictureURL": [{type: mongoose.Schema.Types.ObjectId, ref: 'media',default : null}],
         "password" : {
             type: String,
+            isRequired: true
+        },
+        "birthDate":  {
+            type: Date,
             isRequired: true
         },
         "dateCreated" : {

@@ -35,6 +35,7 @@ class Register extends Component {
             email: "",
             password: "",
             confirmPass: "",
+            birthDate: "",
             errors: {}
         }
     }
@@ -67,7 +68,7 @@ class Register extends Component {
             name: this.state.name,
             email: this.state.email,
             password: this.state.password,
-            password2: this.state.confirmPass
+            confirmPass: this.state.confirmPass
         };
 
         // Register the user by using the passed in registerUser action from redux
@@ -97,11 +98,14 @@ class Register extends Component {
                     <h1 className="text-left" style={{paddingLeft: "30px"}}>Create an account</h1>
                     <Form noValidate className="register-form" onSubmit={this.onSubmit}>
                         <FormGroup row>
-                            <Label for="username" sm={DESCWIDTH}>Username</Label>
+                            <Label for="name" sm={DESCWIDTH}>Username</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input 
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.name}
+                                    error={errors.name} 
                                     type="text" 
-                                    id="username" 
+                                    id="name" 
                                     placeholder="Enter your username" 
                                 />
                             </Col>
@@ -167,12 +171,18 @@ class Register extends Component {
                                 <span className="red-text">{errors.confirmPass}</span>
                             </Col>
                         </FormGroup>
-                        {/* <FormGroup row>
+                        <FormGroup row>
                             <Label for="birthDate" sm={DESCWIDTH}>Date of Birth</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input type="date" name="birthDate" id="birthDate" />
+                                <Input 
+                                    onChange={this.onChange}
+                                    value={this.state.birthDate}
+                                    type="date" 
+                                    name="birthDate" 
+                                    id="birthDate" 
+                                />
                             </Col>
-                        </FormGroup> */}
+                        </FormGroup>
                         <br />
                         <Button className="btn-lg btn-primary rounded-lg" type="submit" block>Create account</Button>
                     </Form>

@@ -90,6 +90,10 @@ class Login extends Component {
                             placeholder="Email address" 
                             required autoFocus 
                         />
+                        <span className="text-red">
+                            {errors.email}
+                            {errors.emailnotfound}
+                        </span>
                         <Label htmlFor="password" className="sr-only">Password</Label>
                         <Input 
                             onChange={this.onChange}
@@ -98,11 +102,14 @@ class Login extends Component {
                             type="password" 
                             id="password" 
                             className={classnames("form-control", {
-                                        invalid: errors.email || errors.emailnotfound
+                                        invalid: errors.password
                                     })}
                             placeholder="Password" 
                             required 
                         />
+                        <span className="text-red">
+                            {errors.password}
+                        </span>
                         <div className="checkbox mb-3">
                             <Label>
                                 {/* Remember me functionality currently does not work */}

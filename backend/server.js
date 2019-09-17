@@ -20,12 +20,13 @@ app.use(bodyParser.json());
 
 // DB config
 const db = require("./config/keys").mongoURI;
+const name = require("./config/keys").dbName;
 
 // Connect to MongoDB
 mongoose
     .connect(
         db,
-        { useNewUrlParser: true }
+        { useNewUrlParser: true, dbName: name }
     )
     .then( () => console.log("MongoDB successfully connected."))
     .catch( err => console.log(err));
@@ -36,7 +37,7 @@ app.use(passport.initialize());
 // Make passport use our config setup
 require("./config/passport")(passport);
 
-// Routes
+// Routes. So we would specify localhost:5000/api/users to access the routes defined in "users.js"
 app.use("/api/users", users);
 
 // process.env.PORT is Heroku's port if we choose to deploy the APP there
