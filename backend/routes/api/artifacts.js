@@ -16,7 +16,7 @@ router.get('/artifacts', function (req, res) {
 });
 
 
-// create new artifact - TO DO: Link owner with artifact (owner email or owner DB ID?) + SerialNum 
+// create new artifact - TO DO: Link owner with artifact (owner email or owner DB ID?) + SerialNum
 router.post('/newArtifact', (req,res) => {
 
     var newArtifact = new Artifact({
