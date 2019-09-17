@@ -19,6 +19,7 @@ const User = require("../../models/User");
 router.post("/register", (req, res) => {
     // Form validation
     const {errors, isValid} = validateRegisterInput(req.body);
+    console.log(req.body);
     // Check the validation
     if (!isValid) {
         return res.status(400).json(errors);
@@ -71,7 +72,7 @@ router.post("/login", (req, res) => {
         bcrypt.compare(password, user.password).then(isMatch => {
             if (isMatch) {
                 // User is matched so create the JWT payload
-                const fullName = user.firstName + " " + user.LastName;
+                const fullName = user.firstName + " " + user.lastName;
                 const payload = {
                     id: user.id,
                     name: fullName

@@ -31,8 +31,10 @@ class Register extends Component {
         super(props);
 
         this.state = {
-            name: "",
+            firstName: "",
+            lastName: "",
             email: "",
+            confirmEmail: "",
             password: "",
             confirmPass: "",
             birthDate: "",
@@ -64,13 +66,18 @@ class Register extends Component {
     onSubmit = (e) => {
         e.preventDefault();
         
+        // Send the entire state including confirmation fields so that it can be validated on at the backend
         const newUser = {
-            name: this.state.name,
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
             email: this.state.email,
+            confirmEmail: this.state.confirmEmail,
             password: this.state.password,
-            confirmPass: this.state.confirmPass
+            confirmPassword: this.state.confirmPass,
+            birthDate: this.state.birthDate
         };
-
+        
+        console.log(this.state);
         // Register the user by using the passed in registerUser action from redux
         this.props.registerUser(newUser, this.props.history);
     };
@@ -98,15 +105,28 @@ class Register extends Component {
                     <h1 className="text-left" style={{paddingLeft: "30px"}}>Create an account</h1>
                     <Form noValidate className="register-form" onSubmit={this.onSubmit}>
                         <FormGroup row>
-                            <Label for="name" sm={DESCWIDTH}>Username</Label>
+                            <Label htmlFor="firstName" sm={DESCWIDTH}>Given name</Label>
                             <Col sm={INPUTWIDTH}>
                                 <Input
                                     onChange={this.onChange}
-                                    value={this.state.name}
-                                    error={errors.name} 
+                                    value={this.state.firstName}
+                                    error={errors.firstName} 
                                     type="text" 
-                                    id="name" 
-                                    placeholder="Enter your username" 
+                                    id="firstName" 
+                                    placeholder="Enter your given name" 
+                                />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label htmlFor="lastName" sm={DESCWIDTH}>Family name</Label>
+                            <Col sm={INPUTWIDTH}>
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.lastName}
+                                    error={errors.lastName} 
+                                    type="text" 
+                                    id="lastName" 
+                                    placeholder="Enter your family name" 
                                 />
                             </Col>
                         </FormGroup>
@@ -127,16 +147,19 @@ class Register extends Component {
                             <span className="red-text">{errors.email}</span>
                             </Col>
                         </FormGroup>
-                        {/* <FormGroup row>
+                        <FormGroup row>
                             <Label for="confirmEmail" sm={DESCWIDTH}>Confirm Email</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input 
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.confirmEmail}
+                                    error={errors.confirmEmail}
                                     type="email" 
                                     id="confirmEmail" 
                                     placeholder="Confirm your email"  
                                 />
                             </Col>
-                        </FormGroup> */}
+                        </FormGroup>
                         <FormGroup row>
                             <Label htmlFor="password" sm={DESCWIDTH}>Password</Label>
                             <Col sm={INPUTWIDTH}>
@@ -160,7 +183,7 @@ class Register extends Component {
                                 <Input
                                     onChange={this.onChange}
                                     value={this.state.confirmPass}
-                                    error={errors.password}
+                                    error={errors.confirmPass}
                                     type="password"
                                     id="confirmPass"
                                     placeholder="Confirm your password"
@@ -177,6 +200,7 @@ class Register extends Component {
                                 <Input 
                                     onChange={this.onChange}
                                     value={this.state.birthDate}
+                                    error={errors.birthDate}
                                     type="date" 
                                     name="birthDate" 
                                     id="birthDate" 
