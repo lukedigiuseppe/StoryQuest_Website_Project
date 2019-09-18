@@ -19,13 +19,6 @@
     transform: translate(-50%, -50%);
 }
 
-.home-link {
-    padding-top: 40px;
-    width: 20%;
-    display: flex;
-    justify-content: center;
-}
-
 .form-signin {
     width: 100%;
     max-width: 330px;

@@ -73,15 +73,10 @@ class Login extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Login to Story Quest</title>
                 </Helmet>
-                <div className="home-link">
-                    <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
-                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
-                    </Link> 
-                </div>
                 {/* The main signin form */}
                 <div className="text-center signin-box bg-light">
                     <Form noValidate className="form-signin" onSubmit={this.onSubmit}>
-                        <img className="mb-4" src={LOGO} alt="" width="72" height="72" />
+                        <Link to="/"><img className="mb-4" src={LOGO} alt="" width="72" height="72" /></Link>
                         <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
                         <Label htmlFor="email" className="sr-only">Email address</Label>
                         <Input 
@@ -121,6 +116,7 @@ class Login extends Component {
                             </Label>
                         </div>
                         <Button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</Button>
+                        <p className="mt-3 mb-2">Don't have an account? <Link style={{color: "blue"}} to="/register">Register here</Link></p>
                         <p className="mt-5 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
                     </Form>
                 </div>
