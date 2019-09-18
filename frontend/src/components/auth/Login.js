@@ -131,6 +131,7 @@ Login.propTypes = {
     errors: PropTypes.object.isRequired
 };
 
+// This maps the state that we get from the Redux store to the props for this component
 const mapStateToProps = state => ({
     auth: state.auth,
     errors: state.errors
