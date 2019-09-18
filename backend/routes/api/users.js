@@ -19,7 +19,6 @@ const User = require("../../models/User");
 router.post("/register", (req, res) => {
     // Form validation
     const {errors, isValid} = validateRegisterInput(req.body);
-    console.log(req.body);
     // Check the validation
     if (!isValid) {
         return res.status(400).json(errors);
@@ -33,6 +32,7 @@ router.post("/register", (req, res) => {
             const newUser = new User({
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
+                publicName: req.body.publicName,
                 email: req.body.email,
                 password: req.body.password,
                 birthDate: req.body.birthDate

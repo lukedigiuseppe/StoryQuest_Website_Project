@@ -13,6 +13,10 @@ const UserSchema = new Schema(
             type: String,
             isRequired: true
         },
+        "publicName": {
+            type: String,
+            isRequired: true
+        },
         "firstName": {
             type: String,
             isRequired: true

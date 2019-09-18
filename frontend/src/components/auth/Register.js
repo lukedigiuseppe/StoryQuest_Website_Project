@@ -33,6 +33,7 @@ class Register extends Component {
         super(props);
 
         this.state = {
+            publicName: "",
             firstName: "",
             lastName: "",
             email: "",
@@ -72,6 +73,7 @@ class Register extends Component {
         const newUser = {
             firstName: this.state.firstName,
             lastName: this.state.lastName,
+            publicName: this.state.publicName,
             email: this.state.email,
             confirmEmail: this.state.confirmEmail,
             password: this.state.password,
@@ -110,6 +112,20 @@ class Register extends Component {
                     </Row>
                     <h1 className="text-left" style={{paddingLeft: "30px"}}>Create an account</h1>
                     <Form noValidate className="register-form" onSubmit={this.onSubmit}>
+                        <FormGroup row>
+                            <Label htmlFor="publicName" sm={DESCWIDTH}>Public name</Label>
+                            <Col sm={INPUTWIDTH}>
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.publicName}
+                                    error={errors.publicName} 
+                                    type="text" 
+                                    id="publicName" 
+                                    placeholder="Enter a public name (this name will be visible to all users)" 
+                                />
+                                <ErrorAlert errorMsg={errors.publicName} />
+                            </Col>
+                        </FormGroup>
                         <FormGroup row>
                             <Label htmlFor="firstName" sm={DESCWIDTH}>Given name</Label>
                             <Col sm={INPUTWIDTH}>

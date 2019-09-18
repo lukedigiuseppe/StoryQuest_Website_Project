@@ -10,6 +10,7 @@ module.exports = function validateRegisterInput(data) {
     // Convert the empty field into empty strings to be run with the validator functions
     data.firstName = !isEmpty(data.firstName) ? data.firstName : "";
     data.lastName = !isEmpty(data.lastName) ? data.lastName : "";
+    data.publicName = !isEmpty(data.publicName) ? data.publicName : "";
     data.email = !isEmpty(data.email) ? data.email: "";
     data.confirmEmail = !isEmpty(data.confirmEmail) ? data.confirmEmail: "";
     data.password = !isEmpty(data.password) ? data.password: "";
@@ -22,6 +23,10 @@ module.exports = function validateRegisterInput(data) {
     }
     if (Validator.isEmpty(data.lastName)) {
         errors.lastName = "Please enter your last name. It is required.";
+    }
+
+    if (Validator.isEmpty(data.publicName)) {
+        errors.publicName = "Please enter a name that will be displayed to all users. It is required."
     }
 
     // Email checks
