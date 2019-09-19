@@ -15,27 +15,69 @@ router.get('/artifacts', function (req, res) {
     });
 });
 
+// This is dev route. REMOVE IN FINAL BUILD
+router.get('/getartifactids', function(req, res) {
+    Artifact.find({}, function(err, artifacts) {
+        var artifactSerials = [];
 
-// create new artifact - TO DO: Link owner with artifact (owner email or owner DB ID?) + SerialNum
+        artifacts.forEach(function (artifact) {
+            artifactSerials.push(artifact.serialNumber);
+        });
+
+        res.send(artifactSerials);
+    })
+})
+
+// This function generates a random string filled with 'characters' up to a specified 'length'
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+ 
+// create new artifact - TO DO: Link owner with artifact (owner email or owner DB ID?)
 router.post('/newArtifact', (req,res) => {
 
-    var newArtifact = new Artifact({
-        "serialNumber": req.body.serialNumber,
-        "story": req.body.story,
-        "category": req.body.category,
-        "keywords": req.body.keywords,
-        "ownerID": req.body.ownerID
-    });
+    // Map through each artifact that current exists, and extract the serial number. Then keep generating new serial numbers until you find a unique
+    // one to assign
+    Artifact.find({}, function(err, artifacts) {
+        var artifactSerials = [];
+        
+        artifacts.forEach(function (artifact) {
+            artifactSerials.push(artifact.serialNumber);
+        });
+        
+        var id = makeid(6);
+        var notUnique = true;
 
-
-    newArtifact.save(function (err, artifact) {
-        if (!err) {
-            res.send(artifact);
-        } else {
-            res.sendStatus(400);
+        while(notUnique) {
+            if (!artifactSerials.includes(id)) {
+                notUnique = false;
+            } else {
+                id = makeid(6);
+            }
         }
-    });
 
+        var newArtifact = new Artifact({
+            "serialNumber": id,
+            "story": req.body.story,
+            "category": req.body.category,
+            "keywords": req.body.keywords,
+            "ownerID": req.body.ownerID
+        });
+
+        newArtifact.save(function (err, artifact) {
+            if (!err) {
+                res.send(artifact);
+            } else {
+                res.sendStatus(400);
+            }
+        });
+    })
 
 });
 //view one artifact by ID
