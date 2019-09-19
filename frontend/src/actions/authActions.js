@@ -8,7 +8,8 @@ import jwt_decode from "jwt-decode";
 import {
     GET_ERRORS,
     SET_CURRENT_USER,
-    USER_LOADING
+    USER_LOADING,
+    USER_NOT_LOADING
 } from "./types"
 
 // Register the user
@@ -61,6 +62,13 @@ export const setUserLoading = () => {
         type: USER_LOADING
     };
 };
+
+// User isn't loading
+export const setUserNotLoading = () => {
+    return {
+        type: USER_NOT_LOADING
+    };
+}
 
 // Log the user out
 export const logoutUser = () => dispatch => {

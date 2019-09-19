@@ -4,7 +4,7 @@ import {Helmet} from 'react-helmet';
 import {Link} from 'react-router-dom';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginUser } from "../../actions/authActions";
+import { loginUser, setUserLoading, setUserNotLoading } from "../../actions/authActions";
 import classnames from "classnames";
 
 import ErrorAlert from "../alerts/ErrorAlert";
@@ -37,6 +37,7 @@ class Login extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.auth.isAuthenticated) {
             this.props.history.push("/dashboard");
+            this.props.setUserNotLoading();
         }
 
         if (this.props.errors !== prevProps.errors) {
@@ -60,12 +61,17 @@ class Login extends Component {
         
         // Redirect is handled by the component (or redux action) so we don't need to use this.props.history
         this.props.loginUser(userData);
+        this.props.setUserLoading();
     };
 
     render() {
 
         const { errors } = this.state;
-
+        if (this.props.auth.loading) {
+            return (
+                <div><h1>Loading...</h1></div>
+            )
+        }
         return (
             <div>
                 <Helmet> 
@@ -127,6 +133,8 @@ class Login extends Component {
 
 Login.propTypes = {
     loginUser: PropTypes.func.isRequired,
+    setUserLoading: PropTypes.func.isRequired,
+    setUserNotLoading: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired
 };
@@ -139,5 +147,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { loginUser }
+    { loginUser, setUserLoading, setUserNotLoading }
 )(Login);
