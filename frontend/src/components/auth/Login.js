@@ -8,6 +8,7 @@ import { loginUser, setUserLoading, setUserNotLoading } from "../../actions/auth
 import classnames from "classnames";
 
 import ErrorAlert from "../alerts/ErrorAlert";
+import Loading from "../layout/Loading";
 
 import '../../css/login.css'
 
@@ -69,7 +70,7 @@ class Login extends Component {
         const { errors } = this.state;
         if (this.props.auth.loading) {
             return (
-                <div><h1>Loading...</h1></div>
+                <Loading />
             )
         }
         return (
