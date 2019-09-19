@@ -26,8 +26,11 @@ const name = require("./config/keys").dbName;
 // Connect to MongoDB
 mongoose
     .connect(
-        db,
-        { useNewUrlParser: true, dbName: name }
+        db, { 
+            useNewUrlParser: true, 
+            dbName: name,
+            useUnifiedTopology: true // This is needed to remove the deprecation warning for Server discovery and monitoring in nodemon
+        }
     )
     .then( () => console.log("MongoDB successfully connected."))
     .catch( err => console.log(err));
