@@ -20,6 +20,7 @@ import Register from './components/auth/Register';
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 import AddArtifact from "./components/layout/AddArtifact";
+import ViewArtifact from "./components/layout/ViewArtifact";
 
 // Check for token to keep the user logged in
 
@@ -52,6 +53,7 @@ const routing = (
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/add_artifact" component ={AddArtifact} />
+                <Route exact path="/view_artifact" component ={ViewArtifact} />
                 <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                 </Switch>
