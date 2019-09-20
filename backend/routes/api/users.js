@@ -69,36 +69,35 @@ router.post("/login", (req, res) => {
         }
 
         // If user exists, check their password next
-        bcrypt.compare(password, user.password).then(isMatch => {
-            if (isMatch) {
-                // User is matched so create the JWT payload
-                const fullName = user.firstName + " " + user.lastName;
-                const payload = {
-                    id: user.id,
-                    name: fullName
-                };
+        const isMatch = user.isValidPassword(password);
+        if (isMatch) {
+            // User is matched so create the JWT payload
+            const fullName = user.firstName + " " + user.lastName;
+            const payload = {
+                id: user.id,
+                name: fullName
+            };
 
-                // Now sign the token with the secret and user info
-                jwt.sign(
-                    payload,
-                    keys.secretOrKey,
-                    {
-                        expiresIn: 31556926 //1 year in seconds or can change to 1 hour seconds. Up to you
-                    },
-                    (err, token) => {
-                        res.json({
-                            success: true,
-                            token: "Bearer " + token
-                        });
-                    }
-                );
-            } else {
-                // No password match
-                return res
-                    .status(400)
-                    .json({ passwordincorrect: "Password incorrect" });
-            }
-        });
+            // Now sign the token with the secret and user info
+            jwt.sign(
+                payload,
+                keys.secretOrKey,
+                {
+                    expiresIn: 31556926 //1 year in seconds or can change to 1 hour seconds. Up to you
+                },
+                (err, token) => {
+                    res.json({
+                        success: true,
+                        token: "Bearer " + token
+                    });
+                }
+            );
+        } else {
+            // No password match
+            return res
+                .status(400)
+                .json({ passwordincorrect: "Password incorrect" });
+        }
     });
 });
 

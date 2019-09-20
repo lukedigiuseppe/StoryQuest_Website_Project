@@ -5,6 +5,12 @@ const router = express.Router();
 const keys = require("../../config/keys");
 const Artifact = require("../../models/Artifact");
 
+const passport = require('passport');
+require("../../config/passport")(passport);
+const passportOpts = {
+    session: false
+};
+
 router.get('/artifacts', function (req, res) {
     Artifact.find(function (err, artifact) {
         if (!err) {
@@ -15,18 +21,29 @@ router.get('/artifacts', function (req, res) {
     });
 });
 
+router.get('/findUser', (req, res, next) => {
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+        if (err) { return next(err); }
+        if (!user) { return res.send("Doesn't work"); }
+        return res.send("Hey, its working.");
+    })(req, res, next);
+  });
+
 // This is dev route. REMOVE IN FINAL BUILD
-router.get('/getartifactids', function(req, res) {
-    Artifact.find({}, function(err, artifacts) {
-        var artifactSerials = [];
+// router.get('/getartifactids', function(req, res) {
 
-        artifacts.forEach(function (artifact) {
-            artifactSerials.push(artifact.serialNumber);
-        });
-
-        res.send(artifactSerials);
-    })
-})
+    // passport.authenticate('jwt', passportOpts, function(req, res) {
+        // Artifact.find({}, function(err, artifacts) {
+        //     var artifactSerials = [];
+    
+        //     artifacts.forEach(function (artifact) {
+        //         artifactSerials.push(artifact.serialNumber);
+        //     });
+    
+        //     res.send(artifactSerials);
+        // })
+    // });
+// })
 
 // This function generates a random string filled with 'characters' up to a specified 'length'
 function makeid(length) {
