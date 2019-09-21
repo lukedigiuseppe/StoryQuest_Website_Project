@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+const encrypt = require('../../config/encryption').encrypt;
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 
@@ -67,6 +67,7 @@ router.post("/login", (req, res) => {
         if (!user) {
             return res.status(404).json({emailnotfound: "Email not found"});
         }
+        
 
         // If user exists, check their password next
         const isMatch = user.isValidPassword(password);
@@ -74,16 +75,16 @@ router.post("/login", (req, res) => {
             // User is matched so create the JWT payload
             const fullName = user.firstName + " " + user.lastName;
             const payload = {
-                id: user.id,
+                id: encrypt(user.id),
                 name: fullName
             };
-
+            
             // Now sign the token with the secret and user info
             jwt.sign(
                 payload,
                 keys.secretOrKey,
                 {
-                    expiresIn: 31556926 //1 year in seconds or can change to 1 hour seconds. Up to you
+                    expiresIn: 3600 // 1 hour in seconds. Up to you
                 },
                 (err, token) => {
                     res.json({
