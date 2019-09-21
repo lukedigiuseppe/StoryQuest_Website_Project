@@ -16,7 +16,13 @@ import {
     Input,
     InputGroup,
     InputGroupAddon,
-    FormText 
+    FormText, 
+    Card, 
+    CardImg, 
+    CardText, 
+    CardBody,
+    CardTitle,
+    CardSubtitle,
 } from 'reactstrap';
 
 import ErrorAlert from '../alerts/ErrorAlert';
@@ -29,6 +35,8 @@ import '../../css/addArtifact.css';
 const INPUTWIDTH = 10;
 const DESCWIDTH = 2;
 const BANNER = "/images/cover.png"
+const MARGIN = 1;
+const HALF = 6;
 
 
 class AddArtifact extends Component {
@@ -87,46 +95,145 @@ class AddArtifact extends Component {
 
                 <Container className="register-box bg-light rounded-lg">
 
-                {/*Form title*/}
+              
                 <Row>
                         <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
                         <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
                         </Link>
                 </Row>
-                <h1 className="text-left" style={{paddingLeft: "30px"}}>Register an Artifact</h1>
-
-
-
+            
 
                 <Form noValidate className="register-form" onSubmit={this.onSubmit}>
 
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Add a new artifact</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
                     <FormGroup row>
-                                <Label htmlFor="Name" sm={DESCWIDTH}>Name</Label>
-                                <Col sm={INPUTWIDTH}>
-                                    <Input
-                                        onChange={this.onChange}
-                                        value={this.state.name}
-                                        error={errors.Name} 
-                                        type="text" 
-                                        id="name" 
-                                        placeholder="Enter the name of your artifact" 
-                                    />
-                                    <ErrorAlert errorMsg={errors.Name} />
-                                </Col>
+
+                        <Col sm = {MARGIN}></Col>
+
+                        <Col sm={HALF -1}>
+                            <Input
+                                onChange={this.onChange}
+                                value={this.state.name}
+                                error={errors.Name} 
+                                type="text" 
+                                id="name" 
+                                placeholder="What's your artifact called?" 
+                            />
+                            <ErrorAlert errorMsg={errors.Name} />
+                        </Col>
+
+                        <Col sm = {HALF -1}></Col>
+
+                        <Col sm = {MARGIN}></Col>
                     </FormGroup>
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Its Story</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+                    <FormGroup row>
+    
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                            <Input 
+                                style = {{height: '200px'}}
+                                onChange={this.onChange}
+                                value={this.state.story}
+                                type="textarea" 
+                                name="text" 
+                                id="story" 
+                                placeholder= "Tell us about its journey"
+                                />
+                                <ErrorAlert errorMsg={errors.Story} />
+
+                        </Col>  
+
+                        <Col sm = {MARGIN}></Col>
+                    </FormGroup>
+
+
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Add Photos</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+                    <FormGroup row>
+                        <Col sm = {MARGIN}></Col>
+                
+                        <Col sm = {3}>
+                        <Card>
+
+                        <CardImg top width = "100%" src= '/images/vase.jpg' ></CardImg>
+
+                        <CardBody>
+                            <CardTitle>Upload Image</CardTitle>
+                            <Input 
+                            style = {{height: '100px'}}
+                            type="file" 
+                            name="file" 
+                            id="exampleFile" />
+                        </CardBody>
+                        </Card>
+
+
+                        </Col>
+
+                        <Col sm = {2}>
+                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
+                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
+
+                        </Col>
+                        <Col sm = {2}>
+                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
+                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
+
+                        </Col>
+                        <Col sm = {2}>
+                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
+                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
+
+                        </Col>
+
+                        <Col sm = {MARGIN}></Col>
+                    </FormGroup>
+
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Add a catagory</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
 
                     
                     <FormGroup row>
-                        <Label htmlFor="Catagory" sm={DESCWIDTH}>Catagory</Label>
-                        <Col sm={INPUTWIDTH}>
+                        <Col sm = {MARGIN}></Col>
+                        <Col sm={HALF -1}>
                             <Input 
                                 onChange={this.onChange}
                                 value={this.state.catagory}
                                 type="select" 
-                                id="catagory" 
+                                id="catagory"
                                 >
 
-                                
+                                <option>Other</option>
                                 <option>Jewlery</option>
                                 <option>Clothes</option>
                                 <option>Tool</option>
@@ -137,11 +244,49 @@ class AddArtifact extends Component {
                         </Input>
                         <ErrorAlert errorMsg={errors.Catagory} />
                         </Col>
+
+
+                        <Col sm = {MARGIN}></Col>
                     </FormGroup>
 
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Add tags</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+                    
                     <FormGroup row>
-                        <Label htmlFor="Date Made" sm={DESCWIDTH}>Date Made</Label>
-                        <Col sm={INPUTWIDTH}>
+                        <Col sm = {MARGIN}></Col>
+                        <Col sm={HALF -1}>
+                        <InputGroup>
+                            <InputGroupAddon addonType="prepend"><Button>Add tag</Button> </InputGroupAddon>
+                            <Input 
+                            placeholder="Add tags for others to search for your artifact"
+                                />
+                            </InputGroup>
+                            <ErrorAlert errorMsg={errors.Keywords} />
+                        </Col>
+
+                        <Col sm = {MARGIN}></Col>
+                    </FormGroup>
+
+
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Other details (optional)</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+                    <FormGroup row>
+                        <Col sm = {MARGIN}></Col>
+                        <Label htmlFor="Date Made" sm={2}>Date Made:</Label>
+                        <Col sm={2}>
                         <Input
                             onChange={this.onChange}
                             value={this.state.date}
@@ -151,50 +296,7 @@ class AddArtifact extends Component {
                             />
                             <ErrorAlert errorMsg={errors.Date} />
                         </Col>
-                    </FormGroup>
-
-                    <FormGroup row>
-                    <Label htmlFor="Story" sm={DESCWIDTH}>Story</Label>
-                        <Col sm={INPUTWIDTH}>
-                        <Input 
-                            style = {{height: '200px'}}
-                            onChange={this.onChange}
-                            value={this.state.story}
-                            type="textarea" 
-                            name="text" 
-                            id="story" 
-                            placeholder= "Write a description of your artifact"
-                            />
-                            <ErrorAlert errorMsg={errors.Story} />
-
-                        </Col>  
-                    </FormGroup>
-
-                    <FormGroup row>
-                        <Label htmlFor="Keywords" sm={DESCWIDTH}>Keywords</Label>
-                        <Col sm={INPUTWIDTH}>
-                        <InputGroup>
-                            <InputGroupAddon addonType="prepend"><Button>Add Keyword</Button> </InputGroupAddon>
-                            <Input 
-                            placeholder="Add tags for others to search for your artifact"
-                                />
-                            </InputGroup>
-                            <ErrorAlert errorMsg={errors.Keywords} />
-                        </Col>
-                    </FormGroup>
-
-                    <FormGroup row>
-                        <Label htmlFor="Images" sm={DESCWIDTH}>Images</Label>
-                        <Col sm={INPUTWIDTH}>
-                            <Label for="ImageFile">ImageFile</Label>
-                            <Input type="file" name="file" id="exampleFile" />
-                            <FormText color="muted">
-                                Upload a photo of your artifact.
-                            </FormText>
-
-
-
-                        </Col>
+                        <Col sm = {MARGIN}></Col>
                     </FormGroup>
 
                 </Form>
