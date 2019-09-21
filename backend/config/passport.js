@@ -28,4 +28,4 @@ module.exports = passport => {
     );
 };
 
-// jwt_payload is the thing that will be sent to our login endpoint.
+// jwt_payload is the thing that will be sent to our login endpoint. If the server resets then the original bearer token will be invalid.
