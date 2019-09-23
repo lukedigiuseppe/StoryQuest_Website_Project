@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import {withRouter}  from 'react-router-dom';
+import {Link, withRouter}  from 'react-router-dom';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
 import {registerUser} from '../../actions/authActions';
@@ -15,6 +15,8 @@ import {
     Label, 
     Input
 } from 'reactstrap';
+
+import ErrorAlert from '../alerts/ErrorAlert';
 
 import '../../css/register.css';
 
@@ -31,11 +33,15 @@ class Register extends Component {
         super(props);
 
         this.state = {
-            name: "",
+            publicName: "",
+            firstName: "",
+            lastName: "",
             email: "",
+            confirmEmail: "",
             password: "",
             confirmPass: "",
-            errors: {}
+            birthDate: "",
+            errors: {},
         }
     }
 
@@ -63,13 +69,18 @@ class Register extends Component {
     onSubmit = (e) => {
         e.preventDefault();
         
+        // Send the entire state including confirmation fields so that it can be validated on at the backend
         const newUser = {
-            name: this.state.name,
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            publicName: this.state.publicName,
             email: this.state.email,
+            confirmEmail: this.state.confirmEmail,
             password: this.state.password,
-            password2: this.state.confirmPass
+            confirmPass: this.state.confirmPass,
+            birthDate: this.state.birthDate
         };
-
+        
         // Register the user by using the passed in registerUser action from redux
         this.props.registerUser(newUser, this.props.history);
     };
@@ -93,17 +104,54 @@ class Register extends Component {
                     </Row>
                 </Container>
                 {/* The form container */}
-                <Container className="text-center register-box bg-light rounded-lg">
+                <Container className="register-box bg-light rounded-lg">
+                    <Row>
+                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
+                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
+                        </Link>
+                    </Row>
                     <h1 className="text-left" style={{paddingLeft: "30px"}}>Create an account</h1>
                     <Form noValidate className="register-form" onSubmit={this.onSubmit}>
                         <FormGroup row>
-                            <Label for="username" sm={DESCWIDTH}>Username</Label>
+                            <Label htmlFor="publicName" sm={DESCWIDTH}>Public name</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input 
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.publicName}
+                                    error={errors.publicName} 
                                     type="text" 
-                                    id="username" 
-                                    placeholder="Enter your username" 
+                                    id="publicName" 
+                                    placeholder="Enter a public name (this name will be visible to all users)" 
                                 />
+                                <ErrorAlert errorMsg={errors.publicName} />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label htmlFor="firstName" sm={DESCWIDTH}>Given name</Label>
+                            <Col sm={INPUTWIDTH}>
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.firstName}
+                                    error={errors.firstName} 
+                                    type="text" 
+                                    id="firstName" 
+                                    placeholder="Enter your given name" 
+                                />
+                                <ErrorAlert errorMsg={errors.firstName} />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label htmlFor="lastName" sm={DESCWIDTH}>Family name</Label>
+                            <Col sm={INPUTWIDTH}>
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.lastName}
+                                    error={errors.lastName} 
+                                    type="text" 
+                                    id="lastName" 
+                                    placeholder="Enter your family name" 
+                                />
+                                <ErrorAlert errorMsg={errors.lastName} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -120,19 +168,23 @@ class Register extends Component {
                                         invalid: errors.email
                                     })}
                                 />
-                            <span className="red-text">{errors.email}</span>
+                                <ErrorAlert errorMsg={errors.email} />
                             </Col>
                         </FormGroup>
-                        {/* <FormGroup row>
+                        <FormGroup row>
                             <Label for="confirmEmail" sm={DESCWIDTH}>Confirm Email</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input 
+                                <Input
+                                    onChange={this.onChange}
+                                    value={this.state.confirmEmail}
+                                    error={errors.confirmEmail}
                                     type="email" 
                                     id="confirmEmail" 
                                     placeholder="Confirm your email"  
                                 />
+                                <ErrorAlert errorMsg={errors.confirmEmail} />
                             </Col>
-                        </FormGroup> */}
+                        </FormGroup>
                         <FormGroup row>
                             <Label htmlFor="password" sm={DESCWIDTH}>Password</Label>
                             <Col sm={INPUTWIDTH}>
@@ -147,7 +199,7 @@ class Register extends Component {
                                         invalid: errors.password
                                     })}
                                 />
-                                <span className="red-text">{errors.password}</span>
+                                <ErrorAlert errorMsg={errors.password} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -156,7 +208,7 @@ class Register extends Component {
                                 <Input
                                     onChange={this.onChange}
                                     value={this.state.confirmPass}
-                                    error={errors.password}
+                                    error={errors.confirmPass}
                                     type="password"
                                     id="confirmPass"
                                     placeholder="Confirm your password"
@@ -164,19 +216,28 @@ class Register extends Component {
                                         invalid: errors.confirmPass
                                     })}
                                 />
-                                <span className="red-text">{errors.confirmPass}</span>
+                                <ErrorAlert errorMsg={errors.confirmPass} />
                             </Col>
                         </FormGroup>
-                        {/* <FormGroup row>
+                        <FormGroup row>
                             <Label for="birthDate" sm={DESCWIDTH}>Date of Birth</Label>
                             <Col sm={INPUTWIDTH}>
-                                <Input type="date" name="birthDate" id="birthDate" />
+                                <Input 
+                                    onChange={this.onChange}
+                                    value={this.state.birthDate}
+                                    error={errors.birthDate}
+                                    type="date" 
+                                    name="birthDate" 
+                                    id="birthDate" 
+                                />
+                                <ErrorAlert errorMsg={errors.birthDate} />
                             </Col>
-                        </FormGroup> */}
+                        </FormGroup>
                         <br />
                         <Button className="btn-lg btn-primary rounded-lg" type="submit" block>Create account</Button>
                     </Form>
-                    <p className="mt-5 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
+                    <p className="text-center mt-3 text-muted">Already have an account? <Link style={{color: "blue"}} to="/login">Login</Link></p>
+                    <p className="text-center mt-3 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
                 </Container>
             </div>
         )

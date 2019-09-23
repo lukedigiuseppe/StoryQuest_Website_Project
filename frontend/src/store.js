@@ -4,6 +4,7 @@ import rootReducer from "./reducers";
 
 const initialState = {};
 
+// Array of middleware that we are using
 const middleware = [thunk];
 
 const store = createStore(
@@ -11,6 +12,7 @@ const store = createStore(
     initialState,
     compose(
         applyMiddleware(...middleware),
+        // The below part is necessary for the REDUX extensions in Chrome and Firefox to work. For dev purposes only.
         (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && 
         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__()) ||
         compose

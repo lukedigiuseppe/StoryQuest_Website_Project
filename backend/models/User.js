@@ -13,17 +13,25 @@ const UserSchema = new Schema(
             type: String,
             isRequired: true
         },
-        // Change this later, just for testing login
-        "name": {
+        "publicName": {
             type: String,
             isRequired: true
         },
-        "firstName": String,
-        "lastName": String,
-        "DOB": Date,
+        "firstName": {
+            type: String,
+            isRequired: true
+        },
+        "lastName": {
+            type: String,
+            isRequired: true
+        },
         "pictureURL": [{type: mongoose.Schema.Types.ObjectId, ref: 'media',default : null}],
         "password" : {
             type: String,
+            isRequired: true
+        },
+        "birthDate":  {
+            type: Date,
             isRequired: true
         },
         "dateCreated" : {
@@ -35,8 +43,8 @@ const UserSchema = new Schema(
 
 // Now hash the password before we completely save the new user into the database
 UserSchema.pre('save', function(next) {
-    var user = this;
-    var SALT_FACTOR = 10;
+    const user = this;
+    const SALT_FACTOR = 10;
 
     if (!user.isModified('password')) {
         return next();
@@ -55,5 +63,13 @@ UserSchema.pre('save', function(next) {
     });
 });
 
+// This compares the unhashed password with the stored hash to check if they are the same.
+UserSchema.methods.isValidPassword = function(password) {
+    const user = this;
+    const isValid = bcrypt.compare(password, user.password);
+    return isValid;
+}
+
 // Export as a mongoose model which will be stored in a collection called users
-module.exports =  User = mongoose.model("users", UserSchema);
+const User = mongoose.model("users", UserSchema);
+module.exports =  User;

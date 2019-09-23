@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+const encrypt = require('../../config/encryption').encrypt;
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 
@@ -19,7 +19,6 @@ const User = require("../../models/User");
 router.post("/register", (req, res) => {
     // Form validation
     const {errors, isValid} = validateRegisterInput(req.body);
-
     // Check the validation
     if (!isValid) {
         return res.status(400).json(errors);
@@ -31,9 +30,12 @@ router.post("/register", (req, res) => {
             return(res.status(400).json({email: "Email already exists."}));
         } else {
             const newUser = new User({
-                name: req.body.name,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                publicName: req.body.publicName,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                birthDate: req.body.birthDate
             });
 
             newUser
@@ -65,37 +67,36 @@ router.post("/login", (req, res) => {
         if (!user) {
             return res.status(404).json({emailnotfound: "Email not found"});
         }
-
+        
         // If user exists, check their password next
-        bcrypt.compare(password, user.password).then(isMatch => {
-            if (isMatch) {
-                // User is matched so create the JWT payload
-                const payload = {
-                    id: user.id,
-                    name: user.name
-                };
-
-                // Now sign the token with the secret and user info
-                jwt.sign(
-                    payload,
-                    keys.secretOrKey,
-                    {
-                        expiresIn: 31556926 //1 year in seconds or can change to 1 hour seconds. Up to you
-                    },
-                    (err, token) => {
-                        res.json({
-                            success: true,
-                            token: "Bearer " + token
-                        });
-                    }
-                );
-            } else {
-                // No password match
-                return res
-                    .status(400)
-                    .json({ passwordincorrect: "Password incorrect" });
-            }
-        });
+        const isMatch = user.isValidPassword(password);
+        if (isMatch) {
+            const fullName = user.publicName;
+            const payload = {
+                id: encrypt(user.id),
+                name: fullName
+            };
+            
+            // Now sign the token with the secret and user info
+            jwt.sign(
+                payload,
+                keys.secretOrKey,
+                {
+                    expiresIn: 3600 // 1 hour in seconds. Up to you
+                },
+                (err, token) => {
+                    res.json({
+                        success: true,
+                        token: "Bearer " + token
+                    });
+                }
+            );
+        } else {
+            // No password match
+            return res
+                .status(400)
+                .json({ passwordincorrect: "Password incorrect" });
+        }
     });
 });
 
