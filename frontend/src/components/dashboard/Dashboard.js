@@ -4,8 +4,30 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {logoutUser} from "../../actions/authActions";
+import axios from "axios";
 
 class Dashboard extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            message: ''
+        }
+
+        this.test = this.test.bind(this);
+    }
+
+    test = () => {
+        console.log("method called");
+        axios.get('/findUser')
+        .then(response => {
+          this.setState({ message: response.data });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+        console.log(this.state.message);
+    }
 
     onLogoutClick = (e) => {
         e.preventDefault();
@@ -24,6 +46,7 @@ class Dashboard extends Component {
                             <p className="flow-text grey-text text-darken-1">
                                 You are logged into a full-stack{" "}<span style={{ fontFamily: "monospace"}}>MERN</span> app 👏
                             </p>
+                            <p><button onClick={this.test}>Test me and check the console to see the info you get back.</button></p>
                         </h4>
                         <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} onClick={this.onLogoutClick} className="btn btn-large waves-effect waves-light hoverable blue accent-3">Logout</button>
                     </div>
