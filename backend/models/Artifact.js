@@ -1,9 +1,9 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 //const enums = require('../models/enums.js');
 
 // Artifact attributes
 
-var artifactSchema = mongoose.Schema(
+const ArtifactSchema = mongoose.Schema(
     {
         "serialNumber": {
             type: String,
@@ -33,5 +33,17 @@ var artifactSchema = mongoose.Schema(
     }
 );
 
+ArtifactSchema.index({
+    name: 'text', 
+    story: 'text', 
+    keywords: 'text'
+}, {
+    weights: {
+        name: 5, 
+        keywords: 3, 
+        story: 2
+    }
+});
 
-module.exports =  mongoose.model('artifact',artifactSchema);
+const Artifact = mongoose.model('Artifact', ArtifactSchema);
+module.exports =  Artifact;

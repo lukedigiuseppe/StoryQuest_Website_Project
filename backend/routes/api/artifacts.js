@@ -11,7 +11,7 @@ const passportOpts = {
     session: false
 };
 
-// @route /artifacts
+// @route GET /artifacts
 // @desc View all public artifacts
 // @access Public
 router.get('/artifacts', function (req, res) {
@@ -24,21 +24,38 @@ router.get('/artifacts', function (req, res) {
     });
 });
 
-// This is dev route. REMOVE IN FINAL BUILD
-// router.get('/getartifactids', function(req, res) {
+// @route POST /searchartifacts
+// @desc Returns artifacts that match the keywords specified by the search
+// @access Public but only returns public artifacts. If user is logged in will return their own artifacts as well.
+router.post('/searchartifacts', function(req, res, next) {
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
 
-    // passport.authenticate('jwt', passportOpts, function(req, res) {
-        // Artifact.find({}, function(err, artifacts) {
-        //     var artifactSerials = [];
-    
-        //     artifacts.forEach(function (artifact) {
-        //         artifactSerials.push(artifact.serialNumber);
-        //     });
-    
-        //     res.send(artifactSerials);
-        // })
-    // });
-// })
+        // If it is a guest or unregsitered user, they are only allowed to search for public artifacts
+        if (!user) {
+            Artifact.find({$text: { $search: req.body.searchString }, isPublic: true}, {score: { $meta: `textScore` }} )
+                .sort({score: {$meta: `textScore`}})
+                .exec(function(err, artifacts) {
+                    if (err) {
+                        return res.status(400).send("Error: Search function has failed. Try again later.");
+                    }
+                    return res.send(artifacts);
+                });
+        } else {
+            // Otherwise they are allowed to search for public artifacts, plus the ones they have created
+            Artifact.find({$text: { $search: req.body.searchString }, $or: [ {isPublic: true}, {ownerID: user.id}] }, {score: { $meta: `textScore` }} )
+                .sort({score: {$meta: `textScore`}})
+                .exec(function (err, artifacts) {
+                    if (err) {
+                        return res.status(400).send("Error: Search function has failed. Try again later.");
+                    }
+                    return res.status(200).send(artifacts);
+                });
+        }
+    })(req, res, next);
+});
 
 router.get('/findUser', (req, res, next) => {
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
@@ -94,6 +111,7 @@ router.post('/newArtifact', (req, res, next) => {
 
             var newArtifact = new Artifact({
                 "serialNumber": id,
+                "name": req.body.name,
                 "story": req.body.story,
                 "category": req.body.category,
                 "keywords": req.body.keywords,
@@ -103,7 +121,7 @@ router.post('/newArtifact', (req, res, next) => {
 
             newArtifact.save(function (err, artifact) {
                 if (!err) {
-                    res.send(artifact);
+                    res.status(200).send(artifact);
                 } else {
                     res.status(400).send("There was an error creating the artifact. Please try again later.");
                 }
@@ -112,13 +130,13 @@ router.post('/newArtifact', (req, res, next) => {
     })(req, res, next);
 });
 
-// @route /artifacts
+// @route GET /artifacts
 // @desc View a single artifact based on its serial number.
 // @access Public
 router.get('/artifact/:artifactID', (req, res, next) => { 
     Artifact.findById(req.params.artifactID, function(err,artifact){
         if (!err) {
-            res.send(artifact);
+            res.status(200).send(artifact);
         } else {
             res.sendStatus(400);
         }
@@ -138,4 +156,3 @@ router.delete('/artifact/:serialID', (req,res) => {
 });
 
 module.exports = router;
-
