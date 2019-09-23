@@ -11,12 +11,15 @@ const passportOpts = {
     session: false
 };
 
+// @route /artifacts
+// @desc View all public artifacts
+// @access Public
 router.get('/artifacts', function (req, res) {
-    Artifact.find(function (err, artifact) {
+    Artifact.find({isPublic: true}, function (err, artifact) {
         if (!err) {
             res.send(artifact);
         } else {
-            res.sendStatus(404);
+            res.status(404).send("Unable to retrieve any artifacts. Please try again later or contact the site admin.");
         }
     });
 });
@@ -56,10 +59,12 @@ function makeid(length) {
     return result;
  }
  
-// create new artifact - TO DO: Link owner with artifact (owner email or owner DB ID?)
+// create new artifact
 router.post('/newArtifact', (req, res, next) => {
 
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
+        const SERIAL_LENGTH = 6;
+
         if (err) { 
             return next(err); 
         }
@@ -76,14 +81,14 @@ router.post('/newArtifact', (req, res, next) => {
                 artifactSerials.push(artifact.serialNumber);
             });
             
-            var id = makeid(6);
+            var id = makeid(SERIAL_LENGTH);
             var notUnique = true;
 
             while(notUnique) {
                 if (!artifactSerials.includes(id)) {
                     notUnique = false;
                 } else {
-                    id = makeid(6);
+                    id = makeid(SERIAL_LENGTH);
                 }
             }
 
@@ -92,24 +97,25 @@ router.post('/newArtifact', (req, res, next) => {
                 "story": req.body.story,
                 "category": req.body.category,
                 "keywords": req.body.keywords,
-                "ownerID": user.id
+                "ownerID": user.id,
+                "isPublic": req.body.isPublic
             });
 
             newArtifact.save(function (err, artifact) {
                 if (!err) {
                     res.send(artifact);
                 } else {
-                    res.sendStatus(400);
+                    res.status(400).send("There was an error creating the artifact. Please try again later.");
                 }
             });
         })
     })(req, res, next);
-
-
 });
 
-//view one artifact by ID
-router.get('/artifact/:artifactID', (req,res) =>{
+// @route /artifacts
+// @desc View a single artifact based on its serial number.
+// @access Public
+router.get('/artifact/:artifactID', (req, res, next) => { 
     Artifact.findById(req.params.artifactID, function(err,artifact){
         if (!err) {
             res.send(artifact);

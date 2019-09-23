@@ -5,8 +5,14 @@ var mongoose = require('mongoose');
 
 var artifactSchema = mongoose.Schema(
     {
-        "serialNumber": String,
-        "name": String,
+        "serialNumber": {
+            type: String,
+            isRequired: true
+        },
+        "name": {
+            type: String,
+            isRequired: true
+        },
         "story": String,
         "keywords": String,
         // Should we define a basic list of categories? if so
@@ -18,7 +24,12 @@ var artifactSchema = mongoose.Schema(
         "ownerID": [{type: mongoose.Schema.Types.ObjectId, ref: 'user',default : null}],
         // the default value for collectionID is null, as an artifact does not need to be
         // part of a collection
-        "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}]
+        "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
+        "isPublic" : {
+            type: Boolean,
+            isRequired: true,
+            default: false
+        }
     }
 );
 
