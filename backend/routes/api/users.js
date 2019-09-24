@@ -68,12 +68,10 @@ router.post("/login", (req, res) => {
             return res.status(404).json({emailnotfound: "Email not found"});
         }
         
-
         // If user exists, check their password next
         const isMatch = user.isValidPassword(password);
         if (isMatch) {
-            // User is matched so create the JWT payload
-            const fullName = user.firstName + " " + user.lastName;
+            const fullName = user.publicName;
             const payload = {
                 id: encrypt(user.id),
                 name: fullName

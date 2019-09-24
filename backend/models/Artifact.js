@@ -1,12 +1,18 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 //const enums = require('../models/enums.js');
 
 // Artifact attributes
 
-var artifactSchema = mongoose.Schema(
+const ArtifactSchema = mongoose.Schema(
     {
-        "serialNumber": String,
-        "name": String,
+        "serialNumber": {
+            type: String,
+            isRequired: true
+        },
+        "name": {
+            type: String,
+            isRequired: true
+        },
         "story": String,
         "keywords": String,
         // Should we define a basic list of categories? if so
@@ -18,9 +24,26 @@ var artifactSchema = mongoose.Schema(
         "ownerID": [{type: mongoose.Schema.Types.ObjectId, ref: 'user',default : null}],
         // the default value for collectionID is null, as an artifact does not need to be
         // part of a collection
-        "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}]
+        "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
+        "isPublic" : {
+            type: Boolean,
+            isRequired: true,
+            default: false
+        }
     }
 );
 
+ArtifactSchema.index({
+    name: 'text', 
+    story: 'text', 
+    keywords: 'text'
+}, {
+    weights: {
+        name: 5, 
+        keywords: 3, 
+        story: 2
+    }
+});
 
-module.exports =  mongoose.model('artifact',artifactSchema);
+const Artifact = mongoose.model('Artifact', ArtifactSchema);
+module.exports =  Artifact;
