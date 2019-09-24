@@ -67,9 +67,25 @@ class AddArtifact extends Component {
     };
     
     onKeywordButtonClick(input){
-
-        
+   
     }
+
+    onSubmit = (e) => {
+        e.preventDefault();
+        
+        // Send the entire state including confirmation fields so that it can be validated on at the backend
+        const newArtifact = {
+            name: this.state.name,
+            catagory: this.state.catagory,
+            date: this.state.date,
+            story: this.state.story,
+            confirmEmail: this.state.confirmEmail,
+            keywords: this.state.keywords,
+        };
+        
+        // Register the user by using the passed in registerUser action from redux
+        this.props.registerArtifact(newArtifact, this.props.history);
+    };
 
 
     render(){
