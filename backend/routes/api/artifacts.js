@@ -16,7 +16,7 @@ const passportOpts = {
 // @desc View all public artifacts
 // @access Public
 router.get('/artifacts', function (req, res) {
-    Artifact.find({isPublic: true}, function (err, artifact) {
+    Artifact.find({isPublic: "public"}, function (err, artifact) {
         if (!err) {
             res.send(artifact);
         } else {
@@ -116,45 +116,12 @@ router.post('/newArtifact', (req, res, next) => {
                 if (!err) {
                     res.status(200).send(artifact);
                 } else {
-                    res.status(400).send("There was an error creating the artifact. Please try again later.");
+                    res.status(400).send(err);
                 }
             });
         })
     })(req, res, next);
 });
-
-
-// Helper function to determine if this is a user's friend/family member etc.
-// artifactID is the owner of the artifact being checked
-// userEmail is the email of the unknown user to be checked
-// Returns true if user is friend of owner, otherwise false.
-function isUserFriend(artifactID, userEmail) {
-
-    Artifact.findById(artifactID, function(err, artifact) {
-        // If there is an error print to console but don't crash the app. Just return false by default.
-        if (err) {
-            console.error(err);
-            return false;
-        }
-
-        User.findById(artifact.ownerID[0], function(err, user) {
-            if (err) {
-                console.error(err);
-                return false;
-            }
-            if (user.knownUsers !== null && typeof(user.knownUsers) !== "undefined") {
-                // Check to make sure it isn't null before accessing
-                if (user.knownUsers.includes(userEmail)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        });
-    });
-};
 
 // @route GET /artifact/:artifactID
 // @desc View a single artifact based on its unique database ID. Only the artifact owner and authorised users are allowed
@@ -170,17 +137,22 @@ router.get('/artifact/:artifactID', (req, res, next) => {
             return next(err);
         }
 
-        // Check if non-logged in user
-        if (!user) {
-            return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
-        }
-
         Artifact.findById(artifactID, function(err, artifact) {
             if (err) {
                 return res.status(400).send(err);
             }
 
-            // Check if owner of the artifact
+            // Check if non-logged in user
+            if (!user) {
+                // Check if its not public
+                if (artifact.isPublic !== 'public') {
+                    return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
+                } else {
+                    return res.status(200).send(artifact);
+                }
+            }
+            
+            // Check if owner of the artifact, can view it regardless of privacy settings.
             if (artifact.ownerID.includes(user.id)) {
                 return res.status(200).send(artifact);
             } else {
@@ -194,9 +166,20 @@ router.get('/artifact/:artifactID', (req, res, next) => {
                     if (owner.knownUsers !== null && typeof(owner.knownUsers) !== "undefined") {
                         // Check to make sure it isn't null before accessing
                         if (owner.knownUsers.includes(user.email)) {
-                            return res.status(200).send(artifact);
+                            // Check the privacy setting
+                            if (artifact.isPublic === 'friends') {
+                                return res.status(200).send(artifact);
+                            } else if (artifact.isPublic === 'public') {
+                                return res.status(200).send(artifact);
+                            } else {
+                                return res.status(401).send("This artifact is private. Ask the owner to change the privacy.");
+                            }
                         } else {
-                            return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");
+                            if (artifact.isPublic === 'public') {
+                                return res.status(200).send(artifact);
+                            } else {
+                                return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");
+                            }
                         }
                     } else {
                         return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-//const enums = require('../models/enums.js');
 
 // Artifact attributes
 
@@ -25,9 +24,10 @@ const ArtifactSchema = mongoose.Schema(
         // part of a collection
         "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
         "isPublic" : {
-            type: Boolean,
+            type: String,
+            enum: ['private', 'friends', 'public'],
             isRequired: true,
-            default: false
+            default: 'private'
         },
         "dateCreated" : {
             type: Date,
