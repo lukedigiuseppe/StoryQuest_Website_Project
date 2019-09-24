@@ -117,7 +117,7 @@ router.patch('/update', (req, res, next) => {
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
 
         if (err) {
-            return next(err)
+            return next(err);
         }
 
         if (!user) {

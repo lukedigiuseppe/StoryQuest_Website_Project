@@ -125,24 +125,36 @@ router.post('/newArtifact', (req, res, next) => {
 
 
 // Helper function to determine if this is a user's friend/family member etc.
-// ownerID is the owner of the artifact being checked
+// artifactID is the owner of the artifact being checked
 // userEmail is the email of the unknown user to be checked
 // Returns true if user is friend of owner, otherwise false.
-function isUserFriend(ownerID, userEmail) {
+function isUserFriend(artifactID, userEmail) {
 
-    User.findById(ownerID, function(err, user) {
+    Artifact.findById(artifactID, function(err, artifact) {
         // If there is an error print to console but don't crash the app. Just return false by default.
         if (err) {
             console.error(err);
             return false;
         }
-        if (user.knownUsers.includes(userEmail)) {
-            return true;
-        } else {
-            return false;
-        }
-    })
-}
+
+        User.findById(artifact.ownerID[0], function(err, user) {
+            if (err) {
+                console.error(err);
+                return false;
+            }
+            if (user.knownUsers !== null && typeof(user.knownUsers) !== "undefined") {
+                // Check to make sure it isn't null before accessing
+                if (user.knownUsers.includes(userEmail)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        });
+    });
+};
 
 // @route GET /artifact/:artifactID
 // @desc View a single artifact based on its unique database ID. Only the artifact owner and authorised users are allowed
@@ -158,20 +170,41 @@ router.get('/artifact/:artifactID', (req, res, next) => {
             return next(err);
         }
 
+        // Check if non-logged in user
         if (!user) {
-            return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
-        } else if (!!isUserFriend(artifactID, user.email)) {
             return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
         }
 
+        Artifact.findById(artifactID, function(err, artifact) {
+            if (err) {
+                return res.status(400).send(err);
+            }
+
+            // Check if owner of the artifact
+            if (artifact.ownerID.includes(user.id)) {
+                return res.status(200).send(artifact);
+            } else {
+                // Check if it a known user to the owner of the artifact.
+                User.findById(artifact.ownerID[0], function(err, owner) {
+
+                    if (err) {
+                        return res.status(400).send(err);
+                    }
+
+                    if (owner.knownUsers !== null && typeof(owner.knownUsers) !== "undefined") {
+                        // Check to make sure it isn't null before accessing
+                        if (owner.knownUsers.includes(user.email)) {
+                            return res.status(200).send(artifact);
+                        } else {
+                            return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");
+                        }
+                    } else {
+                        return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");
+                    }
+                });
+            }
+        })
     })(req, res, next);
-    Artifact.findById(req.params.artifactID, function(err,artifact){
-        if (!err) {
-            res.status(200).send(artifact);
-        } else {
-            res.sendStatus(400);
-        }
-    });
 });
 
 // @route DELETE /delete_artifact/:artifactID
