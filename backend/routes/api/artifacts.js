@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const Artifact = require("../../models/Artifact");
+const User = require("../../models/User");
 
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client.
 const passport = require('passport');
@@ -54,14 +55,6 @@ router.post('/searchartifacts', function(req, res, next) {
                     return res.status(200).send(artifacts);
                 });
         }
-    })(req, res, next);
-});
-
-router.get('/findUser', (req, res, next) => {
-    passport.authenticate('jwt', passportOpts, (err, user, info) => {
-        if (err) { return next(err); }
-        if (!user) { return res.send("Doesn't work"); }
-        return res.send("Hey, its working.");
     })(req, res, next);
 });
 
@@ -130,10 +123,48 @@ router.post('/newArtifact', (req, res, next) => {
     })(req, res, next);
 });
 
-// @route GET /artifacts
-// @desc View a single artifact based on its serial number.
-// @access Public
+
+// Helper function to determine if this is a user's friend/family member etc.
+// ownerID is the owner of the artifact being checked
+// userEmail is the email of the unknown user to be checked
+// Returns true if user is friend of owner, otherwise false.
+function isUserFriend(ownerID, userEmail) {
+
+    User.findById(ownerID, function(err, user) {
+        // If there is an error print to console but don't crash the app. Just return false by default.
+        if (err) {
+            console.error(err);
+            return false;
+        }
+        if (user.knownUsers.includes(userEmail)) {
+            return true;
+        } else {
+            return false;
+        }
+    })
+}
+
+// @route GET /artifact/:artifactID
+// @desc View a single artifact based on its unique database ID. Only the artifact owner and authorised users are allowed
+//       to view via this URL.
+// @access Restricted
 router.get('/artifact/:artifactID', (req, res, next) => { 
+
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
+        var artifactID = req.params.artifactID;
+
+        if (err) {
+            return next(err);
+        }
+
+        if (!user) {
+            return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
+        } else if (!!isUserFriend(artifactID, user.email)) {
+            return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
+        }
+
+    })(req, res, next);
     Artifact.findById(req.params.artifactID, function(err,artifact){
         if (!err) {
             res.status(200).send(artifact);
@@ -143,16 +174,29 @@ router.get('/artifact/:artifactID', (req, res, next) => {
     });
 });
 
-//delete artifact
-router.delete('/artifact/:serialID', (req,res) => {
-    var artifactSerialNumber = req.params.serialID;
-    Artifact.findOneAndDelete({name:artifactSerialNumber}, function(err,doc){
-        if(!err){
-            res.send(doc);
-        }else{
-            res.sendStatus(404);
+// @route DELETE /delete_artifact/:artifactID
+// @desc View a single artifact based on its serial number.
+// @access Restricted
+router.delete('/delete_artifact/:artifactID', (req, res, next) => {
+
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+        
+        if (err) { 
+            return next(err); 
         }
-    });
+        if (!user) { 
+            return res.status(401).send("Unauthorised user, you are not the owner of this artifact."); 
+        }
+
+        var artifactID = req.params.artifactID;
+        Artifact.findOneAndDelete({_id:artifactID}, function(err, doc) {
+            if(!err){
+                res.status(200).send("Delete successful.");
+            }else{
+                res.status(400).send(err);
+            }
+        });
+    })(req, res, next);
 });
 
 module.exports = router;

@@ -13,6 +13,14 @@ const validateLoginInput = require("../../validation/login");
 // Load up the User module
 const User = require("../../models/User");
 
+// Imports required for securing the routes. Allows passport to verify the JWT sent by the client. 
+// Requires the user model so make sure you load this after
+const passport = require('passport');
+require("../../config/passport")(passport);
+const passportOpts = {
+    session: false
+};
+
 // @route POST api/users/register
 // @desc Register user
 // @access Public
@@ -98,6 +106,41 @@ router.post("/login", (req, res) => {
                 .json({ passwordincorrect: "Password incorrect" });
         }
     });
+});
+
+// @route PATCH api/users/update
+// @desc Gets the loggedin users ID from JWT and updates their information. They can change everything but their email. Since we store
+// their emails in other users as well which means we need to update those as well.
+// @access Private
+router.patch('/update', (req, res, next) => {
+
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
+        if (err) {
+            return next(err)
+        }
+
+        if (!user) {
+            return res.status(401).send("Unauthorised user. Please login to update details.");
+        }
+
+        // Check if its empty, if empty don't update. TODO add a validator here.
+        if (req.body.firstName) {
+            user.firstName = req.body.firstName;
+        }
+        if (req.body.lastName) {
+            user.lastName = req.body.lastName;
+        }
+        if (req.body.publicName) {
+            user.publicName = req.body.publicName;
+        }
+        if (req.body.knownUsers) {
+            // Append a new email. Validate the string here to be a single email. Two emails will not be allowed.
+            user.knownUsers.push(req.body.knownUsers);
+        }
+        user.save();
+        return res.status(201).send("Profile successfully updated.");
+    })(req, res, next);
 });
 
 module.exports = router;
