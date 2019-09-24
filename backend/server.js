@@ -28,6 +28,7 @@ mongoose
     .connect(
         db, { 
             useNewUrlParser: true, 
+            useCreateIndex: true,
             dbName: name,
             useUnifiedTopology: true // This is needed to remove the deprecation warning for Server discovery and monitoring in nodemon
         }
