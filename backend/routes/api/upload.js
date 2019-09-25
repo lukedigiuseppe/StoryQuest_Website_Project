@@ -19,7 +19,7 @@ const passportOpts = {
 const HEADERS = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST',
     'Access-Control-Max-Age': 2592000 // 30 days
   }
 
@@ -43,16 +43,32 @@ router.post('/upload', function(req, res) {
     form.maxFileSize = MAXFILESIZE;
 
     // Events to respond to
-    form.on('fileBegin', function(name, file) {
-        file.path = __dirname + '/upload' + file.name;
-    });
 
     form.on('file', function(field, file) {
-        console.log(file.name);
-        fs.rename(file.path, form.uploadDir + "/" + file.name, function(err) {
+        // Rename to fixed profile image name
+        const NEWPATH = form.uploadDir + "/" + file.name;
+        fs.rename(file.path, NEWPATH, function(err) {
             if (err) {
                 return console.log(err);
             }
+        })
+
+        // Save to MongoDB
+        User.findOne({email: "jig@bigboi.eu"}, function(err, user) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            fs.readFile(NEWPATH, function(err, img) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                user.avatarImg.data = img;
+                user.avatarImg.contentType = "image/" + file.type;
+                user.save();
+                return;
+            });
         })
     });
 

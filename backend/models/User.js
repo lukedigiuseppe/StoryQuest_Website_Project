@@ -26,6 +26,10 @@ const UserSchema = new Schema(
             isRequired: true
         },
         "pictureURL": [{type: mongoose.Schema.Types.ObjectId, ref: 'media',default : null}],
+        "avatarImg": {
+            data: Buffer,
+            contentType: String
+        },
         // An array containing the emails of other users that have been recognised as "known" by the user
         "knownUsers": [{type: String}],
         "password" : {

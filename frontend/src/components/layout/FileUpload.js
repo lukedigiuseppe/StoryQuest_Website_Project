@@ -13,8 +13,16 @@ class FileUpload extends React.Component {
     constructor (props) {
         super(props)
 
-        this.uppy = new Uppy({ id: 'uppy', autoProceed: false, debug: true })
-        .use(Xhr, 
+        this.uppy = new Uppy({ 
+            id: 'avatar', 
+            restrictions: {
+                maxFileSize: 1024 * 1024 * 2,
+                maxNumberOfFiles: 1,
+                allowedFileTypes: ['image/*']
+            },
+            autoProceed: false, 
+            debug: true 
+        }).use(Xhr, 
             { 
                 endpoint: UPLOAD_SERVER, 
                 method: 'post',
