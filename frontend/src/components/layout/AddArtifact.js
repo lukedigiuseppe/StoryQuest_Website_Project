@@ -49,12 +49,40 @@ class AddArtifact extends Component {
             date: "",
             story: "",
             keywords: {},
+            image: null,
+            privacy: 3
         }
     }
 
 
     onChange = (e) => {
-        this.setState({ [e.target.id]: e.target.value });
+        const target = e.target;
+        const type = target.type;
+        const name = target.name;
+        const id = target.id;
+        const value = target.value;
+        var privacy;
+
+        if (type === 'radio'){
+            if(target.checked){
+                if(name === 'privacy3'){
+                    privacy = 3
+                }
+                else if(name === 'privacy2'){
+                    privacy = 2
+                }
+                else if(name === 'privacy1'){
+                    privacy = 1
+                }
+            }
+            this.setState({ [id]: privacy });
+        }
+
+        else{
+    
+            this.setState({ [id]: value });
+        }
+    
     };
     
     onKeywordButtonClick(input){
@@ -72,6 +100,7 @@ class AddArtifact extends Component {
             story: this.state.story,
             confirmEmail: this.state.confirmEmail,
             keywords: this.state.keywords,
+
         };
         
         // Register the user by using the passed in registerUser action from redux
@@ -131,9 +160,9 @@ class AddArtifact extends Component {
                             <Input
                                 onChange={this.onChange}
                                 value={this.state.name}
-                        
                                 type="text" 
                                 id="name" 
+                                name ="name"
                                 placeholder="What's your artifact called?" 
                             />
                            
@@ -163,7 +192,7 @@ class AddArtifact extends Component {
                                 onChange={this.onChange}
                                 value={this.state.story}
                                 type="textarea" 
-                                name="text" 
+                                name="story" 
                                 id="story" 
                                 placeholder= "Tell us about its journey"
                                 />
@@ -194,11 +223,14 @@ class AddArtifact extends Component {
 
                         <CardBody>
                             <CardTitle>Upload Image</CardTitle>
-                            <Input 
+                            <Input
+                            onChange={this.onChange}
+                            value={this.state.image}
                             style = {{height: '100px'}}
+                            name = "image"
                             type="file" 
-                            name="file" 
-                            id="exampleFile" />
+                            id="image" 
+                            />
                         </CardBody>
                         </Card>
 
@@ -243,6 +275,7 @@ class AddArtifact extends Component {
                                 value={this.state.catagory}
                                 type="select" 
                                 id="catagory"
+                                name="catagory"
                                 >
 
                                 <option>Other</option>
@@ -301,7 +334,13 @@ class AddArtifact extends Component {
                         <Col sm = {MARGIN*2}></Col>
                             <FormGroup check>
                                 <Label check>
-                                    <Input type="radio" name="radio2" />{' '}
+                                    <Input 
+                                    type="radio"
+                                     name="privacy"
+                                     onChange={this.onChange}
+                                     value={this.state.privacy}
+                                     id = "privacy3"
+                                      />{' '}
                                     Private - Only you can view your artifact
                                 </Label>
                             </FormGroup>
@@ -314,7 +353,12 @@ class AddArtifact extends Component {
                            
 
                                 <Label check>
-                                    <Input type="radio" name="radio2" />{' '}
+                                    <Input type="radio" 
+                                    name="privacy"
+                                    onChange={this.onChange}
+                                    value={this.state.privacy}
+                                    id = "privacy2" 
+                                    />{' '}
                                     Friends - Your friends can view your artifact
                                 </Label>
                             </FormGroup>
@@ -324,7 +368,12 @@ class AddArtifact extends Component {
                             <Col sm = {MARGIN*2}></Col>
                             <FormGroup check disabled>
                                 <Label check>
-                                    <Input type="radio" name="radio2"/>{' '}
+                                    <Input type="radio" 
+                                    name="privacy"
+                                    onChange={this.onChange}
+                                    value={this.state.privacy}
+                                    id = "privacy1"
+                                    />{' '}
                                     Public - Everyone can view your artifact
                                 </Label>
                             </FormGroup>
