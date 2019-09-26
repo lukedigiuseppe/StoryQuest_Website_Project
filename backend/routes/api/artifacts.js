@@ -106,10 +106,11 @@ router.post('/newArtifact', (req, res, next) => {
                 "serialNumber": id,
                 "name": req.body.name,
                 "story": req.body.story,
+                "tags": req.body.tags.join(' '),
                 "category": req.body.category,
-                "keywords": req.body.keywords,
-                "ownerID": user.id,
-                "isPublic": req.body.isPublic
+                "isPublic": req.body.isPublic,
+                "dateMade": req.body.dateMade,
+                "ownerID": user.id
             });
 
             newArtifact.save(function (err, artifact) {

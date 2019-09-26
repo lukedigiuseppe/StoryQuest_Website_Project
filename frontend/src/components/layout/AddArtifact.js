@@ -3,6 +3,9 @@ import Helmet from 'react-helmet';
 import { Link }  from 'react-router-dom';
 import ImageUpload from '../media/ImageUpload';
 import {WithContext as ReactTags} from 'react-tag-input';
+import PropTypes from "prop-types";
+import {connect} from 'react-redux';
+import axios from 'axios';
 
 import {
     Container,
@@ -13,16 +16,11 @@ import {
     FormGroup, 
     Label, 
     Input,
-    InputGroup,
-    InputGroupAddon,
-    Card, 
-    CardImg, 
-    CardBody,
-    CardTitle,
 } from 'reactstrap';
 
 import '../../css/addArtifact.css';
 import '../../css/tags.css';
+import Axios from 'axios';
 
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
@@ -46,15 +44,13 @@ class AddArtifact extends Component {
 
         this.state = {
             name: "",
-            category: "",
-            date: "",
             story: "",
-            keywords: {},
-            image: null,
-            privacy: 3,
             tags: [
                 { id: 'default', text: 'Add more tags here'}
-            ]
+            ],
+            category: "",
+            dateMade: "",
+            isPublic: "private"
         }
 
         this.handleDelete = this.handleDelete.bind(this);
@@ -90,59 +86,63 @@ class AddArtifact extends Component {
     handleTagClick(index) {
         console.log('The tag at index ' + index + ' was clicked');
     }
+
+    // Prevent user from accessing this page unless they are logged in
+    componentDidMount() {
+        if (!this.props.auth.isAuthenticated) {
+            this.props.history.push('/login');
+        }
+    }
     
     onChange = (e) => {
-        const target = e.target;
-        const type = target.type;
-        const name = target.name;
-        const id = target.id;
-        const value = target.value;
-        var privacy;
+        const type = e.target.type;
+        const id = e.target.id;
+        const value = e.target.value;
+        var isPublic = "";
 
+        // Set the public state depending on which radio button is checked.
         if (type === 'radio'){
-            if(target.checked){
-                if(name === 'privacy3'){
-                    privacy = 3
-                }
-                else if(name === 'privacy2'){
-                    privacy = 2
-                }
-                else if(name === 'privacy1'){
-                    privacy = 1
+            if(e.target.checked){
+                if(id === 'private'){
+                    isPublic = "private";
+                } else if (id === 'friends') {
+                    isPublic = "friends";
+                } else if(id === 'public'){
+                    isPublic = "public";
                 }
             }
-            this.setState({ [id]: privacy });
-        }
-
-        else{
-    
+            this.setState({ isPublic: isPublic });
+        } else {
             this.setState({ [id]: value });
         }
-    
     };
     
-    onKeywordButtonClick(input){
-   
-    }
-
     onSubmit = (e) => {
         e.preventDefault();
-        
-        // Send the entire state including confirmation fields so that it can be validated on at the backend
+
+        // Remove the IDs from the tags, so they can be passed in as an array of strings directly to Mongo
+        const TagArray = this.state.tags.map((tag) => tag.text);
+
+        // Send the entire state including confirmation fields so that it can be validated at the backend
         const newArtifact = {
             name: this.state.name,
-            category: this.state.category,
-            date: this.state.date,
             story: this.state.story,
-            confirmEmail: this.state.confirmEmail,
-            keywords: this.state.keywords,
-
+            tags: TagArray,
+            category: this.state.category,
+            isPublic: this.state.isPublic,
+            dateMade: this.state.dateMade
         };
         
-        // Register the user by using the passed in registerUser action from redux
-
+        // Axios POST request to backend to create the new artifact.
+        axios
+            .post('/newArtifact', newArtifact)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
     };
-
 
     render(){
 
@@ -243,7 +243,7 @@ class AddArtifact extends Component {
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                        <h2 className="text-left" >Add Photos</h2>
+                        <h2 className="text-left" >Add Photos (please click upload before submitting)</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
@@ -323,7 +323,6 @@ class AddArtifact extends Component {
                                 id="category"
                                 name="category"
                                 >
-                                <option>Other</option>
                                 <option>Jewlery</option>
                                 <option>Clothes</option>
                                 <option>Tool</option>
@@ -348,7 +347,7 @@ class AddArtifact extends Component {
                    
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
-                        <Col sm={HALF - 1}>
+                        <Col sm={HALF}>
                         <ReactTags
                             tags={tags}
                             delimiters={delimiters}
@@ -360,121 +359,115 @@ class AddArtifact extends Component {
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <h2 className="text-left" >Sharing</h2>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
 
-                    <FormGroup tag="fieldset" row>
-
-                        <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <h2 className="text-left" >Sharing</h2>
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
-
-
-                        </Row>
-
-                        <Row>
-                        
-                        <Col sm = {MARGIN*2}></Col>
-                            <FormGroup check>
-                                <Label check>
-                                    <Input 
-                                    type="radio"
-                                     name="privacy"
-                                     onChange={this.onChange}
-                                     value={this.state.privacy}
-                                     id = "privacy3"
-                                      />{' '}
-                                    Private - Only you can view your artifact
-                                </Label>
-                            </FormGroup>
-
-                            </Row>
-
-                            <Row>
-                            <Col sm = {MARGIN*2}></Col>
-                            <FormGroup check>
-                           
-
-                                <Label check>
-                                    <Input type="radio" 
-                                    name="privacy"
-                                    onChange={this.onChange}
-                                    value={this.state.privacy}
-                                    id = "privacy2" 
-                                    />{' '}
-                                    Friends - Your friends can view your artifact
-                                </Label>
-                            </FormGroup>
-                            </Row>
-
-                            <Row>
-                            <Col sm = {MARGIN*2}></Col>
-                            <FormGroup check disabled>
-                                <Label check>
-                                    <Input type="radio" 
-                                    name="privacy"
-                                    onChange={this.onChange}
-                                    value={this.state.privacy}
-                                    id = "privacy1"
-                                    />{' '}
-                                    Public - Everyone can view your artifact
-                                </Label>
-                            </FormGroup>
-
-                            </Row>
-
-                           
+                {/* For radio buttons ensure name is the same so that users can only select one */}
+                <Row>
+                    <Col sm = {MARGIN*2}></Col>
+                    <Col sm = {HALF} >
+                    <FormGroup check>
+                        <Label check>
+                            <Input 
+                            type="radio"
+                                name="isPublic"
+                                onChange={this.onChange}
+                                value={this.state.isPublic}
+                                id = "private"
+                                />{' '}
+                            Private - Only you can view your artifact 
+                        </Label>
                     </FormGroup>
-                        
-                    <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <h2 className="text-left" >Other details (optional)</h2>
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
-                    </Row>
+                    </Col>
+                </Row>
 
-
-                    {/*DATE*/}
-
-                    <FormGroup row>
-                        <Col sm = {MARGIN}></Col>
-                        <Label htmlFor="Date Made" sm={2}>Date Made:</Label>
-                        <Col sm={2}>
-                        <Input
+                <Row>
+                    <Col sm = {MARGIN*2}></Col>
+                    <Col sm = {HALF}>
+                    <FormGroup check>
+                        <Label check>
+                            <Input type="radio" 
+                            name="isPublic"
                             onChange={this.onChange}
-                            value={this.state.date}
-                            type="date"
-                            name="date"
-                            id="date"
-                            />
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
+                            value={this.state.isPublic}
+                            id = "friends" 
+                            />{' '}
+                            Friends - Your friends can view your artifact 
+                        </Label>
                     </FormGroup>
+                    </Col>
+                </Row>
 
-                    <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <Button>Submit</Button>
-                        </Col>
-                    </Row>
+                <Row>
+                    <Col sm = {MARGIN*2}></Col>
+                    <Col sm = {HALF}>
+                    <FormGroup check disabled>
+                        <Label check>
+                            <Input type="radio" 
+                            name="isPublic"
+                            onChange={this.onChange}
+                            value={this.state.isPublic}
+                            id = "public"
+                            />{' '}
+                            Public - Everyone can view your artifact 
+                        </Label>
+                    </FormGroup>
+                    </Col>
+                </Row>
 
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <br />
+                    <h2 className="text-left" >Other details (optional)</h2>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
 
+                {/*DATE*/}
+
+                <FormGroup row>
+                    <Col sm = {MARGIN}></Col>
+                    <Label htmlFor="dateMade" sm={2}>Date Made:</Label>
+                    <Col sm={2}>
+                    <Input
+                        onChange={this.onChange}
+                        value={this.state.dateMade}
+                        type="date"
+                        name="dateMade"
+                        id="dateMade"
+                        />
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </FormGroup>
+
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <Button>Submit</Button>
+                    </Col>
+                </Row>
                 </Form>
-
-
                 <p className="text-center mt-3 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
                 </Container>
-
             </div>
-
         )
-
     }
-
-
-
 }
 
-export default AddArtifact;
+AddArtifact.propTypes = {
+    auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+
+export default connect(
+    mapStateToProps
+)(AddArtifact);

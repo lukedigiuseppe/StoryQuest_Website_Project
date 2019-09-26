@@ -252,7 +252,7 @@ Register.propTypes = {
     errors: PropTypes.object.isRequired
 };
 
-// The below declaration eanbles us to get our states from Redux and then map it to props which will
+// The below declaration enables us to get our states from Redux and then map it to props which will
 // be used by the component
 const mapStateToProps = state => ({
     auth: state.auth,

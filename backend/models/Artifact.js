@@ -13,7 +13,10 @@ const ArtifactSchema = mongoose.Schema(
             isRequired: true
         },
         "story": String,
-        "tags": [{type: String}],
+        "tags": {
+            type: String,
+            default: ""
+        },
         "category": String,
         // ownerID + collectionID allows you to add multiple owners and collections
         // [{ }] - represents a list of objects
@@ -28,7 +31,10 @@ const ArtifactSchema = mongoose.Schema(
             isRequired: true,
             default: 'private'
         },
-        "dateCreated" : {
+        "dateMade" : {
+            type: Date,
+        },
+        "dateAdded" : {
             type: Date,
             default: Date.now
         }
@@ -38,7 +44,7 @@ const ArtifactSchema = mongoose.Schema(
 ArtifactSchema.index({
     name: 'text', 
     story: 'text', 
-    keywords: 'text'
+    tags: 'text'
 }, {
     weights: {
         name: 5, 

@@ -47,6 +47,7 @@ class Dashboard extends Component {
                                 You are logged into a full-stack{" "}<span style={{ fontFamily: "monospace"}}>MERN</span> app 👏
                             </p>
                             <p><button onClick={this.test}>Test me and check the console to see the info you get back.</button></p>
+                            <p><a href="/add_artifact">Add an artifact</a></p> 
                         </h4>
                         <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} onClick={this.onLogoutClick} className="btn btn-large waves-effect waves-light hoverable blue accent-3">Logout</button>
                     </div>
