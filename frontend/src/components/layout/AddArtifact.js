@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import {Link, withRouter}  from 'react-router-dom';
-import PropTypes from "prop-types";
-import {connect} from 'react-redux';
-import {registerUser} from '../../actions/authActions';
-import classnames from 'classnames';
+import { Link }  from 'react-router-dom';
+
 import {
     Container,
     Col,
@@ -16,13 +13,10 @@ import {
     Input,
     InputGroup,
     InputGroupAddon,
-    FormText, 
     Card, 
     CardImg, 
-    CardText, 
     CardBody,
     CardTitle,
-    CardSubtitle,
 } from 'reactstrap';
 
 
@@ -31,8 +25,6 @@ import '../../css/addArtifact.css';
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
 
-const INPUTWIDTH = 10;
-const DESCWIDTH = 2;
 const BANNER = "/images/cover.png"
 const MARGIN = 1;
 const HALF = 6;
@@ -257,13 +249,13 @@ class AddArtifact extends Component {
                     </FormGroup>
 
 
-                    {/*CATAGORY*/}
+                    {/*CATEGORY*/}
 
 
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                        <h2 className="text-left" >Add a catagory</h2>
+                        <h2 className="text-left" >Add a category</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row> 
