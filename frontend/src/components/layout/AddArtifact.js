@@ -25,7 +25,6 @@ import {
     CardSubtitle,
 } from 'reactstrap';
 
-import ErrorAlert from '../alerts/ErrorAlert';
 
 import '../../css/addArtifact.css';
 
@@ -50,17 +49,9 @@ class AddArtifact extends Component {
             date: "",
             story: "",
             keywords: {},
-            errors: {},
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.errors !== prevProps.errors) {
-            this.setState({
-                errors: this.props.errors
-            });
-        }
-    }
 
     onChange = (e) => {
         this.setState({ [e.target.id]: e.target.value });
@@ -84,13 +75,12 @@ class AddArtifact extends Component {
         };
         
         // Register the user by using the passed in registerUser action from redux
-        this.props.registerArtifact(newArtifact, this.props.history);
+
     };
 
 
     render(){
-        const { errors } = this.state;
-
+        
         return(
             <div>
                 {/*Title*/}
@@ -99,8 +89,7 @@ class AddArtifact extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Register an artifact</title>
                 </Helmet>
-
-
+                
                 {/*Banner*/}
 
                 <Container className="justify-content-center" fluid>
@@ -111,16 +100,19 @@ class AddArtifact extends Component {
 
                 <Container className="register-box bg-light rounded-lg">
 
-              
+                { /* back to home button*/} 
                 <Row>
                         <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
                         <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
                         </Link>
                 </Row>
             
+                {
+                    /*FORM STARTS HERE
+                 */}
+
 
                 <Form noValidate className="register-form" onSubmit={this.onSubmit}>
-
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
@@ -128,6 +120,8 @@ class AddArtifact extends Component {
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
+
+                    {/*NAME*/}
 
                     <FormGroup row>
 
@@ -137,18 +131,20 @@ class AddArtifact extends Component {
                             <Input
                                 onChange={this.onChange}
                                 value={this.state.name}
-                                error={errors.Name} 
+                        
                                 type="text" 
                                 id="name" 
                                 placeholder="What's your artifact called?" 
                             />
-                            <ErrorAlert errorMsg={errors.Name} />
+                           
                         </Col>
 
                         <Col sm = {HALF -1}></Col>
 
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
+
+                    {/*STORY*/}
 
                     <Row>
                         <Col sm = {MARGIN}></Col>
@@ -171,14 +167,14 @@ class AddArtifact extends Component {
                                 id="story" 
                                 placeholder= "Tell us about its journey"
                                 />
-                                <ErrorAlert errorMsg={errors.Story} />
+                               
 
                         </Col>  
 
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
 
-
+                    {/*PHOTOS*/}
 
                     <Row>
                         <Col sm = {MARGIN}></Col>
@@ -229,16 +225,16 @@ class AddArtifact extends Component {
                     </FormGroup>
 
 
+                    {/*CATAGORY*/}
+
+
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
                         <h2 className="text-left" >Add a catagory</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
-                    </Row>
-
-
-                    
+                    </Row> 
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
                         <Col sm={HALF -1}>
@@ -258,10 +254,7 @@ class AddArtifact extends Component {
                                 <option>Photo</option>
                                 <option>Other</option>
                         </Input>
-                        <ErrorAlert errorMsg={errors.Catagory} />
                         </Col>
-
-
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
 
@@ -273,6 +266,7 @@ class AddArtifact extends Component {
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
+                    {/*TAGS*/}
                     
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
@@ -283,11 +277,64 @@ class AddArtifact extends Component {
                             placeholder="Add tags for others to search for your artifact"
                                 />
                             </InputGroup>
-                            <ErrorAlert errorMsg={errors.Keywords} />
+                           
                         </Col>
 
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
+
+
+                    <FormGroup tag="fieldset" row>
+
+                        <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Sharing</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+
+
+                        </Row>
+
+                        <Row>
+                        
+                        <Col sm = {MARGIN*2}></Col>
+                            <FormGroup check>
+                                <Label check>
+                                    <Input type="radio" name="radio2" />{' '}
+                                    Private - Only you can view your artifact
+                                </Label>
+                            </FormGroup>
+
+                            </Row>
+
+                            <Row>
+                            <Col sm = {MARGIN*2}></Col>
+                            <FormGroup check>
+                           
+
+                                <Label check>
+                                    <Input type="radio" name="radio2" />{' '}
+                                    Friends - Your friends can view your artifact
+                                </Label>
+                            </FormGroup>
+                            </Row>
+
+                            <Row>
+                            <Col sm = {MARGIN*2}></Col>
+                            <FormGroup check disabled>
+                                <Label check>
+                                    <Input type="radio" name="radio2"/>{' '}
+                                    Public - Everyone can view your artifact
+                                </Label>
+                            </FormGroup>
+
+                            </Row>
+
+                           
+                    </FormGroup>
+
+                        
 
 
 
@@ -298,6 +345,9 @@ class AddArtifact extends Component {
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
+
+
+                    {/*DATE*/}
 
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
@@ -310,10 +360,17 @@ class AddArtifact extends Component {
                             name="date"
                             id="date"
                             />
-                            <ErrorAlert errorMsg={errors.Date} />
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <Button>Submit</Button>
+                        </Col>
+                    </Row>
+
 
                 </Form>
 

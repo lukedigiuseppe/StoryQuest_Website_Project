@@ -118,7 +118,7 @@ class ViewArtifact extends Component{
 
     
                     <Col sm={{ size: 6, order: 2, offset: 3 }}>
-                        <UncontrolledCarousel items={items} />
+                        <UncontrolledCarousel items={items} autoPlay={false} />
                     </Col>
 
     
