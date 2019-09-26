@@ -23,6 +23,9 @@ import AddArtifact from "./components/layout/AddArtifact";
 import ViewArtifact from "./components/layout/ViewArtifact";
 import Profile from "./components/layout/Profile";
 
+import FileUpload from "./components/layout/FileUpload";
+import Image from "./components/layout/Image";
+
 // Check for token to keep the user logged in
 
 if (localStorage.jwtToken) {
@@ -56,6 +59,8 @@ const routing = (
                 <Route exact path="/add_artifact" component ={AddArtifact} />
                 <Route exact path="/view_artifact" component ={ViewArtifact} />
                 <Route exact path="/profile" component ={Profile} />
+                <Route exact path="/file_upload" component={FileUpload} />
+                <Route exact path="/image" component={Image} />
                 <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                 </Switch>

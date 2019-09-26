@@ -5,6 +5,7 @@ const router = express.Router();
 const encrypt = require('../../config/encryption').encrypt;
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
+const fs = require("fs");
 
 // Load the input validator
 const validateRegisterInput = require("../../validation/register");
@@ -142,5 +143,21 @@ router.patch('/update', (req, res, next) => {
         return res.status(201).send("Profile successfully updated.");
     })(req, res, next);
 });
+
+// Test function to get the profile image of a user.
+router.get('/profile/:email', function(req, res) {
+
+    const userEmail = req.params.email;
+
+    User.findOne({email: userEmail}, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send(err);
+        }
+        // Convert to base64 then send
+        const img64 = new Buffer.from(user.avatarImg.data, 'binary').toString('base64');
+        return res.status(200).send(img64);
+    })
+})
 
 module.exports = router;

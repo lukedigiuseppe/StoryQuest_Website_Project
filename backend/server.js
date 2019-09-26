@@ -3,13 +3,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const passport = require("passport");
 
 // Pull in the routes that users will need to access
 const users = require("./routes/api/users");
 const artifacts = require("./routes/api/artifacts");
+const upload = require("./routes/api/upload");
 
 const app = express();
+
+// Set domain restricitions here.
+app.use(cors());
 
 // Bodyparser middleware
 app.use(
@@ -45,6 +50,7 @@ require("./config/passport")(passport);
 // Routes. So we would specify localhost:5000/api/users to access the routes defined in "users.js"
 app.use("/api/users", users);
 app.use("/", artifacts);
+app.use("/", upload);
 
 // process.env.PORT is Heroku's port if we choose to deploy the APP there
 const port = process.env.PORT || 5000
