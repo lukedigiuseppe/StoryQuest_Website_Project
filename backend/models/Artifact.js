@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-//const enums = require('../models/enums.js');
 
 // Artifact attributes
 
@@ -20,15 +19,19 @@ const ArtifactSchema = mongoose.Schema(
         "category": String,
         // ownerID + collectionID allows you to add multiple owners and collections
         // [{ }] - represents a list of objects
-        // Should default be null, or should it automatically be given userID as ownerID
         "ownerID": [{type: mongoose.Schema.Types.ObjectId, ref: 'user',default : null}],
         // the default value for collectionID is null, as an artifact does not need to be
         // part of a collection
         "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
         "isPublic" : {
-            type: Boolean,
+            type: String,
+            enum: ['private', 'friends', 'public'],
             isRequired: true,
-            default: false
+            default: 'private'
+        },
+        "dateCreated" : {
+            type: Date,
+            default: Date.now
         }
     }
 );
