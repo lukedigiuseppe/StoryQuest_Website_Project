@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import { Link }  from 'react-router-dom';
+import ImageUpload from '../media/ImageUpload';
+import {WithContext as ReactTags} from 'react-tag-input';
 
 import {
     Container,
@@ -19,8 +21,8 @@ import {
     CardTitle,
 } from 'reactstrap';
 
-
 import '../../css/addArtifact.css';
+import '../../css/tags.css';
 
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
@@ -29,6 +31,13 @@ const BANNER = "/images/cover.png"
 const MARGIN = 1;
 const HALF = 6;
 
+// These are the keyboard keys that when pressed specify a new tag
+const KeyCodes = {
+    comma: 188,
+    enter: 13
+};
+
+const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
 class AddArtifact extends Component {
 
@@ -37,16 +46,51 @@ class AddArtifact extends Component {
 
         this.state = {
             name: "",
-            catagory: "",
+            category: "",
             date: "",
             story: "",
             keywords: {},
             image: null,
-            privacy: 3
+            privacy: 3,
+            tags: [
+                { id: 'default', text: 'Add more tags here'}
+            ]
         }
+
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleAddition = this.handleAddition.bind(this);
+        this.handleDrag = this.handleDrag.bind(this);
+        this.handleTagClick = this.handleTagClick.bind(this);
     }
 
+    // Events to handle for the react-tags module
+    handleDelete(i) {
+        const {tags} = this.state;
+        this.setState({
+            tags: tags.filter((tag, index) => index !== i),
+        });
+    }
 
+    handleAddition(tag) {
+        // Append the new tag to the existing array of tags.
+        this.setState(state => ({ tags: [...state.tags, tag] }));
+    }
+    
+    handleDrag(tag, currPos, newPos) {
+        const tags = [...this.state.tags];
+        const newTags = tags.slice();
+    
+        newTags.splice(currPos, 1);
+        newTags.splice(newPos, 0, tag);
+    
+        // re-render
+        this.setState({ tags: newTags });
+    }
+
+    handleTagClick(index) {
+        console.log('The tag at index ' + index + ' was clicked');
+    }
+    
     onChange = (e) => {
         const target = e.target;
         const type = target.type;
@@ -87,7 +131,7 @@ class AddArtifact extends Component {
         // Send the entire state including confirmation fields so that it can be validated on at the backend
         const newArtifact = {
             name: this.state.name,
-            catagory: this.state.catagory,
+            category: this.state.category,
             date: this.state.date,
             story: this.state.story,
             confirmEmail: this.state.confirmEmail,
@@ -101,6 +145,8 @@ class AddArtifact extends Component {
 
 
     render(){
+
+        const { tags } = this.state;
         
         return(
             <div>
@@ -128,10 +174,7 @@ class AddArtifact extends Component {
                         </Link>
                 </Row>
             
-                {
-                    /*FORM STARTS HERE
-                 */}
-
+                {/*FORM STARTS HERE*/}
 
                 <Form noValidate className="register-form" onSubmit={this.onSubmit}>
                     <Row>
@@ -205,7 +248,19 @@ class AddArtifact extends Component {
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
-                    <FormGroup row>
+                    <Row>
+
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                            <ImageUpload />
+                            <br />
+                        </Col>
+                        <Col sm = {MARGIN}></Col> 
+
+                    </Row>
+
+
+                    {/* <FormGroup row>
                         <Col sm = {MARGIN}></Col>
                 
                         <Col sm = {3}>
@@ -246,11 +301,10 @@ class AddArtifact extends Component {
                         </Col>
 
                         <Col sm = {MARGIN}></Col>
-                    </FormGroup>
+                    </FormGroup> */}
 
 
                     {/*CATEGORY*/}
-
 
                     <Row>
                         <Col sm = {MARGIN}></Col>
@@ -264,12 +318,11 @@ class AddArtifact extends Component {
                         <Col sm={HALF -1}>
                             <Input 
                                 onChange={this.onChange}
-                                value={this.state.catagory}
+                                value={this.state.category}
                                 type="select" 
-                                id="catagory"
-                                name="catagory"
+                                id="category"
+                                name="category"
                                 >
-
                                 <option>Other</option>
                                 <option>Jewlery</option>
                                 <option>Clothes</option>
@@ -292,22 +345,21 @@ class AddArtifact extends Component {
                     </Row>
 
                     {/*TAGS*/}
-                    
+                   
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
-                        <Col sm={HALF -1}>
-                        <InputGroup>
-                            <InputGroupAddon addonType="prepend"><Button>Add tag</Button> </InputGroupAddon>
-                            <Input 
-                            placeholder="Add tags for others to search for your artifact"
-                                />
-                            </InputGroup>
-                           
+                        <Col sm={HALF - 1}>
+                        <ReactTags
+                            tags={tags}
+                            delimiters={delimiters}
+                            handleDelete={this.handleDelete}
+                            handleAddition={this.handleAddition}
+                            handleDrag={this.handleDrag}
+                            handleTagClick={this.handleTagClick}
+                        />
                         </Col>
-
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
-
 
                     <FormGroup tag="fieldset" row>
 
@@ -374,11 +426,7 @@ class AddArtifact extends Component {
 
                            
                     </FormGroup>
-
                         
-
-
-
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>

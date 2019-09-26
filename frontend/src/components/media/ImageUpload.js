@@ -7,17 +7,19 @@ const Xhr = require('@uppy/xhr-upload')
 const { Dashboard } = require('@uppy/react')
 
 // Change this to the Upload Route.
-const UPLOAD_SERVER = 'http://localhost:5000/upload'
+const UPLOAD_SERVER = 'http://localhost:5000/upload';
+const MAXFILESIZE = 1024 * 1024 * 2;
+const MAXFILENUM = 8;
 
-class FileUpload extends React.Component {
+class ImageUpload extends React.Component {
     constructor (props) {
         super(props)
 
         this.uppy = new Uppy({ 
-            id: 'avatar', 
+            id: 'artifactImg', 
             restrictions: {
-                maxFileSize: 1024 * 1024 * 2,
-                maxNumberOfFiles: 1,
+                maxFileSize: MAXFILESIZE,
+                maxNumberOfFiles: MAXFILENUM,
                 allowedFileTypes: ['image/*']
             },
             autoProceed: false, 
@@ -51,8 +53,6 @@ class FileUpload extends React.Component {
     render () {
         return (
         <div>
-            <h1>Upload File Test</h1>
-
             <Dashboard
                 uppy={this.uppy}
                 metaFields={[
@@ -63,4 +63,4 @@ class FileUpload extends React.Component {
         )
     }
 }
-export default FileUpload;
+export default ImageUpload;

@@ -13,9 +13,7 @@ const ArtifactSchema = mongoose.Schema(
             isRequired: true
         },
         "story": String,
-        "keywords": String,
-        // Should we define a basic list of categories? if so
-        // "category": {type: String, enum: enums.categories},
+        "tags": [{type: String}],
         "category": String,
         // ownerID + collectionID allows you to add multiple owners and collections
         // [{ }] - represents a list of objects
@@ -25,6 +23,7 @@ const ArtifactSchema = mongoose.Schema(
         "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
         "isPublic" : {
             type: String,
+            // Defines a restriction of strings to be private, friends and public only
             enum: ['private', 'friends', 'public'],
             isRequired: true,
             default: 'private'
