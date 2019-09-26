@@ -36,7 +36,7 @@ router.post('/searchartifacts', function(req, res, next) {
 
         // If it is a guest or unregsitered user, they are only allowed to search for public artifacts
         if (!user) {
-            Artifact.find({$text: { $search: req.body.searchString }, isPublic: true}, {score: { $meta: `textScore` }} )
+            Artifact.find({$text: { $search: req.body.searchString }, isPublic: "public"}, {score: { $meta: `textScore` }} )
                 .sort({score: {$meta: `textScore`}})
                 .exec(function(err, artifacts) {
                     if (err) {
@@ -45,8 +45,8 @@ router.post('/searchartifacts', function(req, res, next) {
                     return res.send(artifacts);
                 });
         } else {
-            // Otherwise they are allowed to search for public artifacts, plus the ones they have created
-            Artifact.find({$text: { $search: req.body.searchString }, $or: [ {isPublic: true}, {ownerID: user.id}] }, {score: { $meta: `textScore` }} )
+            // Otherwise they are allowed to search for public artifacts, plus the ones they have created or set to friend level privacy
+            Artifact.find({$text: { $search: req.body.searchString }, $or: [ {isPublic: "private"}, {isPublic: "friends"}, {ownerID: user.id}] }, {score: { $meta: `textScore` }} )
                 .sort({score: {$meta: `textScore`}})
                 .exec(function (err, artifacts) {
                     if (err) {
