@@ -11,6 +11,9 @@ const users = require("./routes/api/users");
 const artifacts = require("./routes/api/artifacts");
 const upload = require("./routes/api/upload");
 
+// Sample route to be removed after dev completes
+const sample = require("./routes/api/sample");
+
 const app = express();
 
 // Set domain restricitions here.
@@ -51,6 +54,7 @@ require("./config/passport")(passport);
 app.use("/api/users", users);
 app.use("/", artifacts);
 app.use("/", upload);
+app.use("/", sample);
 
 // process.env.PORT is Heroku's port if we choose to deploy the APP there
 const port = process.env.PORT || 5000

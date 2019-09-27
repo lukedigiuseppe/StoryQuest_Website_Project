@@ -42,6 +42,7 @@ class Login extends Component {
         }
 
         if (this.props.errors !== prevProps.errors) {
+            this.props.setUserNotLoading();
             this.setState({
                 errors: this.props.errors
             });

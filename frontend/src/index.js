@@ -26,6 +26,9 @@ import Profile from "./components/layout/Profile";
 import ImageUpload from "./components/media/ImageUpload";
 import Image from "./components/layout/Image";
 
+// Sample page, delete after you guys are finished with it
+import Sample from "./components/layout/Sample";
+
 // Check for token to keep the user logged in
 
 if (localStorage.jwtToken) {
@@ -61,6 +64,7 @@ const routing = (
                 <Route exact path="/profile" component ={Profile} />
                 <Route exact path="/image_upload" component={ImageUpload} />
                 <Route exact path="/image" component={Image} />
+                <Route exact path="/sample" component={Sample} />
                 <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                 </Switch>

@@ -20,7 +20,6 @@ import {
 
 import '../../css/addArtifact.css';
 import '../../css/tags.css';
-import Axios from 'axios';
 
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
