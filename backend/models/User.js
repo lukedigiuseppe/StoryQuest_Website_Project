@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
 
-
 const UserSchema = new Schema(
     {
         // should username and email be the same?
@@ -25,10 +24,10 @@ const UserSchema = new Schema(
             type: String,
             isRequired: true
         },
-        "pictureURL": [{type: mongoose.Schema.Types.ObjectId, ref: 'media',default : null}],
         "avatarImg": {
-            data: Buffer,
-            contentType: String
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'images.files',
+            default: null
         },
         // An array containing the emails of other users that have been recognised as "known" by the user
         "knownUsers": [{type: String}],

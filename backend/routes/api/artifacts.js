@@ -109,6 +109,7 @@ router.post('/newArtifact', (req, res, next) => {
                 "tags": req.body.tags.join(' '),
                 "category": req.body.category,
                 "isPublic": req.body.isPublic,
+                // Need to add check here to ensure .dateMade is not an empty string, if so then it was optional.
                 "dateMade": req.body.dateMade,
                 "ownerID": user.id
             });

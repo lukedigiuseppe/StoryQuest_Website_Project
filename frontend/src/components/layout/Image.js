@@ -13,7 +13,7 @@ class Image extends Component {
     
     componentDidMount() {
         // Change here for email of user you want to see
-        axios.get('/api/users/profile/jig@bigboi.eu')
+        axios.get('/api/users/profile/test@gmail.com')
             .then(res => {
                 this.setState({imgData: res.data});
             })

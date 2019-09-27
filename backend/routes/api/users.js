@@ -5,7 +5,7 @@ const router = express.Router();
 const encrypt = require('../../config/encryption').encrypt;
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
-const fs = require("fs");
+const imgStore = require('../../storageEngines/imageStorageEngine');
 
 // Load the input validator
 const validateRegisterInput = require("../../validation/register");
@@ -155,7 +155,11 @@ router.get('/profile/:email', function(req, res) {
             return res.status(400).send(err);
         }
         // Convert to base64 then send
-        const img64 = new Buffer.from(user.avatarImg.data, 'binary').toString('base64');
+        const binData = imgStore.readImage(user.avatarImg);
+        if (!binData) {
+            return res.status(500).send("Error: Unable to retrieve image from database");
+        }
+        const img64 = new Buffer.from(binData, 'binary').toString('base64');
         return res.status(200).send(img64);
     })
 })

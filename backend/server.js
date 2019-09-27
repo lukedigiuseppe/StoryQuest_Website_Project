@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
+const imgStore = require('./storageEngines/imageStorageEngine');
 
 // Pull in the routes that users will need to access
 const users = require("./routes/api/users");
@@ -41,7 +42,9 @@ mongoose
             useUnifiedTopology: true // This is needed to remove the deprecation warning for Server discovery and monitoring in nodemon
         }
     )
-    .then( () => console.log("MongoDB successfully connected."))
+    .then( () => {
+        console.log("MongoDB successfully connected.");
+    })
     .catch( err => console.log(err));
 
 // Add in passport to the backend server as middleware

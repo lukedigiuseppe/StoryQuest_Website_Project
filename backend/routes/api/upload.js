@@ -4,6 +4,8 @@ const express = require("express");
 const router = express.Router();
 const formidable = require("formidable");
 const fs = require("fs");
+const path = require("path");
+const imgStore = require('../../storageEngines/imageStorageEngine');
 
 // Load up the User module
 const User = require("../../models/User");
@@ -30,6 +32,7 @@ router.options('/', function(req, res) {
     return;
 })
 
+// Need to add authentication to occur here and possibly a route name change.
 router.post('/upload', function(req, res) {
     var form = new formidable.IncomingForm();
 
@@ -51,26 +54,58 @@ router.post('/upload', function(req, res) {
             if (err) {
                 return console.log(err);
             }
-        })
+        });
+
+        const retVal = imgStore.upload(NEWPATH, file.name);
+        console.log(retVal);
 
         // Save to MongoDB
-        User.findOne({email: "jig@bigboi.eu"}, function(err, user) {
+        User.findOne({email: "test@gmail.com"}, function(err, user) {
             if (err) {
                 console.log(err);
                 return;
             }
-            fs.readFile(NEWPATH, function(err, img) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                user.avatarImg.data = img;
-                user.avatarImg.contentType = "image/" + file.type;
-                user.save();
-                return;
-            });
-        })
+            
+            // Get only the image ID after uploading
+            if (retVal) {
+                // If error occurred exit.
+                return res.sendStatus(500);
+            }
+
+            // Assign the ID to the user
+            console.log(retVal);
+            // user.avatarImg = retVal.id;
+            // user.save();
+
+
+            // fs.readFile(NEWPATH, function(err, img) {
+            //     if (err) {
+            //         console.log(err);
+            //         return;
+            //     }
+            //     user.avatarImg.data = img;
+            //     user.avatarImg.contentType = file.type;
+            //     user.save();
+            //     return;
+            // });
+        });
     });
+
+    // Now remove the uploaded files, once the form has finished parsing.
+    // form.on('end', function() {
+    //     const directory = path.join(__dirname , '../../upload');
+
+    //     fs.readdir(directory, (err, files) => {
+    //         if (err) throw err;
+
+    //         for (const file of files) {
+    //             fs.unlink(path.join(directory, file), err => {
+    //                 if (err) throw err;
+    //             });
+    //         }
+    //     });
+    // });
+
 
     form.parse(req, function(err, fields, files) {
         if (!err) {

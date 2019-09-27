@@ -20,7 +20,10 @@
     "formidable": "^1.2.1",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
+    "mime": "^2.4.4",
+    "mime-types": "^2.1.24",
     "mongoose": "^5.7.1",
+    "mongoose-gridfs": "^1.2.8",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "validator": "^11.1.0"
