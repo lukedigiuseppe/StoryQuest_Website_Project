@@ -56,55 +56,44 @@ router.post('/upload', function(req, res) {
             }
         });
 
-        const retVal = imgStore.upload(NEWPATH, file.name);
-        console.log(retVal);
+        imgStore.upload(NEWPATH, file.name, function(err, file){
 
-        // Save to MongoDB
-        User.findOne({email: "test@gmail.com"}, function(err, user) {
             if (err) {
-                console.log(err);
-                return;
-            }
-            
-            // Get only the image ID after uploading
-            if (retVal) {
-                // If error occurred exit.
-                return res.sendStatus(500);
+                if (!res.headersSent) {
+                    return res.sendStatus(500);
+                }
             }
 
-            // Assign the ID to the user
-            console.log(retVal);
-            // user.avatarImg = retVal.id;
-            // user.save();
-
-
-            // fs.readFile(NEWPATH, function(err, img) {
-            //     if (err) {
-            //         console.log(err);
-            //         return;
-            //     }
-            //     user.avatarImg.data = img;
-            //     user.avatarImg.contentType = file.type;
-            //     user.save();
-            //     return;
-            // });
+            // Save to MongoDB
+            User.findOne({email: "test@gmail.com"}, function(err, user) {
+                if (err) {
+                    console.log(err);
+                    if (!res.headersSent) {
+                        return res.sendStatus(500);
+                    }
+                }
+                
+                // Assign the ID to the user
+                user.avatarImg = file._id;
+                user.save();
+            });
         });
     });
 
     // Now remove the uploaded files, once the form has finished parsing.
-    // form.on('end', function() {
-    //     const directory = path.join(__dirname , '../../upload');
+    form.on('end', function() {
+        const directory = path.join(__dirname , '../../upload');
 
-    //     fs.readdir(directory, (err, files) => {
-    //         if (err) throw err;
+        fs.readdir(directory, (err, files) => {
+            if (err) throw err;
 
-    //         for (const file of files) {
-    //             fs.unlink(path.join(directory, file), err => {
-    //                 if (err) throw err;
-    //             });
-    //         }
-    //     });
-    // });
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), err => {
+                    if (err) throw err;
+                });
+            }
+        });
+    });
 
 
     form.parse(req, function(err, fields, files) {
@@ -114,11 +103,15 @@ router.post('/upload', function(req, res) {
             console.log('original name', file.name)
             console.log('type', file.type)
             console.log('size', file.size)
-            return res.status(200).send({fields, files});
+            if (!res.headersSent) {
+                return res.status(200).send({fields, files});
+            }
         } else {
             console.log(err);
-            res.status(500).send(JSON.stringify(err.toString()));
-            return res.end();
+            if (!res.headersSent) {
+                res.status(500).send(JSON.stringify(err.toString()));
+                return res.end(); 
+            }
         }
     });
 });

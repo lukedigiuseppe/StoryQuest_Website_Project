@@ -15,65 +15,68 @@ module.exports.init = connection.once('open', () => {
     ImgBucket = createModel({
         modelName: 'images',
         connection: connection
-    });
+    })
 });
 
-// This function uploads an image to the MongoDB image store and returns the file information upon success. Returns false upon failure.
-module.exports.upload = function upload(imagePath, filename) {
-
-    connection.once('open', () => {
-        const readStream = createReadStream(imagePath);
-        const contentType = mime.lookup(path.extname(imagePath));
-        if (!contentType) {
-            console.error(Error("Not a valid image file."));
-            return false;
+// This function uploads an image to the MongoDB image store and returns the file information upon success. Returns false upon failure. 
+// The callback function takes two arguments (err, result).
+module.exports.upload = function upload(imagePath, filename, callback) {
+    const readStream = createReadStream(imagePath);
+    const contentType = mime.lookup(path.extname(imagePath));
+    if (!contentType) {
+        console.error("Not a valid file.");
+        callback(new Error("Not a valid file."));
+        return;
+    }
+    // We can possibly alter the filename here using crypto to make it more secure. So files become indistinguishable in the db, except
+    // by object ID.
+    const options = ({ filename: filename, contentType: contentType});
+    ImgBucket.write(options, readStream, (err, file) => {
+        if (err) {
+            console.error(err);
+            callback(new Error(err));
+            return;
         }
-        // We can possibly alter the filename here using crypto to make it more secure. So files become indistinguishable in the db, except
-        // by object ID.
-        const options = ({ filename: filename, contentType: contentType});
-        ImgBucket.write(options, readStream, (err, file) => {
+        console.log(file);
+        callback(null, file);
+        return;
+    });
+};
+
+// This function returns the image file for the specified Mongo object ID. It requires a callback function
+// with the following signature (err, content).
+module.exports.readImage = function readImage(objectID, callback) {
+    ImgBucket.findById(objectID, (err, image) => {
+        if (err) {
+            console.error(err);
+            callback(err);
+            return;
+        }
+        image.read(function(err, content) {
             if (err) {
                 console.error(err);
-                return false;
+                callback(err);
+                return;
             }
-            console.log(file);
-            return file;
+            callback(null, content);
+            return;
         });
     });
 };
 
-// This function returns the image file for the specified Mongo object ID. Returns false on failure.
-module.exports.readImage = function readImage(objectID) {
-
-    connection.once('open', () => {
-        ImgBucket.findById(objectID, (err, image) => {
-            if (err) {
-                console.error(err);
-                return false;
-            }
-            image.read(function(err, content) {
-                if (err) {
-                    console.error(err);
-                    return false;
-                }
-                return content;
-            });
-        });
-    });
-};
-
-// This function deletes an image stored in MongoDB given its MongoDB object ID. Returns false on error, true on success
-module.exports.deleteImage = function deleteImage(objectID) {
+// This function deletes an image stored in MongoDB given its MongoDB object ID. Requires a callback function
+// with the following signature (err)
+module.exports.deleteImage = function deleteImage(objectID, callback) {
 
     connection.once('open', () => {
         ImgBucket.unlink(objectID, (err) => {
             if (err) {
                 console.error(err);
-                return false;
+                callback(err);
+                return;
             }
-            return true;
+            callback(null);
+            return;
         })
     })
 };
-
-

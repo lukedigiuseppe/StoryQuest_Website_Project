@@ -155,13 +155,14 @@ router.get('/profile/:email', function(req, res) {
             return res.status(400).send(err);
         }
         // Convert to base64 then send
-        const binData = imgStore.readImage(user.avatarImg);
-        if (!binData) {
-            return res.status(500).send("Error: Unable to retrieve image from database");
-        }
-        const img64 = new Buffer.from(binData, 'binary').toString('base64');
-        return res.status(200).send(img64);
-    })
-})
+        imgStore.readImage(user.avatarImg, function(err, content) {
+            if (err) {
+                return res.status(500).send("Error: Unable to retrieve image from database");
+            }
+            const img64 = new Buffer.from(content, 'binary').toString('base64');
+            return res.status(200).send(img64);
+        });
+    });
+});
 
 module.exports = router;
