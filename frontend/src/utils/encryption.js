@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc';
-// const key = crypto.randomBytes(32);
+// Set the unique key known only to frontend and backend here.
 const key = "STORYQUESTKEYROCKSTHISWORLDFOREV";
 const iv = crypto.randomBytes(16);
 

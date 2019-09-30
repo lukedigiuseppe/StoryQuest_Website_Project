@@ -5,6 +5,7 @@ const router = express.Router();
 const Artifact = require("../../models/Artifact");
 const User = require("../../models/User");
 const vidStore = require('../../storageEngines/videoStorageEngine');
+const decrypt = require('../../config/encryption').decrypt;
 
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client.
 const passport = require('passport');
@@ -219,12 +220,17 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
 });
 
 // Test route for streaming a video from MongoDB
-router.get('/video', (req, res) => {
-    vidStore.streamVideo("5d90b09c88cd4e22965c4f12", req, res);
+router.get('/video/:iv/:enc', (req, res) => {
+
+    // Here are the encrypted parameters passed from the server to decrypt and
+    // get the object ID of the video, thus preventing any access to videos even with knowledge
+    // of the object ID as they would have to encrypt it first before it would be processed properly.
+    const encrypt = {iv: req.params.iv, encryptedData: req.params.enc};
+    try {
+        vidStore.streamVideo(decrypt(encrypt), req, res);
+    } catch (err) {
+        return res.sendStatus(401);
+    }
 });
-
-// router.post('/test_enc', (req, res) => {
-
-// });
 
 module.exports = router;
