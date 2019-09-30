@@ -115,16 +115,13 @@ module.exports.streamVideo = function streamVideo(objectID, req, res) {
 // This function deletes a video stored in MongoDB given its MongoDB object ID. Requires a callback function
 // with the following signature (err)
 module.exports.deleteVideo = function deleteVideo(objectID, callback) {
-
-    connection.once('open', () => {
-        VidBucket.unlink(objectID, (err) => {
-            if (err) {
-                console.error(err);
-                callback(err);
-                return;
-            }
-            callback(null);
+    VidBucket.unlink(objectID, (err) => {
+        if (err) {
+            console.error(err);
+            callback(err);
             return;
-        })
-    })
+        }
+        callback(null);
+        return;
+    });
 };

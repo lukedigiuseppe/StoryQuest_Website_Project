@@ -1,12 +1,13 @@
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 
+//TODO This is a private page only accessable to logged in users in the final built.
+
 const React = require('react');
 const Uppy = require('@uppy/core');
 const Xhr = require('@uppy/xhr-upload');
 const { Dashboard } = require('@uppy/react');
 const encrypt = require('../../utils/encryption').encrypt;
-const axios = require('axios');
 
 // Change this to the Upload Route for the backend.
 const UPLOAD_SERVER = 'http://localhost:5000/upload';
@@ -59,12 +60,6 @@ class VideoUpload extends React.Component {
             iv: data.iv,
             enc: data.encryptedData
         });
-
-        // axios.post('/api/users/profile/test@gmail.com')
-        //     .then(res => {
-        //         this.setState({imgData: res.data});
-        //     })
-
     }
 
     componentWillUnmount () {
