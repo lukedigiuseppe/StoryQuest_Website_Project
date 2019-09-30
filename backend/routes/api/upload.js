@@ -6,6 +6,8 @@ const formidable = require("formidable");
 const fs = require("fs");
 const path = require("path");
 const imgStore = require('../../storageEngines/imageStorageEngine');
+const vidStore = require('../../storageEngines/videoStorageEngine');
+const mime = require('mime-types');
 
 // Load up the User module
 const User = require("../../models/User");
@@ -56,28 +58,66 @@ router.post('/upload', function(req, res) {
             }
         });
 
-        imgStore.upload(NEWPATH, file.name, function(err, file){
-
-            if (err) {
-                if (!res.headersSent) {
-                    return res.sendStatus(500);
-                }
-            }
-
-            // Save to MongoDB
-            User.findOne({email: "test@gmail.com"}, function(err, user) {
-                if (err) {
-                    console.log(err);
-                    if (!res.headersSent) {
-                        return res.sendStatus(500);
+        // Determine whether the file is an image or video
+        const contentType = mime.lookup(path.extname(NEWPATH));
+        if (contentType) {
+            if (contentType.includes('video')) {
+                vidStore.uploadVideo(NEWPATH, file.name, function(err, file) {
+                    if (err) {
+                        if (!res.headersSent) {
+                            return res.sendStatus(500);
+                        }
+                        return res.sendStatus(200);
                     }
-                }
+                });
+            } else {
+                imgStore.upload(NEWPATH, file.name, function(err, file){
+
+                    if (err) {
+                        if (!res.headersSent) {
+                            return res.sendStatus(500);
+                        }
+                    }
+        
+                    // Save to MongoDB
+                    User.findOne({email: "test@gmail.com"}, function(err, user) {
+                        if (err) {
+                            console.log(err);
+                            if (!res.headersSent) {
+                                return res.sendStatus(500);
+                            }
+                        }
+                        
+                        // Assign the ID to the user
+                        user.avatarImg = file._id;
+                        user.save();
+                    });
+                });
+            }
+        }
+
+        // imgStore.upload(NEWPATH, file.name, function(err, file){
+
+        //     if (err) {
+        //         if (!res.headersSent) {
+        //             return res.sendStatus(500);
+        //         }
+        //     }
+
+        //     // Save to MongoDB
+        //     User.findOne({email: "test@gmail.com"}, function(err, user) {
+        //         if (err) {
+        //             console.log(err);
+        //             if (!res.headersSent) {
+        //                 return res.sendStatus(500);
+        //             }
+        //         }
                 
-                // Assign the ID to the user
-                user.avatarImg = file._id;
-                user.save();
-            });
-        });
+        //         // Assign the ID to the user
+        //         user.avatarImg = file._id;
+        //         user.save();
+        //     });
+        // });
     });
 
     // Now remove the uploaded files, once the form has finished parsing.
@@ -94,7 +134,6 @@ router.post('/upload', function(req, res) {
             }
         });
     });
-
 
     form.parse(req, function(err, fields, files) {
         if (!err) {

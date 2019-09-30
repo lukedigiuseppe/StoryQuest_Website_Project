@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const Artifact = require("../../models/Artifact");
 const User = require("../../models/User");
+const vidStore = require('../../storageEngines/videoStorageEngine');
 
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client.
 const passport = require('passport');
@@ -215,6 +216,11 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
             }
         });
     })(req, res, next);
+});
+
+// Test route for streaming a video from MongoDB
+router.get('/video', (req, res) => {
+    vidStore.streamVideo("5d90b09c88cd4e22965c4f12", req, res);
 });
 
 module.exports = router;
