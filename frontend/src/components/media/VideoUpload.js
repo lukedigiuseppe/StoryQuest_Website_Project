@@ -59,7 +59,7 @@ class VideoUpload extends React.Component {
                 { id: 'name', name: 'Name', placeholder: 'File name' }
                 ]}
             />
-            <video width="1280" height="720" controls>
+            <video width="1280" height="720" preload="metadata" controls>
                 <source src="/video" type="video/mp4" />
             </video>
         </div>

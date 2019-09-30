@@ -223,4 +223,8 @@ router.get('/video', (req, res) => {
     vidStore.streamVideo("5d90b09c88cd4e22965c4f12", req, res);
 });
 
+// router.post('/test_enc', (req, res) => {
+
+// });
+
 module.exports = router;

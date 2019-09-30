@@ -47,8 +47,10 @@ module.exports.uploadVideo = function uploadVideo(videoPath, filename, callback)
 // Express to be able to stream the video back to the requester. 
 module.exports.streamVideo = function streamVideo(objectID, req, res) {
 
+    // This is the size (in bytes) of video chunks to be sent across.
+    const DEFAULT_CHUNK_SIZE = 1750000;
+
     VidBucket.findById(objectID, (err, video) => {
-        console.log("Found video ", objectID);
         if (err) {
             console.error(err);
             return res.status(500).send(JSON.stringify(err.toString()));
@@ -66,7 +68,11 @@ module.exports.streamVideo = function streamVideo(objectID, req, res) {
             var partialEnd = parts[1];
 
             var start = parseInt(partialStart, 10);
-            var end = partialEnd ? parseInt(partialEnd, 10) : video.length - 1;
+            var end = partialEnd ? parseInt(partialEnd, 10) : start + DEFAULT_CHUNK_SIZE;
+            // Don't overshoot the video length and set the remainder of video as the chunk size.
+            if (end >= (video.length - 1)) {
+                end = video.length - 1;
+            }
             var chunkSize = (end - start) + 1;
 
             console.log(req.headers.range);
@@ -95,6 +101,7 @@ module.exports.streamVideo = function streamVideo(objectID, req, res) {
                     end: end
                 }).pipe(res); 
             }
+
         } else {
             // Send the whole video if it's a download request and so it's not a range request.
             console.log("Download requested...");
