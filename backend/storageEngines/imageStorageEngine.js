@@ -52,6 +52,12 @@ module.exports.readImage = function readImage(objectID, callback) {
             callback(err);
             return;
         }
+
+        // Check if image is null
+        if (!image) {
+            callback(new Error("Image not found."));
+            return;
+        }
         image.read(function(err, content) {
             if (err) {
                 console.error(err);
@@ -67,16 +73,13 @@ module.exports.readImage = function readImage(objectID, callback) {
 // This function deletes an image stored in MongoDB given its MongoDB object ID. Requires a callback function
 // with the following signature (err)
 module.exports.deleteImage = function deleteImage(objectID, callback) {
-
-    connection.once('open', () => {
-        ImgBucket.unlink(objectID, (err) => {
-            if (err) {
-                console.error(err);
-                callback(err);
-                return;
-            }
-            callback(null);
+    ImgBucket.unlink(objectID, (err) => {
+        if (err) {
+            console.error(err);
+            callback(err);
             return;
-        })
+        }
+        callback(null);
+        return;
     })
 };

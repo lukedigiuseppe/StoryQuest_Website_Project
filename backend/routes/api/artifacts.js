@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const Artifact = require("../../models/Artifact");
 const User = require("../../models/User");
+const imgStore = require('../../storageEngines/imageStorageEngine');
 const vidStore = require('../../storageEngines/videoStorageEngine');
 const decrypt = require('../../config/encryption').decrypt;
 
@@ -231,6 +232,37 @@ router.get('/video/:iv/:enc', (req, res) => {
     } catch (err) {
         return res.sendStatus(401);
     }
+});
+
+// Test route that returns a base64 string for the given image ID. Artifact ID must also be supplied to check for
+// user authentication as access to these images is restricted depending on user privacy settings.
+router.get('/artifact_images/:artifactID/:imageID', (req, res) => {
+
+    const artifactID = req.params.artifactID;
+    const imageID = req.params.imageID;
+
+    // Add authentication from passport later on, the same rules from the get ArtifactID apply here.
+    Artifact.findById(artifactID, (err, artifact) => {
+
+        if (err) {
+            return res.sendStatus(500);
+        }
+
+        
+
+        imgStore.readImage(imageID, function(err, content) {
+            
+            if (err) {
+                return res.status(500).send(err);
+            }
+            const img64 = new Buffer.from(content, 'binary').toString('base64');
+            // A JSON object that contains the metadata required for a BootStrap Carousel to function,
+            const imageData = {
+                base64String: img64,
+            };
+            return res.status(200).send(img64);
+        });
+    });
 });
 
 module.exports = router;

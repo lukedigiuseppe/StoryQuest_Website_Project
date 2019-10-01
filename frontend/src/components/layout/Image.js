@@ -2,28 +2,56 @@ import React, {Component} from 'react';
 import axios from 'axios';
 // This component is a test sample of how to get images from the backend. 
 
+import {
+    UncontrolledCarousel 
+} from 'reactstrap';
+
+
 class Image extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            imgData: ""
+            // Probs get this artifact ID from props later on
+            artifactID: "5d9330cdcd596f54be4f261e",
+            items: []
         };
     }
     
     componentDidMount() {
-        // Change here for email of user you want to see
-        axios.get('/api/users/profile/test@gmail.com')
+        // Get the artifact image array and go through each image ID calling an axios request to add it to the Carousel items
+        axios.get('/artifact/' + this.state.artifactID)
             .then(res => {
-                this.setState({imgData: res.data});
+                res.data.images.forEach(imageID => {
+                    axios.get('/artifact_images/' + this.state.artifactID + '/' + imageID)
+                        .then(res => {
+                            this.setState(prevState => ({
+                                    items: [
+                                        ...prevState.items, 
+                                        {
+                                            src: `data:image/jpeg;base64,${res.data}`, 
+                                            altText: "",
+                                            caption: "",
+                                            header: ""
+                                        }
+                                    ]
+                                }));
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                });
             })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     render() {
         return (
             <div>
-                <h1>This is a sample image stored on the backend server</h1>
-                <p><img src={`data:image/jpeg;base64,${this.state.imgData}`} alt="Profile" /></p>
+                <h1>Images for Artifact ID: {this.state.artifactID}</h1>
+                <UncontrolledCarousel items={this.state.items} autoPlay={false}/>
             </div>
         )
     }
