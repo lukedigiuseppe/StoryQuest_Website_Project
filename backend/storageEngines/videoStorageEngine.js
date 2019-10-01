@@ -47,8 +47,8 @@ module.exports.uploadVideo = function uploadVideo(videoPath, filename, callback)
 // Express to be able to stream the video back to the requester. 
 module.exports.streamVideo = function streamVideo(objectID, req, res) {
 
-    // This is the size (in bytes) of video chunks to be sent across.
-    const DEFAULT_CHUNK_SIZE = 2000000;
+    // This is the size (in bytes) of video chunks to be sent across. Optimal size has been tested
+    const DEFAULT_CHUNK_SIZE = 3000000;
 
     VidBucket.findById(objectID, (err, video) => {
         if (err) {

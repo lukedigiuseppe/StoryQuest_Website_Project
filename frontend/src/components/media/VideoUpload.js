@@ -67,6 +67,7 @@ class VideoUpload extends React.Component {
     }
 
     render () {
+        // http://camddns.mynetgear.com:5000/video/ for when we are deploying
         const VIDSRC = "/video/" + this.state.iv + "/" + this.state.enc;
         return (
         <div>
@@ -76,7 +77,7 @@ class VideoUpload extends React.Component {
                 { id: 'name', name: 'Name', placeholder: 'File name' }
                 ]}
             />
-            <video width="1280" height="720" preload="metadata" controls>
+            <video width="1280" height="720" preload="metadata" controls autoPlay loop>
                 <source src={VIDSRC} type="video/mp4" />
             </video>
         </div>

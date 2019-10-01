@@ -13,6 +13,11 @@ const ArtifactSchema = mongoose.Schema(
             isRequired: true
         },
         "story": String,
+        "images": [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "images.files",
+            default: null
+        }],
         "tags": {
             type: String,
             default: ""

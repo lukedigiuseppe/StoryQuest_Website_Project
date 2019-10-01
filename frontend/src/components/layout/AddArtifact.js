@@ -35,6 +35,8 @@ const KeyCodes = {
 };
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
+// Change this to the Upload Route.
+const UPLOAD_SERVER = 'http://localhost:5000/upload_artifact_image';
 
 class AddArtifact extends Component {
 
@@ -49,7 +51,10 @@ class AddArtifact extends Component {
             ],
             category: "",
             dateMade: "",
-            isPublic: "private"
+            isPublic: "private",
+            // These state values are used for image upload
+            doUpload: false,
+            artifactID: ""
         }
 
         this.handleDelete = this.handleDelete.bind(this);
@@ -137,10 +142,14 @@ class AddArtifact extends Component {
             .post('/newArtifact', newArtifact)
             .then(res => {
                 console.log(res);
+                // Need these to be sequential, so don't do them at the same time.
+                this.setState({artifactID: res.data._id});
+                this.setState({doUpload: true});
             })
             .catch(err => {
                 console.log(err);
             });
+        
     };
 
     render(){
@@ -242,7 +251,7 @@ class AddArtifact extends Component {
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                        <h2 className="text-left" >Add Photos (please click upload before submitting)</h2>
+                        <h2 className="text-left" >Add Photos</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
@@ -251,57 +260,12 @@ class AddArtifact extends Component {
 
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                            <ImageUpload />
+                            <ImageUpload doUpload={this.state.doUpload} uploadPath={UPLOAD_SERVER} artifactID={this.state.artifactID} />
                             <br />
                         </Col>
                         <Col sm = {MARGIN}></Col> 
 
                     </Row>
-
-
-                    {/* <FormGroup row>
-                        <Col sm = {MARGIN}></Col>
-                
-                        <Col sm = {3}>
-                        <Card>
-
-                        <CardImg top width = "100%" src= '/images/vase.jpg' ></CardImg>
-
-                        <CardBody>
-                            <CardTitle>Upload Image</CardTitle>
-                            <Input
-                            onChange={this.onChange}
-                            value={this.state.image}
-                            style = {{height: '100px'}}
-                            name = "image"
-                            type="file" 
-                            id="image" 
-                            />
-                        </CardBody>
-                        </Card>
-
-
-                        </Col>
-
-                        <Col sm = {2}>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-
-                        </Col>
-                        <Col sm = {2}>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-
-                        </Col>
-                        <Col sm = {2}>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-
-                        </Col>
-
-                        <Col sm = {MARGIN}></Col>
-                    </FormGroup> */}
-
 
                     {/*CATEGORY*/}
 
