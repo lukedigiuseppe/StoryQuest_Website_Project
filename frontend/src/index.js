@@ -23,8 +23,8 @@ import AddArtifact from "./components/layout/AddArtifact";
 import ViewArtifact from "./components/layout/ViewArtifact";
 import Profile from "./components/layout/Profile";
 
-import VideoUpload from "./components/media/VideoUpload";
 import Image from "./components/layout/Image";
+import Video from "./components/layout/Video";
 
 // Sample page, delete after you guys are finished with it
 import Sample from "./components/layout/Sample";
@@ -62,8 +62,8 @@ const routing = (
                 <Route exact path="/add_artifact" component ={AddArtifact} />
                 <Route exact path="/view_artifact/:id" component ={ViewArtifact} />
                 <Route exact path="/profile" component ={Profile} />
-                <Route exact path="/video_upload" component={VideoUpload} />
                 <Route exact path="/image" component={Image} />
+                <Route exact path="/video" component={Video} />
                 <Route exact path="/sample" component={Sample} />
                 <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />

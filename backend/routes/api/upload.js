@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const formidable = require("formidable");
 const fs = require("fs");
+const md5 = require("md5");
 const path = require("path");
 const imgStore = require('../../storageEngines/imageStorageEngine');
 const vidStore = require('../../storageEngines/videoStorageEngine');
@@ -12,6 +13,7 @@ const mime = require('mime-types');
 // Load up the data models
 const User = require("../../models/User");
 const Artifact = require('../../models/Artifact');
+const Media = require("../../models/Media");
 
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client. 
 // Requires the user model so make sure you load this after
@@ -63,14 +65,13 @@ router.post('/upload_artifact_image', function(req, res, next) {
         // Events to respond to
 
         form.on('file', function(field, file) {
-            // Rename to fixed profile image name
             const NEWPATH = form.uploadDir + "/" + file.name;
             fs.rename(file.path, NEWPATH, function(err) {
                 if (err) {
                     return console.log(err);
                 }
             });
-        
+            
             imgStore.upload(NEWPATH, file.name, function(err, file){
 
                 if (err) {
@@ -88,9 +89,13 @@ router.post('/upload_artifact_image', function(req, res, next) {
                         }
                     }
                     
-                    // Assign the ID to the user
-                    artifact.images.push(file._id);
-                    return artifact.save();
+                    // Assign the ID to the artifact
+                    artifact.videos.push(file._id);
+                    artifact.save();
+                    // On successful assignment return response to update Uppy's progress.
+                    if (!res.headersSent) {
+                        return res.status(200).send(file);
+                    }
                 });
 
                 // Delete the file from the backend server once it has been uploaded to MongoDB
@@ -107,14 +112,12 @@ router.post('/upload_artifact_image', function(req, res, next) {
 
         form.parse(req, function(err, fields, files) {
             if (!err) {
+                // Print out the details of the file that was just saved if no error
                 var file = files['files[]'];
                 console.log('saved file to', file.path)
                 console.log('original name', file.name)
                 console.log('type', file.type)
                 console.log('size', file.size)
-                if (!res.headersSent) {
-                    return res.status(200).send({fields, files});
-                }
             } else {
                 console.log(err);
                 if (!res.headersSent) {
@@ -127,6 +130,7 @@ router.post('/upload_artifact_image', function(req, res, next) {
 });
 
 router.post('/upload_artifact_video', function(req, res) {
+
     var form = new formidable.IncomingForm();
 
     // Set the options
@@ -141,7 +145,6 @@ router.post('/upload_artifact_video', function(req, res) {
     // Events to respond to
 
     form.on('file', function(field, file) {
-        // Rename to fixed profile image name
         const NEWPATH = form.uploadDir + "/" + file.name;
         fs.rename(file.path, NEWPATH, function(err) {
             if (err) {
@@ -149,7 +152,7 @@ router.post('/upload_artifact_video', function(req, res) {
             }
         });
 
-        // Determine whether the file is an image or video
+        // Confirm that the file is of the correct type
         const contentType = mime.lookup(path.extname(NEWPATH));
         if (contentType) {
             if (contentType.includes('video')) {
@@ -158,49 +161,94 @@ router.post('/upload_artifact_video', function(req, res) {
                         if (!res.headersSent) {
                             return res.sendStatus(500);
                         }
-                        return res.sendStatus(200);
+                    }
+
+                    // Assign the video to the artifact object
+                    Artifact.findById(req.headers.artifactid, function(err, artifact) {
+                        if (err) {
+                            console.log(err);
+                            if (!res.headersSent) {
+                                return res.sendStatus(500);
+                            }
+                        }
+
+                        // Delete from media collection and from the artifact videos array
+                        Media.findOneAndDelete({artifactID: artifact._id, md5: file.md5}, (err, media) => {
+                            // Assign the ID to the artifact
+                            artifact.videos.push(file._id);
+                            var index = artifact.videos.indexOf(media._id);
+                            if (index > -1) {
+                                // Greater than -1 means, that media ID was found successfully
+                                artifact.videos.splice(index, 1);
+                            }
+                            artifact.save()
+                                .catch(err => {
+                                    throw err;
+                                });
+                            // Remove the local file has been successfully added to MongoDB
+                            fs.unlink(media.filePath, (err) => {
+                                if (err) {
+                                    throw err;
+                                }
+                                if (!res.headersSent) {
+                                    return res.sendStatus(500);
+                                }
+                            });
+                        });
+                    });
+                });
+
+                // Create a Media document to store the local file path and also assign it to the artifact that is associated with it
+                // We rename the uploaded file to the object ID for the media object just created.
+                var newMedia = new Media();
+                newMedia.filePath = form.uploadDir + '/' + newMedia._id + path.extname(NEWPATH);
+                // Calculate the md5 hash
+                fs.readFile(NEWPATH, (err, buf) => {
+                    if (err) {
+                        throw err;
+                    }
+                    newMedia.md5 = md5(buf);
+                });
+                // Now rename the actual file
+                fs.rename(NEWPATH, newMedia.filePath, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                });
+                // Assign the video to the artifact object
+                Artifact.findById(req.headers.artifactid, function(err, artifact) {
+                    if (err) {
+                        console.log(err);
+                        if (!res.headersSent) {
+                            return res.sendStatus(500);
+                        }
+                    }
+
+                    // Check if artifact exists
+                    if (!artifact) {
+                        if (!res.headersSent) {
+                            return res.status(404).send("The artifact for this media object does not exist.");
+                        }
+                    }
+
+                    newMedia.artifactID = req.headers.artifactid;
+                    // Assign the ID to the artifact
+                    artifact.videos.push(newMedia._id);
+                    artifact.save()
+                        .catch(err => {
+                            throw err;
+                        });
+                    newMedia.save()
+                        .catch(err => {
+                            throw err;
+                        });
+                    // On successful creation return response to update Uppy's progress if the other upload isn't done yet.
+                    if (!res.headersSent) {
+                        return res.status(200).send(newMedia);
                     }
                 });
             }
         }
-    });
-
-        // imgStore.upload(NEWPATH, file.name, function(err, file){
-
-        //     if (err) {
-        //         if (!res.headersSent) {
-        //             return res.sendStatus(500);
-        //         }
-        //     }
-
-        //     // Save to MongoDB
-        //     User.findOne({email: "test@gmail.com"}, function(err, user) {
-        //         if (err) {
-        //             console.log(err);
-        //             if (!res.headersSent) {
-        //                 return res.sendStatus(500);
-        //             }
-        //         }
-                
-        //         // Assign the ID to the user
-        //         user.avatarImg = file._id;
-        //         user.save();
-        //     });
-        // });
-
-    // Now remove the uploaded files, once the form has finished parsing.
-    form.on('end', function() {
-        const directory = path.join(__dirname , '../../upload');
-
-        fs.readdir(directory, (err, files) => {
-            if (err) throw err;
-
-            for (const file of files) {
-                fs.unlink(path.join(directory, file), err => {
-                    if (err) throw err;
-                });
-            }
-        });
     });
 
     form.parse(req, function(err, fields, files) {
@@ -210,9 +258,6 @@ router.post('/upload_artifact_video', function(req, res) {
             console.log('original name', file.name)
             console.log('type', file.type)
             console.log('size', file.size)
-            if (!res.headersSent) {
-                return res.status(200).send({fields, files});
-            }
         } else {
             console.log(err);
             if (!res.headersSent) {

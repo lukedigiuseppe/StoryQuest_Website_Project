@@ -40,6 +40,9 @@ class ImageUpload extends React.Component {
                 headers: this.customHeader,
                 formData: true,
                 fieldName: 'files[]',
+                // For our purposes, since we have quite a long delay after the video has finished parsing locally, still needs to be uploaded to Mongo
+                // So set timeout to 0 to disable the check for upload progress events.
+                timeout: 0,
                 getResponseError (responseText, res) {
                     console.log(res);
                     if (responseText) {
@@ -91,7 +94,8 @@ class ImageUpload extends React.Component {
 ImageUpload.propTypes = {
     doUpload: PropTypes.bool,
     uploadPath: PropTypes.string.isRequired,
-    auth: PropTypes.object
+    auth: PropTypes.object,
+    artifactID: PropTypes.string
 };
 
 const mapStateToProps = state => ({

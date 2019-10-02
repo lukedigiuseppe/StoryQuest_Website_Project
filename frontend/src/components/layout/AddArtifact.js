@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import { Link }  from 'react-router-dom';
-import ImageUpload from '../media/ImageUpload';
 import {WithContext as ReactTags} from 'react-tag-input';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
@@ -17,6 +16,9 @@ import {
     Label, 
     Input,
 } from 'reactstrap';
+
+import ImageUpload from '../media/ImageUpload';
+import VideoUpload from '../media/VideoUpload';
 
 import '../../css/addArtifact.css';
 import '../../css/tags.css';
@@ -36,7 +38,8 @@ const KeyCodes = {
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 // Change this to the Upload Route.
-const UPLOAD_SERVER = 'http://localhost:5000/upload_artifact_image';
+const IMG_UPLOAD = 'http://localhost:5000/upload_artifact_image';
+const VIDEO_UPLOAD = 'http://localhost:5000/upload_artifact_video';
 
 class AddArtifact extends Component {
 
@@ -260,7 +263,27 @@ class AddArtifact extends Component {
 
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                            <ImageUpload doUpload={this.state.doUpload} uploadPath={UPLOAD_SERVER} artifactID={this.state.artifactID} />
+                            <ImageUpload doUpload={this.state.doUpload} uploadPath={IMG_UPLOAD} artifactID={this.state.artifactID} />
+                            <br />
+                        </Col>
+                        <Col sm = {MARGIN}></Col> 
+
+                    </Row>
+
+                    {/* VIDEOS */}
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Add Videos</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+                    <Row>
+
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                            <VideoUpload doUpload={this.state.doUpload} uploadPath={VIDEO_UPLOAD} artifactID={this.state.artifactID} />
                             <br />
                         </Col>
                         <Col sm = {MARGIN}></Col> 

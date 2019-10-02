@@ -20,6 +20,7 @@
     "formidable": "^1.2.1",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
+    "md5": "^2.2.1",
     "mime": "^2.4.4",
     "mime-types": "^2.1.24",
     "mongoose": "^5.7.1",

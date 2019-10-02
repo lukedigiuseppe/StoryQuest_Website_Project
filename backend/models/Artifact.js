@@ -18,6 +18,11 @@ const ArtifactSchema = mongoose.Schema(
             ref: "images.files",
             default: null
         }],
+        "videos": [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "videos.files",
+            default: null
+        }],
         "tags": {
             type: String,
             default: ""

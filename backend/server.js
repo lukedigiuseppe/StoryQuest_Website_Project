@@ -5,12 +5,12 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
-const imgStore = require('./storageEngines/imageStorageEngine');
 
 // Pull in the routes that users will need to access
 const users = require("./routes/api/users");
 const artifacts = require("./routes/api/artifacts");
 const upload = require("./routes/api/upload");
+const files = require("./routes/api/files");
 
 // Sample route to be removed after dev completes
 const sample = require("./routes/api/sample");
@@ -57,6 +57,7 @@ require("./config/passport")(passport);
 app.use("/api/users", users);
 app.use("/", artifacts);
 app.use("/", upload);
+app.use("/", files);
 app.use("/", sample);
 
 // process.env.PORT is Heroku's port if we choose to deploy the APP there
