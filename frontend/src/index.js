@@ -25,6 +25,7 @@ import Profile from "./components/layout/Profile";
 
 import Image from "./components/layout/Image";
 import Video from "./components/layout/VideoTest";
+import ProfileUpload from "./components/dashboard/ProfileUpload";
 
 // Sample page, delete after you guys are finished with it
 import Sample from "./components/layout/Sample";
@@ -67,6 +68,7 @@ const routing = (
                 <Route exact path="/sample" component={Sample} />
                 <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
+                    <PrivateRoute exact path="/profile_image" component={ProfileUpload} />
                 </Switch>
             </div>
         </Router>

@@ -15,22 +15,21 @@ class Dashboard extends Component {
         this.state = {
             message: '',
             videoID: "",
-            artifactID: ""
+            artifactID: "",
+            profileImgData: ""
         }
-
-        this.test = this.test.bind(this);
     }
 
-    test = () => {
-        console.log("method called");
-        axios.get('/findUser')
-        .then(response => {
-          this.setState({ message: response.data });
-        })
-        .catch(error => {
-          console.log(error);
-        });
-        console.log(this.state.message);
+    componentDidMount() {
+        axios.get('/api/users/profile/' + this.props.auth.user.email)
+            .then(res => {
+                this.setState({
+                    profileImgData: res.data
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     onLogoutClick = (e) => {
@@ -76,7 +75,8 @@ class Dashboard extends Component {
                             <p className="flow-text grey-text text-darken-1">
                                 You are logged into a full-stack{" "}<span style={{ fontFamily: "monospace"}}>MERN</span> app 👏
                             </p>
-                            <p><button onClick={this.test}>Test me and check the console to see the info you get back.</button></p>
+                            <p><img src={`data:image/jpeg;base64,${this.state.profileImgData}`} /></p>
+                            <p><a href="/profile_image">Upload a new profile picture</a></p> 
                             <p><a href="/add_artifact">Add an artifact</a></p> 
                         </h4>
                         <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} onClick={this.onLogoutClick} className="btn btn-large waves-effect waves-light hoverable blue accent-3">Logout</button>

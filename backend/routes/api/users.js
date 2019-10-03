@@ -7,6 +7,12 @@ const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const imgStore = require('../../storageEngines/imageStorageEngine');
 
+// Import the stuff required to upload profile images
+const formidable = require("formidable");
+const fs = require("fs");
+const path = require("path");
+const cryptoString = require("crypto-random-string");
+
 // Load the input validator
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
@@ -83,7 +89,8 @@ router.post("/login", (req, res) => {
             const fullName = user.publicName;
             const payload = {
                 id: encrypt(user.id),
-                name: fullName
+                name: fullName,
+                email: user.email
             };
             
             // Now sign the token with the secret and user info
@@ -144,7 +151,134 @@ router.patch('/update', (req, res, next) => {
     })(req, res, next);
 });
 
-// Test function to get the profile image of a user.
+// @route POST api/users/upload_profile_image
+// @desc Uploads the profile image for the user. Only the user themselves can update their profile picture. Also checks if
+// there is already an image existing, if so, deletes it and replaces it with the new one.
+// @access Restricted
+router.post('/upload_profile_image', (req, res, next) => {
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
+        if (err) {
+            return next(err);
+        }
+
+        if (!user) {
+            return res.status(401).send("Unauthorised user. Please login to update profile image.");
+        }
+
+        // Set up form for receiving the data
+        var form = new formidable.IncomingForm();
+
+        // Set the options
+        const MB = 1024*1024;
+        const MAXFILESIZE = 1 * MB;
+        const FILENAMELEN = 16;
+        const CHARS = "123456789abcdedfghijklmnopqrstuvwxyz";
+
+        form.uploadDir = './upload';
+        form.keepExtensions = true;
+        form.multiples = true;
+        form.maxFileSize = MAXFILESIZE;
+
+        // Events to respond to
+
+        form.on('file', function(field, file) {
+            const NEWPATH = form.uploadDir + "/" + cryptoString({length: FILENAMELEN, characters: CHARS}) + path.extname(file.name);
+            fs.rename(file.path, NEWPATH, function(err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+            
+            imgStore.upload(NEWPATH, file.name, function(err, file){
+
+                if (err) {
+                    if (!res.headersSent) {
+                        return res.sendStatus(500);
+                    }
+                }
+
+                // Check if user already has an avatarImg
+                if (user.avatarImg) {
+                    const oldAvatarImg = user.avatarImg;
+                    imgStore.deleteImage(oldAvatarImg, (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            return res.status(500).send(err);
+                        }
+
+                        if (result) {
+                            // On success assign new image
+                            user.avatarImg = file._id;
+                            user.save()
+                                .then(() => {
+                                    if (!res.headersSent) {
+                                        return res.status(200).send({message: "Profile image added successfully."});
+                                    }
+                                })
+                                .catch(err => {
+                                    console.err(err);
+                                    if (!res.headersSent) {
+                                        return res.status(500).send(err)
+                                    }
+                                });
+                        } else {
+                            if (!res.headersSent) {
+                                return res.status(400).send({message: "Profile image upload failed."})
+                            }
+                        }
+                    })
+                } else {
+                    user.avatarImg = file._id;
+                    user.save()
+                        .then(() => {
+                            if (!res.headersSent) {
+                                return res.status(200).send({message: "Profile image added successfully."});
+                            }
+                        })
+                        .catch(err => {
+                            console.err(err);
+                            if (!res.headersSent) {
+                                return res.status(500).send(err)
+                            }
+                        });
+                }
+
+                // Delete the file from the backend server once it has been uploaded to MongoDB
+                fs.unlink(NEWPATH, (err) => {
+                    if (err) {
+                        console.error(err);
+                        if (!res.headersSent) {
+                            return res.sendStatus(500);
+                        }
+                    }
+                });
+            });
+        });
+
+        form.parse(req, function(err, fields, files) {
+            if (!err) {
+                // Print out the details of the file that was just saved if no error
+                var file = files['files[]'];
+                console.log('saved file to', file.path)
+                console.log('original name', file.name)
+                console.log('type', file.type)
+                console.log('size', file.size)
+            } else {
+                console.log(err);
+                if (!res.headersSent) {
+                    res.status(500).send(JSON.stringify(err.toString()));
+                    return res.end(); 
+                }
+            }
+        });
+    })(req, res, next);
+});
+
+// @route GET api/users/profile/:email
+// @desc Gets the profile image for the user with the provided email. Profile pictures are public, so everyone is
+// allowed access to this route.
+// @access Public
 router.get('/profile/:email', function(req, res) {
 
     const userEmail = req.params.email;
@@ -154,15 +288,19 @@ router.get('/profile/:email', function(req, res) {
             console.log(err);
             return res.status(400).send(err);
         }
+
+        if (!user) {
+            return res.status(404).send("Error: User not found.");
+        }
         // Convert to base64 then send
         imgStore.readImage(user.avatarImg, function(err, content) {
             if (err) {
                 return res.status(500).send("Error: Unable to retrieve image from database");
             }
-            const img64 = new Buffer.from(content, 'binary').toString('base64');
-            return res.status(200).send(img64);
+            return res.status(200).send(content);
         });
     });
 });
+
 
 module.exports = router;
