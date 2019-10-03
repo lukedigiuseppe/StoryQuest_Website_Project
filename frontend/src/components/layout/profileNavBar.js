@@ -23,7 +23,7 @@ class TopMenu extends Component {
     render() {
         return(
             <header>
-                <Navbar fixed="top" color="white" light expand="xs" className="border-bottom border-gray" style={{height: 70}}>
+                <Navbar fixed="top" color="secondary" light expand="xs" className="border-bottom border-gray" style={{height: 80}}>
                     {/* Use grid system to create 1 row and 3 columns to put each of the Navbar elements into */}
                     <NavbarToggler onClick={this.toggle}/>
                     <Container>
@@ -50,7 +50,7 @@ class TopMenu extends Component {
                                     <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
                                         <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
                                         <DropdownMenu right>
-                                            <DropdownItem href="/profile"><Button>My Profile</Button></DropdownItem>
+                                            <DropdownItem href="/myprofile"><Button>My Profile</Button></DropdownItem>
                                             <DropdownItem href="/logout"><Button>Logout</Button></DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
