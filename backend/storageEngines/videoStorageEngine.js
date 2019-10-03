@@ -7,6 +7,9 @@ const connection = require('mongoose').connection;
 const path = require('path');
 const mime = require('mime-types');
 
+// Import Media collection to delete those
+const Media = require("../models/Media");
+
 // Create a new GridFS bucket to hold the files to be uploaded to MongoDB, ensure connection has been made before doing
 // anything
 
@@ -191,15 +194,44 @@ module.exports.streamVideo = function streamVideo(objectID, req, res) {
 };
 
 // This function deletes a video stored in MongoDB given its MongoDB object ID. Requires a callback function
-// with the following signature (err)
+// with the following signature (err, result). Result is a boolean value that is set to true upon deletion success and false otherwise.
 module.exports.deleteVideo = function deleteVideo(objectID, callback) {
-    VidModel.unlink(objectID, (err) => {
+
+    VidModel.findById(objectID, (err, video) => {
         if (err) {
             console.error(err);
-            callback(err);
-            return;
+            return callback(err, false);
         }
-        callback(null);
-        return;
+
+        if (video) {
+            VidModel.unlink(objectID, (err) => {
+                if (err) {
+                    console.error(err);
+                    return callback(err, false);
+                }
+                return callback(null, true);
+            });
+        } else {
+            // If we can't find it in video collection for GridFS, check media collection
+            Media.findOneAndDelete({_id: objectID}, (err, media) => {
+                if (err) {
+                    console.error(err);
+                    return callback(err, false);
+                }
+
+                // If media exists, means delete was successful, otherwise video ID must be invalid
+                if (media) {
+                    // Remove the local file
+                    fs.unlink(media.filePath, (err) => {
+                        if (err) {
+                            return callback(err, false);
+                        }
+                    });
+                    return callback(null, true);
+                } else {
+                    return callback(null, false);
+                }
+            })
+        }
     });
 };

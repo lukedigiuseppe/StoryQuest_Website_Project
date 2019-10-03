@@ -14,7 +14,8 @@ class Dashboard extends Component {
         super(props);
         this.state = {
             message: '',
-            videoID: ""
+            videoID: "",
+            artifactID: ""
         }
 
         this.test = this.test.bind(this);
@@ -46,7 +47,7 @@ class Dashboard extends Component {
         e.preventDefault();
         const data = encrypt(this.state.videoID);
 
-        axios.post('/delete_video', data)
+        axios.post('/delete_video/' + this.state.artifactID, data)
             .then(res => {
                 console.log(res);
             })
@@ -73,6 +74,8 @@ class Dashboard extends Component {
                         <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} onClick={this.onLogoutClick} className="btn btn-large waves-effect waves-light hoverable blue accent-3">Logout</button>
                         <br />
                         <form onSubmit={this.onSubmit}>
+                            <input type="text" id="artifactID" placeholder="Enter artifact ID" onChange={this.onChange} value={this.state.artifactID} />
+                            <br />
                             <input type="text" id="videoID" placeholder="Enter video ID" onChange={this.onChange} value={this.state.videoID} />
                             <br />
                             <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large hoverable blue accent-3">Delete Video</button>

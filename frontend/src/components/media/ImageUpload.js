@@ -60,7 +60,6 @@ class ImageUpload extends React.Component {
 
         // Set the img uploaded state to complete, once all images have been uploaded
         this.uppy.on('complete', (result) => {
-            this.props.setHasImgs();
             this.props.setImgUploaded();
         })
 
@@ -80,6 +79,12 @@ class ImageUpload extends React.Component {
                 if (this.uppy.getFiles().length !== 0) {
                     this.uppy.upload();
                 }
+            }
+        }
+        if (this.uppy.getFiles().length !== 0) {
+            // Check if we have videos to upload, if so set to true, only if not already set to true
+            if (!this.props.files.hasImgs) {
+                this.props.setHasImgs();
             }
         }
     }

@@ -215,11 +215,28 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
         }
 
         var artifactID = req.params.artifactID;
-        Artifact.findOneAndDelete({_id:artifactID}, function(err, doc) {
-            if(!err){
-                res.status(200).send("Delete successful.");
-            }else{
-                res.status(400).send(err);
+        Artifact.findById(artifactID, (err, artifact) => {
+
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            if (!artifact) {
+                return res.status(404).send("Artifact not found.");
+            }
+
+            // Check if owner of the artifact, can then delete it
+            if (artifact.ownerID.includes(user.id)) {
+                Artifact.findOneAndDelete({_id:artifactID}, function(err, doc) {
+                    if(!err){
+                        res.status(200).send("Delete successful.");
+                    } else {
+                        res.status(500).send(err);
+                    }
+                });
+            } else {
+                // Unauth user
+                return res.status(401).send("Unauthorised user, you are not the owner of this artifact."); 
             }
         });
     })(req, res, next);
@@ -259,6 +276,7 @@ router.get('/video/:iv/:enc', (req, res) => {
 // @route GET /artifact_images/:artifactID/:imageID
 // A GET route that returns a base64 string for the given image ID. Artifact ID must also be supplied to check for
 // user authentication as access to these images is restricted depending on user privacy settings.
+// access Restricted
 router.get('/artifact_images/:artifactID/:imageID', (req, res, next) => {
 
     const artifactID = req.params.artifactID;
@@ -285,7 +303,7 @@ router.get('/artifact_images/:artifactID/:imageID', (req, res, next) => {
                 if (err) {
                     return res.status(500).send(err);
                 }
-                
+
                 // Check if non-logged in user
                 if (!user) {
                     // Check if its not public

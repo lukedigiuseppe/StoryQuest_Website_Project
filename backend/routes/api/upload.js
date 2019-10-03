@@ -174,26 +174,36 @@ router.post('/upload_artifact_video', function(req, res) {
 
                         // Delete from media collection and from the artifact videos array
                         Media.findOneAndDelete({artifactID: artifact._id, md5: file.md5}, (err, media) => {
-                            // Assign the ID to the artifact
-                            artifact.videos.push(file._id);
-                            var index = artifact.videos.indexOf(media._id);
-                            if (index > -1) {
-                                // Greater than -1 means, that media ID was found successfully
-                                artifact.videos.splice(index, 1);
-                            }
-                            artifact.save()
-                                .catch(err => {
-                                    throw err;
+                            // If media exists then remove it from the artifact video array, otherwise just add the ID
+                            if (media) {
+                                // Assign the ID to the artifact
+                                artifact.videos.push(file._id);
+                                var index = artifact.videos.indexOf(media._id);
+                                if (index > -1) {
+                                    // Greater than -1 means, that media ID was found successfully
+                                    artifact.videos.splice(index, 1);
+                                }
+                                artifact.save()
+                                    .catch(err => {
+                                        throw err;
+                                    });
+                                // Remove the local file has been successfully added to MongoDB
+                                fs.unlink(media.filePath, (err) => {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                    if (!res.headersSent) {
+                                        return res.sendStatus(500);
+                                    }
                                 });
-                            // Remove the local file has been successfully added to MongoDB
-                            fs.unlink(media.filePath, (err) => {
-                                if (err) {
-                                    throw err;
-                                }
-                                if (!res.headersSent) {
-                                    return res.sendStatus(500);
-                                }
-                            });
+                            } else {
+                                // Assign the ID to the artifact
+                                artifact.videos.push(file._id);
+                                artifact.save()
+                                    .catch(err => {
+                                        throw err;
+                                    });
+                            }
                         });
                     });
                 });

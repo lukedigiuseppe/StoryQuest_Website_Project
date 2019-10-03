@@ -16,18 +16,68 @@ const passportOpts = {
     session: false
 };
 
-// Test route for deleting a video. Later on will need to update to take in an artifact ID as well to identify that the user 
-// is allowed to delete this video
-router.post('/delete_video', (req, res) => {
-    // Decrypt the video ID received in the body
-    const videoID = decrypt(req.body);
+// @route POST /delete_video/:artifactID
+// @desc Deletes the video associated with the artifact ID given in the URL
+// @access Restricted
+router.post('/delete_video/:artifactID', (req, res, next) => {
 
-    vidStore.deleteVideo(videoID, (err) => {
+    const artifactID = req.params.artifactID;
+
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
         if (err) {
             return res.status(500).send(err);
         }
-        return res.sendStatus(200);
-    })
+
+        if (!user) {
+            return res.sendStatus(401);
+        }
+
+        Artifact.findById(artifactID, (err, artifact) => {
+        
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            if (!artifact) {
+                return res.status(404).send("Artifact not found.");
+            }
+
+            // Check that the user owns the artifact for which the video is being deleted.
+            if (artifact.ownerID.includes(user.id)) {
+                // Decrypt the video ID received in the body
+                try {
+                    const videoID = decrypt(req.body);
+                    vidStore.deleteVideo(videoID, (err, result) => {
+                        if (err) {
+                            return res.status(500).send(err);
+                        }
+                        if (result) {
+                            // Also unlink it from the artifact
+                            var index = artifact.videos.indexOf(videoID);
+                            if (index > -1) {
+                                // Greater than -1 means, that media ID was found successfully
+                                artifact.videos.splice(index, 1);
+                            }
+                            artifact.save()
+                                .catch(err => {
+                                    throw err;
+                                });
+                            return res.status(200).send("Video delete successful.");
+                        } else {
+                            // If an error wasn't triggered, then the only unsuccessful result would be from the video not existing
+                            return res.status(404).send("Video not found");
+                        }
+                    })
+                } catch (err) {
+                    console.error(err);
+                    return res.sendStatus(400);
+                }
+            } else {
+                return res.status(401).send("Unauthorised user. You are not allowed to delete this object.");
+            }
+        });
+    })(req, res, next);
 })
 
 module.exports = router;

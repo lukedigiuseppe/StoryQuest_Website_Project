@@ -58,9 +58,8 @@ class VideoUpload extends React.Component {
             console.log('error message:', error)
         });
 
-        // Set the vid uploaded state to complete and that it had vids to be uploaded, once all uploads have been completed
+        // Set the vid uploaded state to complete once all uploads have been completed
         this.uppy.on('complete', (result) => {
-            this.props.setHasVids();
             this.props.setVidUploaded();
         })
     }
@@ -77,6 +76,13 @@ class VideoUpload extends React.Component {
                 }
             }
         }
+
+        if (this.uppy.getFiles().length !== 0) {
+            // Check if we have videos to upload, if so set to true, only if not already set to true
+            if (!this.props.files.hasVids) {
+                this.props.setHasVids();
+            }
+        }
     }
 
     componentWillUnmount () {
@@ -84,6 +90,7 @@ class VideoUpload extends React.Component {
     }
 
     render () {
+        
         return (
         <div>
             <Dashboard
