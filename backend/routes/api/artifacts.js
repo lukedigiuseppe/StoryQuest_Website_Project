@@ -134,7 +134,6 @@ router.post('/newArtifact', (req, res, next) => {
 //       to view via this URL.
 // @access Restricted
 router.get('/artifact/:artifactID', (req, res, next) => { 
-
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
 
         var artifactID = req.params.artifactID;
@@ -227,26 +226,24 @@ router.get('/video/:iv/:enc', (req, res) => {
     // Here are the encrypted parameters passed from the server to decrypt and
     // get the object ID of the video, thus preventing any access to videos even with knowledge
     // of the object ID as they would have to encrypt it first before it would be processed properly.
-    const objID = decrypt({iv: req.params.iv, encryptedData: req.params.enc});
-
-    // See if it's a local media object first
-    Media.findById(objID, (err, media) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-
-        // Check if it exists in media collection
-        if (media) {
-            console.log(media);
-            return res.sendStatus(200);
-        } else {
-            try {
-                vidStore.streamVideo(objID, req, res);
-            } catch (err) {
-                return res.sendStatus(401);
+    try {
+        const objID = decrypt({iv: req.params.iv, encryptedData: req.params.enc});
+        // See if it's a local media object first
+        Media.findById(objID, (err, media) => {
+            if (err) {
+                return res.status(500).send(err);
             }
-        }
-    });
+
+            // Check if it exists in media collection
+            if (media) {
+                vidStore.streamLocalVideo(media.filePath, req, res);
+            } else {
+                vidStore.streamVideo(objID, req, res);
+            }
+        });
+    } catch (err) {
+        return res.sendStatus(401);
+    }
 });
 
 // Test route that returns a base64 string for the given image ID. Artifact ID must also be supplied to check for

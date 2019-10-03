@@ -75,7 +75,7 @@ class Dashboard extends Component {
                         <form onSubmit={this.onSubmit}>
                             <input type="text" id="videoID" placeholder="Enter video ID" onChange={this.onChange} value={this.state.videoID} />
                             <br />
-                            <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large hoverable blue accent-3">Delete Artifact</button>
+                            <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large hoverable blue accent-3">Delete Video</button>
                         </form>
                     </div>
                 </div>

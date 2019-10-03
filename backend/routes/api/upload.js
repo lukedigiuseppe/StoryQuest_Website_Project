@@ -90,7 +90,7 @@ router.post('/upload_artifact_image', function(req, res, next) {
                     }
                     
                     // Assign the ID to the artifact
-                    artifact.videos.push(file._id);
+                    artifact.images.push(file._id);
                     artifact.save();
                     // On successful assignment return response to update Uppy's progress.
                     if (!res.headersSent) {
@@ -239,6 +239,9 @@ router.post('/upload_artifact_video', function(req, res) {
                             throw err;
                         });
                     newMedia.save()
+                        .then( doc => {
+                            console.log(doc);
+                        })
                         .catch(err => {
                             throw err;
                         });

@@ -1,6 +1,8 @@
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {setVidUploaded, setHasVids} from '../../actions/fileActions';
 
 const React = require('react');
 const Uppy = require('@uppy/core');
@@ -56,15 +58,23 @@ class VideoUpload extends React.Component {
             console.log('error message:', error)
         });
 
+        // Set the vid uploaded state to complete and that it had vids to be uploaded, once all uploads have been completed
+        this.uppy.on('complete', (result) => {
+            this.props.setHasVids();
+            this.props.setVidUploaded();
+        })
     }
 
     componentDidUpdate(prevProps) {
         // Let Uppy upload when the submit button is clicked.
-        if (this.props !== prevProps) {
+        if (this.props.doUpload !== prevProps.doUpload) {
             if (this.props.doUpload) {
                 // Send the ID of the artifact that was made to the backend so it can auto assign the uploaded images.
                 this.customHeader.artifactID = this.props.artifactID;
-                this.uppy.upload();
+                // Only upload if we have files to upload
+                if (this.uppy.getFiles().length !== 0) {
+                    this.uppy.upload();
+                }
             }
         }
     }
@@ -93,7 +103,17 @@ class VideoUpload extends React.Component {
 VideoUpload.propTypes = {
     doUpload: PropTypes.bool,
     uploadPath: PropTypes.string.isRequired,
-    artifactID: PropTypes.string.isRequired
+    artifactID: PropTypes.string.isRequired,
+    files: PropTypes.object.isRequired,
+    setVidUploaded: PropTypes.func.isRequired,
+    setHasVids: PropTypes.func.isRequired
 };
 
-export default VideoUpload;
+const mapStateToProps = state => ({
+    files: state.files
+});
+
+export default connect(
+    mapStateToProps, 
+    {setVidUploaded, setHasVids}
+)(VideoUpload);

@@ -13,7 +13,7 @@ class Image extends Component {
         super(props);
         this.state = {
             // Probs get this artifact ID from props later on
-            artifactID: "5d9330cdcd596f54be4f261e",
+            artifactID: "5d9579ed70e6523eedf92654",
             items: []
         };
     }

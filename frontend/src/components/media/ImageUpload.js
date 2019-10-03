@@ -2,12 +2,12 @@ import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {setImgUploaded, setHasImgs} from '../../actions/fileActions';
 
 const React = require('react');
 const Uppy = require('@uppy/core');
 const Xhr = require('@uppy/xhr-upload');
 const { Dashboard } = require('@uppy/react');
-
 
 const MAXFILESIZE = 1024 * 1024 * 2;
 const MAXFILENUM = 8;
@@ -58,6 +58,12 @@ class ImageUpload extends React.Component {
             console.log('error message:', error)
         })
 
+        // Set the img uploaded state to complete, once all images have been uploaded
+        this.uppy.on('complete', (result) => {
+            this.props.setHasImgs();
+            this.props.setImgUploaded();
+        })
+
     }
 
     componentWillUnmount () {
@@ -66,11 +72,14 @@ class ImageUpload extends React.Component {
 
     componentDidUpdate(prevProps) {
         // Let Uppy upload when the submit button is clicked.
-        if (this.props !== prevProps) {
+        if (this.props.doUpload !== prevProps.doUpload) {
             if (this.props.doUpload) {
                 // Send the ID of the artifact that was made to the backend so it can auto assign the uploaded images.
                 this.customHeader.artifactID = this.props.artifactID;
-                this.uppy.upload();
+                // Only upload if we have files to upload
+                if (this.uppy.getFiles().length !== 0) {
+                    this.uppy.upload();
+                }
             }
         }
     }
@@ -94,13 +103,18 @@ class ImageUpload extends React.Component {
 ImageUpload.propTypes = {
     doUpload: PropTypes.bool,
     uploadPath: PropTypes.string.isRequired,
-    auth: PropTypes.object,
+    files: PropTypes.object.isRequired,
+    setImgUploaded: PropTypes.func.isRequired,
+    setHasImgs: PropTypes.func.isRequired,
     artifactID: PropTypes.string
 };
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    files: state.files
 });
 
 
-export default connect(mapStateToProps)(ImageUpload);
+export default connect(
+    mapStateToProps,
+    {setImgUploaded, setHasImgs}
+)(ImageUpload);

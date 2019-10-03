@@ -4,6 +4,7 @@ import { Link }  from 'react-router-dom';
 import {WithContext as ReactTags} from 'react-tag-input';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
+import {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs} from '../../actions/fileActions';
 import axios from 'axios';
 
 import {
@@ -100,7 +101,19 @@ class AddArtifact extends Component {
             this.props.history.push('/login');
         }
     }
-    
+
+    componentDidUpdate(prevProps) {
+        if ((this.props.files.vidUploaded && this.props.files.hasVids) || (this.props.files.imgUploaded && this.props.files.hasImgs)) {
+            // Reset the state once upload has completed and push to the video page
+            console.log("Update Values: ", this.props.files.vidUploaded, "imgs", this.props.files.imgUploaded);
+            this.props.setVidUploading();
+            this.props.setImgUploading();
+            this.props.setHasNoImgs();
+            this.props.setHasNoVids();
+            this.props.history.push('/video/' + this.state.artifactID);
+        }
+    }
+
     onChange = (e) => {
         const type = e.target.type;
         const id = e.target.id;
@@ -447,13 +460,20 @@ class AddArtifact extends Component {
 }
 
 AddArtifact.propTypes = {
-    auth: PropTypes.object.isRequired
+    auth: PropTypes.object.isRequired,
+    files: PropTypes.object.isRequired,
+    setVidUploading: PropTypes.func.isRequired,
+    setImgUploading: PropTypes.func.isRequired,
+    setHasNoVids: PropTypes.func.isRequired,
+    setHasNoImgs: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth,
+    files: state.files
 });
 
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs}
 )(AddArtifact);
