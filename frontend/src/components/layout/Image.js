@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import axios from 'axios';
 // This component is a test sample of how to get images from the backend. 
 
+// CSS file to fix the images width and height
+import "../../css/carousel.css";
+
 import {
     UncontrolledCarousel 
 } from 'reactstrap';
@@ -13,8 +16,8 @@ class Image extends Component {
         super(props);
         this.state = {
             // Probs get this artifact ID from props later on
-            artifactID: "5d9579ed70e6523eedf92654",
-            items: []
+            artifactID: "5d95c30f7642e222216876ba",
+            items: [],
         };
     }
     

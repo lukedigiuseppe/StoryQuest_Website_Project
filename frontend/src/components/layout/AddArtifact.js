@@ -105,7 +105,6 @@ class AddArtifact extends Component {
     componentDidUpdate(prevProps) {
         if ((this.props.files.vidUploaded && this.props.files.hasVids) || (this.props.files.imgUploaded && this.props.files.hasImgs)) {
             // Reset the state once upload has completed and push to the video page
-            console.log("Update Values: ", this.props.files.vidUploaded, "imgs", this.props.files.imgUploaded);
             this.props.setVidUploading();
             this.props.setImgUploading();
             this.props.setHasNoImgs();

@@ -58,15 +58,20 @@ module.exports.readImage = function readImage(objectID, callback) {
             callback(new Error("Image not found."));
             return;
         }
-        image.read(function(err, content) {
-            if (err) {
-                console.error(err);
-                callback(err);
-                return;
-            }
-            callback(null, content);
-            return;
+
+        // Stream data from MongoDB
+        const readStream = image.read();
+        var buffer = "";
+        readStream.on('data', (data) => {
+            // Convert it bit by bit to base64 and append to our buffer
+            const imgData = new Buffer.from(data, 'binary').toString('base64');
+            buffer += imgData
         });
+
+        readStream.on('close', () => {
+            callback(null, buffer);
+            return;
+        })
     });
 };
 

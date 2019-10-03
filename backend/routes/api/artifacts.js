@@ -147,6 +147,11 @@ router.get('/artifact/:artifactID', (req, res, next) => {
                 return res.status(400).send(err);
             }
 
+            // Check that the artifact exists
+            if (!artifact) {
+                return res.status(404).send("Artifact not found.");
+            }
+
             // Check if non-logged in user
             if (!user) {
                 // Check if its not public
@@ -220,7 +225,12 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
     })(req, res, next);
 });
 
-// Test route for streaming a video from MongoDB
+// @route GET /video/:iv/:enc
+// @desc Views single video based on its object ID in MongoDB. Access is restricted as this video is only accessible on 
+// the artifact page that it is on. 
+// IV is the initialisation vector and ENC is the actual encrypted data. Both must be passed in the URL to correctly
+// access the video
+// @access Restricted
 router.get('/video/:iv/:enc', (req, res) => {
 
     // Here are the encrypted parameters passed from the server to decrypt and
@@ -246,32 +256,82 @@ router.get('/video/:iv/:enc', (req, res) => {
     }
 });
 
-// Test route that returns a base64 string for the given image ID. Artifact ID must also be supplied to check for
+// @route GET /artifact_images/:artifactID/:imageID
+// A GET route that returns a base64 string for the given image ID. Artifact ID must also be supplied to check for
 // user authentication as access to these images is restricted depending on user privacy settings.
-router.get('/artifact_images/:artifactID/:imageID', (req, res) => {
+router.get('/artifact_images/:artifactID/:imageID', (req, res, next) => {
 
     const artifactID = req.params.artifactID;
     const imageID = req.params.imageID;
 
-    // Add authentication from passport later on, the same rules from the get ArtifactID apply here.
     Artifact.findById(artifactID, (err, artifact) => {
 
         if (err) {
             return res.sendStatus(500);
         }
 
-        imgStore.readImage(imageID, function(err, content) {
-            
+        if (!artifact) {
+            return res.status(404).send("Error: This image is not associated with an artifact.");
+        }
+
+        passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
             if (err) {
                 return res.status(500).send(err);
             }
-            const img64 = new Buffer.from(content, 'binary').toString('base64');
-            // A JSON object that contains the metadata required for a BootStrap Carousel to function,
-            const imageData = {
-                base64String: img64,
-            };
-            return res.status(200).send(img64);
-        });
+
+            // Read the image and determine whether or not send it depending on user authentication
+            imgStore.readImage(imageID, function(err, imgData) {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                
+                // Check if non-logged in user
+                if (!user) {
+                    // Check if its not public
+                    if (artifact.isPublic !== 'public') {
+                        return res.status(401).send("Unauthorised user. You are not allowed to view this resource.");
+                    } else {
+                        return res.status(200).send(imgData);
+                    }
+                }
+
+                // Check if owner of the artifact, can view it regardless of privacy settings.
+                if (artifact.ownerID.includes(user.id)) {
+                    return res.status(200).send(imgData);
+                } else {
+                    // Check if it a known user to the owner of the artifact.
+                    User.findById(artifact.ownerID[0], function(err, owner) {
+
+                        if (err) {
+                            return res.status(400).send(err);
+                        }
+
+                        if (owner.knownUsers !== null && typeof(owner.knownUsers) !== "undefined") {
+                            // Check to make sure it isn't null before accessing
+                            if (owner.knownUsers.includes(user.email)) {
+                                // Check the privacy setting
+                                if (artifact.isPublic === 'friends') {
+                                    return res.status(200).send(imgData);
+                                } else if (artifact.isPublic === 'public') {
+                                    return res.status(200).send(imgData);
+                                } else {
+                                    return res.status(401).send("This artifact image is private. Ask the owner to change the privacy.");
+                                }
+                            } else {
+                                if (artifact.isPublic === 'public') {
+                                    return res.status(200).send(imgData);
+                                } else {
+                                    return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");
+                                }
+                            }
+                        } else {
+                            return res.status(401).send("You are not the owner or a known user. So you are not allowed to view this resource.");
+                        }
+                    });
+                }
+            });
+        })(req, res, next);
     });
 });
 
