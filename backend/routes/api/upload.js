@@ -232,15 +232,15 @@ router.post('/upload_artifact_video', function(req, res) {
                     }
 
                     newMedia.artifactID = req.headers.artifactid;
-                    // Assign the ID to the artifact
-                    artifact.videos.push(newMedia._id);
-                    artifact.save()
-                        .catch(err => {
-                            throw err;
-                        });
                     newMedia.save()
                         .then( doc => {
                             console.log(doc);
+                            // Assign the ID to the artifact
+                            artifact.videos.push(newMedia._id);
+                            artifact.save()
+                                .catch(err => {
+                                    throw err;
+                                });
                         })
                         .catch(err => {
                             throw err;
