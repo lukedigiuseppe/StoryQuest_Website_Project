@@ -227,6 +227,38 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
 
             // Check if owner of the artifact, can then delete it
             if (artifact.ownerID.includes(user.id)) {
+                // Delete all images associated
+                artifact.images.forEach((objectID) => {
+                    imgStore.deleteImage(objectID, (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            if (!res.headersSent) {
+                                return res.status(500).send(err);
+                            }
+                        }
+                        if (result) {
+                            console.log("Deleted Image: ", objectID);
+                        } else {
+                            console.log("Delete Image failed for: ", objectID);
+                        }
+                    });
+                });
+                // Delete all videos associated
+                artifact.videos.forEach((objectID) => {
+                    vidStore.deleteVideo(objectID, (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            if (!res.headersSent) {
+                                return res.status(500).send(err);
+                            }
+                        }
+                        if (result) {
+                            console.log("Deleted Video: ", objectID);
+                        } else {
+                            console.log("Delete Video failed for: ", objectID);
+                        }
+                    });
+                });
                 Artifact.findOneAndDelete({_id:artifactID}, function(err, doc) {
                     if(!err){
                         res.status(200).send("Delete successful.");

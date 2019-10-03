@@ -76,15 +76,27 @@ module.exports.readImage = function readImage(objectID, callback) {
 };
 
 // This function deletes an image stored in MongoDB given its MongoDB object ID. Requires a callback function
-// with the following signature (err)
+// with the following signature (err, result)
 module.exports.deleteImage = function deleteImage(objectID, callback) {
-    ImgBucket.unlink(objectID, (err) => {
+    ImgBucket.findById(objectID, (err, image) => {
+
         if (err) {
             console.error(err);
-            callback(err);
-            return;
+            return callback(err, false);
         }
-        callback(null);
-        return;
+
+        if (!image) {
+            return callback(null, false);
+        }
+
+        ImgBucket.unlink(objectID, (err) => {
+            if (err) {
+                console.error(err);
+                return callback(err, false);
+            }
+
+            return callback(null, true);
+        });
     })
+    
 };
