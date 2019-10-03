@@ -86,6 +86,7 @@ module.exports.deleteImage = function deleteImage(objectID, callback) {
         }
 
         if (!image) {
+            console.log("No Image found.");
             return callback(null, false);
         }
 
@@ -94,7 +95,6 @@ module.exports.deleteImage = function deleteImage(objectID, callback) {
                 console.error(err);
                 return callback(err, false);
             }
-
             return callback(null, true);
         });
     })

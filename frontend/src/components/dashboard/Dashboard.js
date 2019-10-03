@@ -47,13 +47,21 @@ class Dashboard extends Component {
         e.preventDefault();
         const data = encrypt(this.state.videoID);
 
-        axios.post('/delete_video/' + this.state.artifactID, data)
-            .then(res => {
-                console.log(res);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        // axios.post('/delete_video/' + this.state.artifactID, data)
+        //     .then(res => {
+        //         console.log(res);
+        //     })
+        //     .catch(err => {
+        //         console.log(err);
+        //     })
+        
+        axios.delete('/delete_image/' + this.state.artifactID + '/' + this.state.videoID)
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => {
+            console.log(err);
+        })
     }
 
     render() {
