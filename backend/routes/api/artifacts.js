@@ -8,6 +8,7 @@ const Media = require("../../models/Media");
 const imgStore = require('../../storageEngines/imageStorageEngine');
 const vidStore = require('../../storageEngines/videoStorageEngine');
 const decrypt = require('../../config/encryption').decrypt;
+const cryptoString = require("crypto-random-string");
 
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client.
 const passport = require('passport');
@@ -15,6 +16,8 @@ require("../../config/passport")(passport);
 const passportOpts = {
     session: false
 };
+
+const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 // @route GET /artifacts
 // @desc View all public artifacts
@@ -71,13 +74,14 @@ function makeid(length) {
        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
- }
- 
+}
+
 // create new artifact
 router.post('/newArtifact', (req, res, next) => {
 
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
-        const SERIAL_LENGTH = 6;
+        const SERIAL_LENGTH = 24;
+        const PASS_LENGTH = 4;
 
         if (err) { 
             return next(err); 
@@ -90,24 +94,29 @@ router.post('/newArtifact', (req, res, next) => {
         // one to assign
         Artifact.find({}, function(err, artifacts) {
             var artifactSerials = [];
+            var artifactPasscodes = [];
             
             artifacts.forEach(function (artifact) {
                 artifactSerials.push(artifact.serialNumber);
+                artifactPasscodes.push(artifact.passcode);
             });
             
-            var id = makeid(SERIAL_LENGTH);
+            var id = cryptoString({length: SERIAL_LENGTH, characters: CHARACTERS});
+            var passcode = cryptoString({length: PASS_LENGTH, characters: CHARACTERS});
             var notUnique = true;
 
             while(notUnique) {
-                if (!artifactSerials.includes(id)) {
+                if (!artifactSerials.includes(id) && !artifactPasscodes.includes(passcode)) {
                     notUnique = false;
                 } else {
-                    id = makeid(SERIAL_LENGTH);
+                    id = cryptoString({length: SERIAL_LENGTH, characters: CHARACTERS});
+                    passcode = cryptoString({length: PASS_LENGTH, characters: CHARACTERS});
                 }
             }
 
             var newArtifact = new Artifact({
                 "serialNumber": id,
+                "passcode": passcode,
                 "name": req.body.name,
                 "story": req.body.story,
                 "tags": req.body.tags.join(' '),
@@ -127,6 +136,28 @@ router.post('/newArtifact', (req, res, next) => {
             });
         })
     })(req, res, next);
+});
+
+// @route GET /artifact/:serial/:passcode
+// @desc View a single artifact based on its serial code. Anyone has access to this route and will gain access to the artifact as long as they have the serial number
+// and passcode for the artifact.
+// @access Public
+router.get('/artifact/:serial/:passcode', (req, res) => {
+
+    const serial = req.params.serial;
+    const passcode = req.params.passcode;
+
+    Artifact.findOne({serialNumber: serial, passcode: passcode}, (err, artifact) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+
+        if (!artifact) {
+            return res.status(404).send("Error: Artifact not found.");
+        }
+        return res.status(200).send(artifact);
+    })
+
 });
 
 // @route GET /artifact/:artifactID

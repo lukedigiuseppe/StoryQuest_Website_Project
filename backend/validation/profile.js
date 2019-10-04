@@ -11,6 +11,7 @@ module.exports = function validateUpdateProfile(data) {
     data.lastName = !isEmpty(data.lastName) ? data.password: "";
     data.publicName = !isEmpty(data.publicName) ? data.publicName: "";
     data.newFriend = !isEmpty(data.newFriend) ? data.newFriend: "";
+    data.location = !isEmpty(data.location) ? data.location: "";
 
     // All above fields can be empty but can be no longer than 50 characters each
     const MAX_LEN = 50;
@@ -25,6 +26,9 @@ module.exports = function validateUpdateProfile(data) {
     }
     if (!Validator.isLength(data.newFriend,  0, MAX_LEN)) {
         errors.newFriend = "The email must be between 0 and " + MAX_LEN + " characters long.";
+    }
+    if (!Validator.isLength(data.location,  0, MAX_LEN)) {
+        errors.location = "The location must be between 0 and " + MAX_LEN + " characters long.";
     }
 
     // Friend email checks

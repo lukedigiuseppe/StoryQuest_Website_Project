@@ -155,6 +155,9 @@ router.patch('/update', (req, res, next) => {
             // Users can add any valid email, even if they have not registered an account with the site yet.
             user.knownUsers.push(req.body.newFriend);
         }
+        if (req.body.location) {
+            user.location = req.body.location;
+        }
 
         user.save()
             .then(() => {

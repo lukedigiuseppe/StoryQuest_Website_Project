@@ -4,7 +4,12 @@ const mongoose = require('mongoose');
 
 const ArtifactSchema = mongoose.Schema(
     {
+        // A serial number and passcode is used to view an artifact regardless of privacy settings or ownership
         "serialNumber": {
+            type: String,
+            isRequired: true
+        },
+        "passcode": {
             type: String,
             isRequired: true
         },
