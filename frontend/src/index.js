@@ -22,6 +22,7 @@ import Dashboard from "./components/dashboard/Dashboard";
 import AddArtifact from "./components/layout/AddArtifact";
 import ViewArtifact from "./components/layout/ViewArtifact";
 import Profile from "./components/layout/Profile";
+import MyProfile from "./components/layout/myProfile";
 
 import Image from "./components/layout/Image";
 import Video from "./components/layout/VideoTest";

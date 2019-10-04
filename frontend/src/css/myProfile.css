@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css?family=Merriweather|Oxygen:700|Barlow|Libre+Franklin|Varela+Round&display=swap');
+
+.profile{
+    background-color: #F5F3EC;
+}
+.picBox{
+    border-radius: 2%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    text-align: center;
+    background-color: white;
+
+}
+
+.profileBox{
+    border-radius: 2%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    font-family: 'Merriweather', sans-serif;
+    max-height: min-content;
+}
+
+.profilePic {
+    border-radius: 50%;
+    display: block;
+    padding: 10px;
+    max-width:200px;
+    text-align: center;
+}
+
+.name {
+    font-family: 'Merriweather', sans-serif;
+    font-size: 20px;
+    padding-top: 2px;
+
+}
+
+.greeting {
+    font-family: 'Merriweather', sans-serif;
+    font-size: 25px;
+}
+
+.basicText{
+    font-size:15px;
+    font-family: 'Barlow', sans-serif;
+    align-self: left;
+
+}
+
+.card{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+}
+
+
+.icon{
+    max-height: 30px;
+
+}
+.artifactInfo{
+    padding: 10px;
+}
+.navBar{
+
+}
