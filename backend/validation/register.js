@@ -16,7 +16,6 @@ module.exports = function validateRegisterInput(data) {
     data.password = !isEmpty(data.password) ? data.password: "";
     data.confirmPass = !isEmpty(data.confirmPass) ? data.confirmPass: "";
     data.birthDate = !isEmpty(data.birthDate) ? data.birthDate : "";
-
     // Name checks
     if (Validator.isEmpty(data.firstName)) {
         errors.firstName = "Please enter your first name. It is required.";
@@ -28,6 +27,7 @@ module.exports = function validateRegisterInput(data) {
     if (Validator.isEmpty(data.publicName)) {
         errors.publicName = "Please enter a name that will be displayed to all users. It is required."
     }
+
 
     // Email checks
     if (Validator.isEmpty(data.email)) {
@@ -58,11 +58,12 @@ module.exports = function validateRegisterInput(data) {
     if (!Validator.equals(data.password, data.confirmPass)) {
         errors.confirmPass = "Passwords must match.";
     }
-
+    
     // Birthdate checks
     if (Validator.isEmpty(data.birthDate)) {
         errors.birthDate = "Birth date field is required.";
     }
+
     // Check that the birthdate is at the very least before the current day. Default for this function
     if (!Validator.isBefore(data.birthDate)) {
         errors.birthDate = "Birth date is invalid.";

@@ -134,7 +134,7 @@ router.post('/newArtifact', (req, res, next) => {
             if (req.body.dateMade) {
                 newArtifact.dateMade = req.body.dateMade;
             }
-            
+
             newArtifact.save(function (err, artifact) {
                 if (!err) {
                     res.status(200).send(artifact);

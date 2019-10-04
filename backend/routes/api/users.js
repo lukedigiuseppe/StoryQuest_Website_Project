@@ -41,7 +41,11 @@ router.post("/register", (req, res) => {
     }
 
     // Find the user by email
-    User.findOne({ email: req.body.email }).then( user => {
+    User.findOne({ email: req.body.email }, (err, user) => {
+        if (err) {
+            console.log(err);
+        }
+
         if (user) {
             return(res.status(400).json({email: "Email already exists."}));
         } else {
@@ -56,7 +60,7 @@ router.post("/register", (req, res) => {
 
             newUser
                 .save()
-                .then(user => res.json(user))
+                .then(user => res.status(200).json(user))
                 .catch(err => console.log(err));
         }
     });

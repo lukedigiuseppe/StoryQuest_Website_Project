@@ -2,6 +2,7 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
@@ -28,9 +29,19 @@ app.use(
 );
 app.use(bodyParser.json());
 
-// DB config
-const db = require("./config/keys").mongoURI;
-const name = require("./config/keys").dbName;
+var db = null;
+var name = null;
+
+// DB config for dev and production environments
+if (process.env.NODE_ENV !== "test") {
+    db = require("./config/keys").mongoURI;
+    name = require("./config/keys").dbName;
+    // Only use morgan logging in dev mode, otherwise it interferes with testing output
+    app.use(morgan('combined'));
+} else {
+    db = require("./config/keys").testMongoURI;
+    name = require("./config/keys").testDBName;
+}
 
 // Connect to MongoDB
 mongoose
@@ -64,3 +75,6 @@ app.use("/", sample);
 const port = process.env.PORT || 5000
 
 app.listen(port, () => console.log(`Server up and running on port ${port}!`));
+
+// Export is used only for testing purposes.
+module.exports = app;
