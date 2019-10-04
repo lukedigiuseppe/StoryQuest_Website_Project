@@ -4,8 +4,9 @@ import { Link }  from 'react-router-dom';
 import {WithContext as ReactTags} from 'react-tag-input';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
+import {addNewArtifact} from '../../actions/artifactActions';
 import {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs} from '../../actions/fileActions';
-import axios from 'axios';
+import ErrorAlert from '../alerts/ErrorAlert';
 
 import {
     Container,
@@ -21,8 +22,8 @@ import {
 import ImageUpload from '../media/ImageUpload';
 import VideoUpload from '../media/VideoUpload';
 
-import '../../css/addArtifact.css';
 import '../../css/tags.css';
+import '../../css/addArtifact.css';
 
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
@@ -53,12 +54,13 @@ class AddArtifact extends Component {
             tags: [
                 { id: 'default', text: 'Add more tags here'}
             ],
-            category: "",
+            category: "Jewelry",
             dateMade: "",
-            isPublic: "private",
+            isPublic: "",
             // These state values are used for image upload
             doUpload: false,
-            artifactID: ""
+            artifactID: "",
+            errors: {}
         }
 
         this.handleDelete = this.handleDelete.bind(this);
@@ -113,6 +115,11 @@ class AddArtifact extends Component {
             // Redirect to home page
             this.props.history.push('/');
         }
+        if (this.props.errors !== prevProps.errors) {
+            this.setState({
+                errors: this.props.errors
+            });
+        }
     }
 
     onChange = (e) => {
@@ -153,30 +160,25 @@ class AddArtifact extends Component {
             isPublic: this.state.isPublic,
             dateMade: this.state.dateMade
         };
-        
-        // Axios POST request to backend to create the new artifact.
-        axios
-            .post('/newArtifact', newArtifact)
-            .then(res => {
-                console.log(res);
-                // Need these to be sequential, so don't do them at the same time.
-                this.setState({artifactID: res.data._id});
-                this.setState({doUpload: true});
-                // Push to artifact page on submit only if there were no images or videos being uploaded to the artifact. Give the system
-                // some time to process the images and videos for a better user experience.
-                const pushPage = this.props.files.hasVids || this.props.files.hasImgs;
-                if (!pushPage) {
-                    this.props.history.push('/view_artifact/' + this.state.artifactID);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
+
+        this.props.addNewArtifact(newArtifact, (res) => {
+            console.log(res);
+            // Need these to be sequential, so don't do them at the same time.
+            this.setState({artifactID: res.data._id});
+            this.setState({doUpload: true});
+            // Push to artifact page on submit only if there were no images or videos being uploaded to the artifact. Give the system
+            // some time to process the images and videos for a better user experience.
+            const pushPage = this.props.files.hasVids || this.props.files.hasImgs;
+            if (!pushPage) {
+                this.props.history.push('/view_artifact/' + this.state.artifactID);
+            }
+        });
+
     };
 
     render(){
 
-        const { tags } = this.state;
+        const { tags, errors } = this.state;
         
         return(
             <div>
@@ -195,7 +197,7 @@ class AddArtifact extends Component {
                     </Row>
                 </Container>
 
-                <Container className="register-box bg-light rounded-lg">
+                <Container className="bg-light rounded-lg" style={{paddingTop: "20px", paddingBottom: "10px", transform: "translate(0%, -1%)"}}>
 
                 { /* back to home button*/} 
                 <Row>
@@ -230,6 +232,7 @@ class AddArtifact extends Component {
                                 name ="name"
                                 placeholder="What's your artifact called?" 
                             />
+                            <ErrorAlert errorMsg={errors.name} />
                            
                         </Col>
 
@@ -261,7 +264,7 @@ class AddArtifact extends Component {
                                 id="story" 
                                 placeholder= "Tell us about its journey"
                                 />
-                               
+                            <ErrorAlert errorMsg={errors.story} />
 
                         </Col>  
 
@@ -328,6 +331,7 @@ class AddArtifact extends Component {
                                 id="category"
                                 name="category"
                                 >
+                                {/* The first option is the same as the default state */}
                                 <option>Jewlery</option>
                                 <option>Clothes</option>
                                 <option>Tool</option>
@@ -336,6 +340,7 @@ class AddArtifact extends Component {
                                 <option>Photo</option>
                                 <option>Other</option>
                         </Input>
+                        <ErrorAlert errorMsg={errors.category} />
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
@@ -361,6 +366,7 @@ class AddArtifact extends Component {
                             handleDrag={this.handleDrag}
                             handleTagClick={this.handleTagClick}
                         />
+                        <ErrorAlert errorMsg={errors.tag} />
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
@@ -428,6 +434,14 @@ class AddArtifact extends Component {
                 <Row>
                     <Col sm = {MARGIN}></Col>
                     <Col>
+                    <ErrorAlert errorMsg={errors.isPublic} />
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
                     <br />
                     <h2 className="text-left" >Other details (optional)</h2>
                     </Col>
@@ -467,19 +481,22 @@ class AddArtifact extends Component {
 
 AddArtifact.propTypes = {
     auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired,
     files: PropTypes.object.isRequired,
     setVidUploading: PropTypes.func.isRequired,
     setImgUploading: PropTypes.func.isRequired,
     setHasNoVids: PropTypes.func.isRequired,
-    setHasNoImgs: PropTypes.func.isRequired
+    setHasNoImgs: PropTypes.func.isRequired,
+    addNewArtifact: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     auth: state.auth,
+    errors: state.errors,
     files: state.files
 });
 
 export default connect(
     mapStateToProps,
-    {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs}
+    {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs, addNewArtifact}
 )(AddArtifact);

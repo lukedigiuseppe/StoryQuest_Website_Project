@@ -10,6 +10,9 @@ const vidStore = require('../../storageEngines/videoStorageEngine');
 const decrypt = require('../../config/encryption').decrypt;
 const cryptoString = require("crypto-random-string");
 
+// Load the validators
+const validateAddArtifact = require("../../validation/artifactValidator");
+ 
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client.
 const passport = require('passport');
 require("../../config/passport")(passport);
@@ -65,17 +68,6 @@ router.post('/searchartifacts', function(req, res, next) {
     })(req, res, next);
 });
 
-// This function generates a random string filled with 'characters' up to a specified 'length'
-function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-
 // create new artifact
 router.post('/newArtifact', (req, res, next) => {
 
@@ -90,9 +82,22 @@ router.post('/newArtifact', (req, res, next) => {
             return res.status(401).send("Unauthorised user"); 
         }
 
+        // Form validation for add artifact
+        const { errors, isValid } = validateAddArtifact(req.body);
+        
+        // Check validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+
         // Map through each artifact that current exists, and extract the serial number. Then keep generating new serial numbers until you find a unique
         // one to assign
         Artifact.find({}, function(err, artifacts) {
+
+            if (err) {
+                return next(err);
+            }
+
             var artifactSerials = [];
             var artifactPasscodes = [];
             
@@ -122,11 +127,14 @@ router.post('/newArtifact', (req, res, next) => {
                 "tags": req.body.tags.join(' '),
                 "category": req.body.category,
                 "isPublic": req.body.isPublic,
-                // Need to add check here to ensure .dateMade is not an empty string, if so then it was optional.
-                "dateMade": req.body.dateMade,
                 "ownerID": user.id
             });
 
+            // Add dateMade only if it wasn't empty, if it's empty that means user did not specify it
+            if (req.body.dateMade) {
+                newArtifact.dateMade = req.body.dateMade;
+            }
+            
             newArtifact.save(function (err, artifact) {
                 if (!err) {
                     res.status(200).send(artifact);
