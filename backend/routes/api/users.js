@@ -16,6 +16,7 @@ const cryptoString = require("crypto-random-string");
 // Load the input validator
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+const validateUpdateProfile = require("../../validation/profile");
 
 // Load up the User module
 const User = require("../../models/User");
@@ -131,8 +132,16 @@ router.patch('/update', (req, res, next) => {
         if (!user) {
             return res.status(401).send("Unauthorised user. Please login to update details.");
         }
+        
+        // Form validation for profile update
+        const { errors, isValid } = validateUpdateProfile(req.body);
+            
+        // Check validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
 
-        // Check if its empty, if empty don't update. TODO add a validator here.
+        // Check if its empty, if empty don't update.
         if (req.body.firstName) {
             user.firstName = req.body.firstName;
         }
@@ -142,12 +151,19 @@ router.patch('/update', (req, res, next) => {
         if (req.body.publicName) {
             user.publicName = req.body.publicName;
         }
-        if (req.body.knownUsers) {
-            // Append a new email. Validate the string here to be a single email. Two emails will not be allowed.
-            user.knownUsers.push(req.body.knownUsers);
+        if (req.body.newFriend) {
+            // Users can add any valid email, even if they have not registered an account with the site yet.
+            user.knownUsers.push(req.body.newFriend);
         }
-        user.save();
-        return res.status(201).send("Profile successfully updated.");
+
+        user.save()
+            .then(() => {
+                return res.status(201).send("Profile successfully updated.");
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).send(err);
+            });
     })(req, res, next);
 });
 
