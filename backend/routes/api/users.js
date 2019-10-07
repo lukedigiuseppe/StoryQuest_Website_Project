@@ -89,35 +89,39 @@ router.post("/login", (req, res) => {
         }
         
         // If user exists, check their password next
-        const isMatch = user.isValidPassword(password);
-        if (isMatch) {
-            const fullName = user.publicName;
-            const payload = {
-                id: encrypt(user.id),
-                name: fullName,
-                email: user.email
-            };
-            
-            // Now sign the token with the secret and user info
-            jwt.sign(
-                payload,
-                keys.secretOrKey,
-                {
-                    expiresIn: 3600 // 1 hour in seconds. Up to you
-                },
-                (err, token) => {
-                    res.json({
-                        success: true,
-                        token: "Bearer " + token
-                    });
-                }
-            );
-        } else {
-            // No password match
-            return res
-                .status(400)
-                .json({ passwordincorrect: "Password incorrect" });
-        }
+        user.isValidPassword(password, (err, result) => {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            if (result) {
+                const fullName = user.publicName;
+                const payload = {
+                    id: encrypt(user.id),
+                    name: fullName,
+                    email: user.email
+                };
+
+                // Now sign the token with the secret and user info
+                jwt.sign(
+                    payload,
+                    keys.secretOrKey,
+                    {
+                        expiresIn: 3600 // 1 hour in seconds. Up to you
+                    },
+                    (err, token) => {
+                        res.json({
+                            success: true,
+                            token: "Bearer " + token
+                        });
+                    }
+                );
+            } else {
+                // No password match
+                return res
+                    .status(401)
+                    .json({ passwordincorrect: "Password incorrect" });
+            }
+        });
     });
 });
 
