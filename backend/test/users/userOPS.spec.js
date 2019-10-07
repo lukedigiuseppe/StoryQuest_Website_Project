@@ -6,24 +6,15 @@ const chaiHTTP = common.chaiHTTP;
 const User = common.User;
 const server = common.server;
 const should = common.should;
+const userData = common.userData;
+// Required for decoding JWT token to check for valid info
+const jwtDecode = require('jwt-decode');
 
 chai.use(chaiHTTP);
 // Required for testing dates due to there different formats
 chai.use(require('chai-datetime'));
 
 describe('User database operations', () => {
-
-    // Our test user to use for correct info and correct login
-    const userData = {
-        firstName: "TesterAlpha",
-        lastName: "McTester",
-        publicName: "Tester",
-        email: "test@gmail.com",
-        confirmEmail: "test@gmail.com",
-        password: "test123",
-        confirmPass: "test123",
-        birthDate: "2015-03-25"
-    };
 
     // Clear user database before doing these tests, only once cos we want some user data to remain for subsequent tests
     before((done) => {
@@ -127,6 +118,30 @@ describe('User database operations', () => {
                     res.should.have.status(401);
                     res.body.should.be.a('object');
                     res.body.should.have.property('passwordincorrect').eql('Password incorrect');
+                    done();
+                });
+        });
+
+        // Test login user with correct information
+        it('should login a user if they have both a registered email and the correct password', (done) => {
+            var correctData = {
+                email: userData.email,
+                password: userData.password
+            };
+
+            chai.request(server)
+                .post('/api/users/login')
+                .send(correctData)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('success').eql(true);
+                    res.body.should.have.property('token');
+                    var token = jwtDecode(res.body.token);
+                    token.should.have.property('id');
+                    token.should.have.property('name').eql(userData.publicName);
+                    token.should.have.property('email').eql(userData.email);
                     done();
                 });
         });

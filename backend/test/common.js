@@ -12,9 +12,22 @@ const chaiHTTP = require('chai-http');
 const server = require('../server');
 const should = chai.should();
 
+// Our test user to use for correct info and correct login
+const userData = {
+    firstName: "TesterAlpha",
+    lastName: "McTester",
+    publicName: "Tester",
+    email: "test@gmail.com",
+    confirmEmail: "test@gmail.com",
+    password: "test123",
+    confirmPass: "test123",
+    birthDate: "2015-03-25"
+};
+
 exports.Artifact = Artifact;
 exports.User = User;
 exports.chai = chai;
 exports.chaiHTTP = chaiHTTP;
 exports.server = server;
 exports.should = should;
+exports.userData = userData;

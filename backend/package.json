@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "server": "NODE_ENV=dev nodemon server.js",
-    "test": "mocha --timeout 100000 --reporter=spec"
+    "test": "mocha --timeout 100000 --reporter=spec --exit"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,7 @@
     "formidable": "^1.2.1",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^2.2.0",
     "md5": "^2.2.1",
     "mime": "^2.4.4",
     "mime-types": "^2.1.24",

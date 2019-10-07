@@ -52,7 +52,7 @@ router.post('/searchartifacts', function(req, res, next) {
                     if (err) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
                     }
-                    return res.send(artifacts);
+                    return res.status(200).send(artifacts);
                 });
         } else {
             // Otherwise they are allowed to search for public artifacts, plus the ones they have created or set to friend level privacy
