@@ -13,7 +13,6 @@ import {
     UncontrolledCarousel 
 } from 'reactstrap';
 
-import ErrorAlert from '../alerts/ErrorAlert';
 
 import '../../css/viewArtifact.css';
 import axios from 'axios';
@@ -50,7 +49,10 @@ class ViewArtifact extends Component{
             category: "",
             dateMade: "" ,
             isPublic: "private",
-            ownerID: ""
+            ownerID: "",
+            images: [],
+
+            ownerName: "",
         }
     }
 
@@ -67,11 +69,58 @@ class ViewArtifact extends Component{
                     isPublic: res.data.isPublic,
                     ownerID: res.data.ownerID,
                 })
-            })
+                axios.get('http://localhost:5000/api/users/profile/all_info/' + this.state.ownerID )
+                    .then(res => {
+                         console.log(res.data);
+                // We then call setState here to assign the information we got back into our state so that we can render it.
+                            this.setState({
+                                ownerName: res.data.publicName,
+                        
+                            })
+                        })
             .catch(err => {
             
                 console.log(err);
             });
+
+            })
+
+
+            .catch(err => {
+            
+                console.log(err);
+            });
+
+        axios.get('/artifact/' + this.props.match.params.id)
+        .then(res => {
+            res.data.images.forEach(imageID => {
+                axios.get('/artifact_images/' + this.props.match.params.id + '/' + imageID)
+                    .then(res => {
+                        this.setState(prevState => ({
+                                images: [
+                                    ...prevState.images, 
+                                    {
+                                        src: `data:image/jpeg;base64,${res.data}`, 
+                                        altText: "",
+                                        caption: "",
+                                        header: ""
+                                    }
+                                ]
+                            }));
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+
+        
+
+
     }
 
     // For posting form information, it gets a little more complicated. We will require two functions, onChange and onSubmit. 
@@ -113,21 +162,32 @@ class ViewArtifact extends Component{
                     </Col>
                 
 
-                    <Col xs = "6">
-                        <p className="text-left" style={{paddingLeft: "30px"}}>User: {this.state.ownerID}</p>
-
-                    </Col>
+                    
                 </Row>
                 <Row>   
-                    <Col>
+                    <Col xs = "2">
                 
-                         <h5 className="text-left" style={{paddingLeft: "30px"}}>Date: {this.state.dateMade}</h5>
+                         <h5 className="text-left" style={{paddingLeft: "30px"}}>Date: {this.state.dateMade.slice(0, 10)}</h5>
+                    </Col>
+
+                    <Col xs = "8" ></Col>
+
+                    <Col xs = "2">
+
+                        <Link to={"/profile/"  + this.state.ownerID} style={{fontSize: "20px"}}> User: {this.state.ownerName}
+                        </Link>
+
                     </Col>
 
                 </Row>
 
                 <Row>
-                    <h3 className="text-center">Story</h3>
+                     <Col xs = "1"></Col>
+                    <Col>
+                    <p  className= "text-center" style={{paddingLeft: "30px"}, {fontSize: "30px"}}>Story</p>
+                    </Col>
+
+                    <Col xs = "1"></Col>
 
                 </Row>
 
@@ -135,7 +195,7 @@ class ViewArtifact extends Component{
                     <Col xs = "1"></Col>
 
                     <Col>
-                    <p className="text-left" style={{paddingLeft: "30px"}}> {this.state.story}</p></Col>
+                    <p className="text-center" style={{paddingLeft: "30px"}}> {this.state.story}</p></Col>
 
                     <Col xs = "1"></Col>
 
@@ -147,24 +207,14 @@ class ViewArtifact extends Component{
 
     
                     <Col sm={{ size: 6, order: 2, offset: 3 }}>
-                        <UncontrolledCarousel items={items} autoPlay={false} />
+                        <UncontrolledCarousel items={this.state.images} autoPlay={false} />
                     </Col>
 
     
 
                 </Row>
 
-                <Row>
-                    <h1 className="text-left" style={{paddingLeft: "30px"}}>TimeLine (we hope)</h1>
-                </Row>
-                <Row>
-                    <Col xs="4"></Col>
-                    <Col xs="4">
-                        <UncontrolledCarousel items={items} />
-                    </Col>
-                    <Col xs="4"></Col>
-
-                </Row>
+            
 
                 </Container>
 
