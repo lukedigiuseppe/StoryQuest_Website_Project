@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {Container, Row, Col, Jumbotron, Button, Form, Input} from 'reactstrap';
-import ProfileNavBar from './profileNavBar'
+import ProfileNavBar from './profileNavBar';
 import MobileMenu2 from './MobileMenu';
+import ArtifactBlock from './ArtifactBlock';
 import '../../css/myProfile.css';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
@@ -13,17 +14,14 @@ class myProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: "",
+            birthDate: "",
             publicName: "",
             firstName: "",
             lastName: "",
             location:"",
             dateCreated: "",
-
-
-            field1: "",
-            field2: "",
-            field3: "",
-            field4: ""
+            artifacts: []
         }
     }
 
@@ -41,10 +39,8 @@ class myProfile extends Component {
                     lastName: userRes.data.lastName,
                     location: userRes.data.location,
                     dateCreated: userRes.data.dateCreated,
-                    avatarImg: userRes.data.avatarImg,
                     artifacts: artiRes.data
-                })
-
+                });
             }))
                 .catch(err => {// This catches any errors such as 400 replies etc. or any errors from the backend. How you deal with it is up to you. But usually printing an error to the console,
                     // or you can have a separate error field in the state that you can check for errors in the render method.
@@ -54,9 +50,15 @@ class myProfile extends Component {
 
 
     onChange = (e) => {
-
         this.setState({ [e.target.id]: e.target.value });
     }
+
+    artifactList() {
+        return this.state.artifacts.map(function(currentArtifact, i){
+            return <li key={i}><ArtifactBlock artifactData={currentArtifact} /></li>;
+        });
+    }
+
     render() {
         return(
             <div className="myProfile">
@@ -92,8 +94,10 @@ class myProfile extends Component {
                     </Row>
                 </Container>
                 <br></br><br></br>
+                {this.state.artifacts.map(function(currentArtifact, i){
+                    return <ArtifactBlock artifactData={currentArtifact} />;
+                })}    
             </div>
-
         )
     }
 }

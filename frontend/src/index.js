@@ -63,7 +63,8 @@ const routing = (
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/add_artifact" component ={AddArtifact} />
                 <Route exact path="/view_artifact/:id" component ={ViewArtifact} />
-                <Route exact path="/profile" component ={Profile} />
+                <Route exact path="/profile" component={Profile} />
+                <Route exact path="/myprofile" component= {MyProfile} />
                 <Route exact path="/image" component={Image} />
                 <Route exact path="/video/:artifactid" component={Video} />
                 <Route exact path="/sample" component={Sample} />
