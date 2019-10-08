@@ -39,6 +39,8 @@ const ArtifactSchema = mongoose.Schema(
         // the default value for collectionID is null, as an artifact does not need to be
         // part of a collection
         "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
+        // A list of emails of allowed users
+        "allowedUser" : [{type: String}],
         "isPublic" : {
             type: String,
             // Defines a restriction of strings to be private, friends and public only
