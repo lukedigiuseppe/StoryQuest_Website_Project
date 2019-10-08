@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Container, Row, Col, Jumbotron, Button, Form, Input} from 'reactstrap';
-import ProfileNavBar from './profileNavBar'
-import MobileMenu2 from './MobileMenu';
+import TopMenu from './TopMenu'
+import MobileMenu from './MobileMenu';
 import '../../css/profile.css';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
@@ -75,8 +75,8 @@ class Profile extends Component {
                     <title>My Profile</title>
                 </Helmet>
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
-                    <Container className="d-none d-lg-flex"><ProfileNavBar /></Container>
-                    <Container className="d-lg-none"><MobileMenu2 /></Container>
+                    <Container className="d-none d-lg-flex"><TopMenu /></Container>
+                    <Container className="d-lg-none"><MobileMenu /></Container>
                 <br /><br /><br />
 
                 <Container className="profileBox">

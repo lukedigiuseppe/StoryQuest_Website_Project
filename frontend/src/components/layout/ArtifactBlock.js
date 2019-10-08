@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import isEmpty from 'is-empty';
 
+
+
 class ArtifactBlock extends Component {
 
     constructor(props) {
@@ -28,6 +30,7 @@ class ArtifactBlock extends Component {
         var hasData = !isEmpty(this.state.artifactData) ? this.state.artifactData : false;
         return(
             <div>
+
                 {hasData.name}
             </div>
         );
