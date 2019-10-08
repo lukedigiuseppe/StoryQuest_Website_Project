@@ -2,17 +2,20 @@ import React, {Component} from 'react';
 import {Container, Row, Col} from 'reactstrap';
 import ProfileNavBar from './profileNavBar';
 import MobileMenu2 from './MobileMenu';
-import ArtifactBlock from './ArtifactBlock';
 import '../../css/myProfile.css';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const Artifact = props => (
     <tr>
-        <td>{props.artifacts.name}</td>
-        <td>{props.artifacts.dateMade}</td>
+        <td>
+            <Link to={"/view_artifact/"+props.artifacts._id}>{props.artifacts.name}</Link>
+        </td>
+        <td>{props.artifacts.story.substring(0,25)} ...</td>
+        <td>{props.artifacts.dateMade} </td>
     </tr>
 )
 
@@ -101,13 +104,15 @@ class myProfile extends Component {
                     </Row>
                 </Container>
                 <br></br><br></br>
+                <Container className="artifactBox">
                 <div>
-                    <h3>My Artifacts</h3>
-                    <table className="table table-striped" size="sm" style={{ marginTop: 20 }} >
+                    <div className="d-flex justify-content-centre"> <p className="tMHeader">Your Artifacts</p></div>
+                    <table className="table table-striped" size="sm" justify-content-centre>
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Age</th>
+                            <th className="tHeader">Name</th>
+                            <th className="tHeader">Your Story</th>
+                            <th className="tHeader">Date Made</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -115,6 +120,7 @@ class myProfile extends Component {
                         </tbody>
                     </table>
                 </div>
+                </Container>
             </div>
         )
     }
