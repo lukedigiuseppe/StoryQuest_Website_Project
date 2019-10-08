@@ -58,7 +58,8 @@ class AddArtifact extends Component {
             dateMade: "",
             isPublic: "",
             // These state values are used for image upload
-            doUpload: false,
+            doImgUpload: false,
+            doVideoUpload: false,
             artifactID: "",
             errors: {}
         }
@@ -105,16 +106,32 @@ class AddArtifact extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const pushPage = (this.props.files.vidUploaded && this.props.files.hasVids) || (this.props.files.imgUploaded && this.props.files.hasImgs);
-        if (pushPage) {
-            // Reset the state once upload has completed and push to the video page
-            this.props.setVidUploading();
+        // const pushPage = (this.props.files.vidUploaded && this.props.files.hasVids) || (this.props.files.imgUploaded && this.props.files.hasImgs);
+        // if (pushPage) {
+        //     // Reset the state once upload has completed and push to the video page
+        //     this.props.setVidUploading();
+        //     this.props.setImgUploading();
+        //     this.props.setHasNoImgs();
+        //     this.props.setHasNoVids();
+        //     // Redirect to home page
+        //     this.props.history.push('/');
+        // }
+        if (this.props.files.imgUploaded && this.props.files.hasImgs) {
             this.props.setImgUploading();
             this.props.setHasNoImgs();
+            if (this.props.files.hasVids) {
+                this.setState({doVideoUpload: true});
+            } else {
+                this.props.history.push('/');
+            }
+        }
+
+        if (this.props.files.vidUploaded && this.props.files.hasVids) {
+            this.props.setVidUploading();
             this.props.setHasNoVids();
-            // Redirect to home page
             this.props.history.push('/');
         }
+
         if (this.props.errors !== prevProps.errors) {
             this.setState({
                 errors: this.props.errors
@@ -165,7 +182,12 @@ class AddArtifact extends Component {
             console.log(res);
             // Need these to be sequential, so don't do them at the same time.
             this.setState({artifactID: res.data._id});
-            this.setState({doUpload: true});
+            // Check if there are imgs if so do imgUpload otherwise do vid upload
+            if (this.props.files.hasImgs) {
+                this.setState({doImgUpload: true});
+            } else if (this.props.files.hasVids) {
+                this.setState({doVideoUpload: true});
+            }
             // Push to artifact page on submit only if there were no images or videos being uploaded to the artifact. Give the system
             // some time to process the images and videos for a better user experience.
             const pushPage = this.props.files.hasVids || this.props.files.hasImgs;
@@ -285,7 +307,7 @@ class AddArtifact extends Component {
 
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                            <ImageUpload doUpload={this.state.doUpload} uploadPath={IMG_UPLOAD} artifactID={this.state.artifactID} />
+                            <ImageUpload doUpload={this.state.doImgUpload} uploadPath={IMG_UPLOAD} artifactID={this.state.artifactID} />
                             <br />
                         </Col>
                         <Col sm = {MARGIN}></Col> 
@@ -305,7 +327,7 @@ class AddArtifact extends Component {
 
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                            <VideoUpload doUpload={this.state.doUpload} uploadPath={VIDEO_UPLOAD} artifactID={this.state.artifactID} />
+                            <VideoUpload doUpload={this.state.doVideoUpload} uploadPath={VIDEO_UPLOAD} artifactID={this.state.artifactID} />
                             <br />
                         </Col>
                         <Col sm = {MARGIN}></Col> 
