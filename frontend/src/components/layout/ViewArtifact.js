@@ -13,7 +13,6 @@ import {
     UncontrolledCarousel 
 } from 'reactstrap';
 
-import ErrorAlert from '../alerts/ErrorAlert';
 
 import '../../css/viewArtifact.css';
 import axios from 'axios';
