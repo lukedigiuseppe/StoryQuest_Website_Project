@@ -92,14 +92,6 @@ class myProfile extends Component {
                     </Row>
                 </Container>
                 <br></br><br></br>
-                <Row>
-                    <Container className="profileBox">
-                        <div className="d-flex center"> <p className="greeting">Your Artifacts </p></div>
-                       const {artifacts} = this.state.artifacts
-                        return(
-                        {artifacts.map(image => <div serial Number={serialNumber}</div>)}
-                    </Container>
-                </Row>
             </div>
 
         )

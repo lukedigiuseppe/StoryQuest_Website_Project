@@ -74,10 +74,10 @@ UserSchema.pre('save', function(next) {
 });
 
 // This compares the unhashed password with the stored hash to check if they are the same.
-UserSchema.methods.isValidPassword = function(password) {
+// Requires a callback function of the form (err, result) to be passed in.
+UserSchema.methods.isValidPassword = function(password, callback) {
     const user = this;
-    const isValid = bcrypt.compare(password, user.password);
-    return isValid;
+    bcrypt.compare(password, user.password, callback);
 }
 
 // Export as a mongoose model which will be stored in a collection called users

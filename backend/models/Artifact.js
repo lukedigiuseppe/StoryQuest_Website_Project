@@ -1,26 +1,72 @@
-var mongoose = require('mongoose');
-//const enums = require('../models/enums.js');
+const mongoose = require('mongoose');
 
 // Artifact attributes
 
-var artifactSchema = mongoose.Schema(
+const ArtifactSchema = mongoose.Schema(
     {
-        "serialNumber": String,
-        "name": String,
+        // A serial number and passcode is used to view an artifact regardless of privacy settings or ownership
+        "serialNumber": {
+            type: String,
+            isRequired: true
+        },
+        "passcode": {
+            type: String,
+            isRequired: true
+        },
+        "name": {
+            type: String,
+            isRequired: true
+        },
         "story": String,
-        "keywords": String,
-        // Should we define a basic list of categories? if so
-        // "category": {type: String, enum: enums.categories},
+        "images": [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "images.files",
+            default: null
+        }],
+        "videos": [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "videos.files",
+            default: null
+        }],
+        "tags": {
+            type: String,
+            default: ""
+        },
         "category": String,
         // ownerID + collectionID allows you to add multiple owners and collections
         // [{ }] - represents a list of objects
-        // Should default be null, or should it automatically be given userID as ownerID
         "ownerID": [{type: mongoose.Schema.Types.ObjectId, ref: 'user',default : null}],
         // the default value for collectionID is null, as an artifact does not need to be
         // part of a collection
-        "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}]
+        "collectionID": [{type: mongoose.Schema.Types.ObjectId, ref: 'collection',default : null}],
+        "isPublic" : {
+            type: String,
+            // Defines a restriction of strings to be private, friends and public only
+            enum: ['private', 'friends', 'public'],
+            isRequired: true,
+            default: 'private'
+        },
+        "dateMade" : {
+            type: Date,
+        },
+        "dateAdded" : {
+            type: Date,
+            default: Date.now
+        }
     }
 );
 
+ArtifactSchema.index({
+    name: 'text', 
+    story: 'text', 
+    tags: 'text'
+}, {
+    weights: {
+        name: 5, 
+        keywords: 3, 
+        story: 2
+    }
+});
 
-module.exports =  mongoose.model('artifact',artifactSchema);
+const Artifact = mongoose.model('Artifact', ArtifactSchema);
+module.exports =  Artifact;

@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import {Link, withRouter}  from 'react-router-dom';
+import { Link }  from 'react-router-dom';
+import {WithContext as ReactTags} from 'react-tag-input';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
-import {registerUser} from '../../actions/authActions';
-import classnames from 'classnames';
+import {addNewArtifact} from '../../actions/artifactActions';
+import {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs} from '../../actions/fileActions';
+import ErrorAlert from '../alerts/ErrorAlert';
+
 import {
     Container,
     Col,
@@ -14,30 +17,31 @@ import {
     FormGroup, 
     Label, 
     Input,
-    InputGroup,
-    InputGroupAddon,
-    FormText, 
-    Card, 
-    CardImg, 
-    CardText, 
-    CardBody,
-    CardTitle,
-    CardSubtitle,
 } from 'reactstrap';
 
-import ErrorAlert from '../alerts/ErrorAlert';
+import ImageUpload from '../media/ImageUpload';
+import VideoUpload from '../media/VideoUpload';
 
+import '../../css/tags.css';
 import '../../css/addArtifact.css';
 
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
 
-const INPUTWIDTH = 10;
-const DESCWIDTH = 2;
 const BANNER = "/images/cover.png"
 const MARGIN = 1;
 const HALF = 6;
 
+// These are the keyboard keys that when pressed specify a new tag
+const KeyCodes = {
+    comma: 188,
+    enter: 13
+};
+
+const delimiters = [KeyCodes.comma, KeyCodes.enter];
+// Change this to the Upload Route.
+const IMG_UPLOAD = 'http://localhost:5000/upload_artifact_image';
+const VIDEO_UPLOAD = 'http://localhost:5000/upload_artifact_video';
 
 class AddArtifact extends Component {
 
@@ -46,15 +50,71 @@ class AddArtifact extends Component {
 
         this.state = {
             name: "",
-            catagory: "",
-            date: "",
             story: "",
-            keywords: {},
-            errors: {},
+            tags: [
+                { id: 'default', text: 'Add more tags here'}
+            ],
+            category: "Jewelry",
+            dateMade: "",
+            isPublic: "",
+            // These state values are used for image upload
+            doUpload: false,
+            artifactID: "",
+            errors: {}
+        }
+
+        this.handleDelete = this.handleDelete.bind(this);
+        this.handleAddition = this.handleAddition.bind(this);
+        this.handleDrag = this.handleDrag.bind(this);
+        this.handleTagClick = this.handleTagClick.bind(this);
+    }
+
+    // Events to handle for the react-tags module
+    handleDelete(i) {
+        const {tags} = this.state;
+        this.setState({
+            tags: tags.filter((tag, index) => index !== i),
+        });
+    }
+
+    handleAddition(tag) {
+        // Append the new tag to the existing array of tags.
+        this.setState(state => ({ tags: [...state.tags, tag] }));
+    }
+    
+    handleDrag(tag, currPos, newPos) {
+        const tags = [...this.state.tags];
+        const newTags = tags.slice();
+    
+        newTags.splice(currPos, 1);
+        newTags.splice(newPos, 0, tag);
+    
+        // re-render
+        this.setState({ tags: newTags });
+    }
+
+    handleTagClick(index) {
+        console.log('The tag at index ' + index + ' was clicked');
+    }
+
+    // Prevent user from accessing this page unless they are logged in
+    componentDidMount() {
+        if (!this.props.auth.isAuthenticated) {
+            this.props.history.push('/login');
         }
     }
 
     componentDidUpdate(prevProps) {
+        const pushPage = (this.props.files.vidUploaded && this.props.files.hasVids) || (this.props.files.imgUploaded && this.props.files.hasImgs);
+        if (pushPage) {
+            // Reset the state once upload has completed and push to the video page
+            this.props.setVidUploading();
+            this.props.setImgUploading();
+            this.props.setHasNoImgs();
+            this.props.setHasNoVids();
+            // Redirect to home page
+            this.props.history.push('/');
+        }
         if (this.props.errors !== prevProps.errors) {
             this.setState({
                 errors: this.props.errors
@@ -63,34 +123,63 @@ class AddArtifact extends Component {
     }
 
     onChange = (e) => {
-        this.setState({ [e.target.id]: e.target.value });
+        const type = e.target.type;
+        const id = e.target.id;
+        const value = e.target.value;
+        var isPublic = "";
+
+        // Set the public state depending on which radio button is checked.
+        if (type === 'radio'){
+            if(e.target.checked){
+                if(id === 'private'){
+                    isPublic = "private";
+                } else if (id === 'friends') {
+                    isPublic = "friends";
+                } else if(id === 'public'){
+                    isPublic = "public";
+                }
+            }
+            this.setState({ isPublic: isPublic });
+        } else {
+            this.setState({ [id]: value });
+        }
     };
     
-    onKeywordButtonClick(input){
-   
-    }
-
     onSubmit = (e) => {
         e.preventDefault();
-        
-        // Send the entire state including confirmation fields so that it can be validated on at the backend
+
+        // Remove the IDs from the tags, so they can be passed in as an array of strings directly to Mongo
+        const TagArray = this.state.tags.map((tag) => tag.text);
+
+        // Send the entire state including confirmation fields so that it can be validated at the backend
         const newArtifact = {
             name: this.state.name,
-            catagory: this.state.catagory,
-            date: this.state.date,
             story: this.state.story,
-            confirmEmail: this.state.confirmEmail,
-            keywords: this.state.keywords,
+            tags: TagArray,
+            category: this.state.category,
+            isPublic: this.state.isPublic,
+            dateMade: this.state.dateMade
         };
-        
-        // Register the user by using the passed in registerUser action from redux
-        this.props.registerArtifact(newArtifact, this.props.history);
+
+        this.props.addNewArtifact(newArtifact, (res) => {
+            console.log(res);
+            // Need these to be sequential, so don't do them at the same time.
+            this.setState({artifactID: res.data._id});
+            this.setState({doUpload: true});
+            // Push to artifact page on submit only if there were no images or videos being uploaded to the artifact. Give the system
+            // some time to process the images and videos for a better user experience.
+            const pushPage = this.props.files.hasVids || this.props.files.hasImgs;
+            if (!pushPage) {
+                this.props.history.push('/view_artifact/' + this.state.artifactID);
+            }
+        });
+
     };
 
-
     render(){
-        const { errors } = this.state;
 
+        const { tags, errors } = this.state;
+        
         return(
             <div>
                 {/*Title*/}
@@ -99,8 +188,7 @@ class AddArtifact extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Register an artifact</title>
                 </Helmet>
-
-
+                
                 {/*Banner*/}
 
                 <Container className="justify-content-center" fluid>
@@ -109,18 +197,18 @@ class AddArtifact extends Component {
                     </Row>
                 </Container>
 
-                <Container className="register-box bg-light rounded-lg">
+                <Container className="bg-light rounded-lg" style={{paddingTop: "20px", paddingBottom: "10px", transform: "translate(0%, -1%)"}}>
 
-              
+                { /* back to home button*/} 
                 <Row>
                         <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
                         <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
                         </Link>
                 </Row>
             
+                {/*FORM STARTS HERE*/}
 
                 <Form noValidate className="register-form" onSubmit={this.onSubmit}>
-
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
@@ -128,6 +216,8 @@ class AddArtifact extends Component {
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
+
+                    {/*NAME*/}
 
                     <FormGroup row>
 
@@ -137,18 +227,21 @@ class AddArtifact extends Component {
                             <Input
                                 onChange={this.onChange}
                                 value={this.state.name}
-                                error={errors.Name} 
                                 type="text" 
                                 id="name" 
+                                name ="name"
                                 placeholder="What's your artifact called?" 
                             />
-                            <ErrorAlert errorMsg={errors.Name} />
+                            <ErrorAlert errorMsg={errors.name} />
+                           
                         </Col>
 
                         <Col sm = {HALF -1}></Col>
 
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
+
+                    {/*STORY*/}
 
                     <Row>
                         <Col sm = {MARGIN}></Col>
@@ -167,18 +260,18 @@ class AddArtifact extends Component {
                                 onChange={this.onChange}
                                 value={this.state.story}
                                 type="textarea" 
-                                name="text" 
+                                name="story" 
                                 id="story" 
                                 placeholder= "Tell us about its journey"
                                 />
-                                <ErrorAlert errorMsg={errors.Story} />
+                            <ErrorAlert errorMsg={errors.story} />
 
                         </Col>  
 
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
 
-
+                    {/*PHOTOS*/}
 
                     <Row>
                         <Col sm = {MARGIN}></Col>
@@ -188,68 +281,57 @@ class AddArtifact extends Component {
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
-                    <FormGroup row>
-                        <Col sm = {MARGIN}></Col>
-                
-                        <Col sm = {3}>
-                        <Card>
-
-                        <CardImg top width = "100%" src= '/images/vase.jpg' ></CardImg>
-
-                        <CardBody>
-                            <CardTitle>Upload Image</CardTitle>
-                            <Input 
-                            style = {{height: '100px'}}
-                            type="file" 
-                            name="file" 
-                            id="exampleFile" />
-                        </CardBody>
-                        </Card>
-
-
-                        </Col>
-
-                        <Col sm = {2}>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-
-                        </Col>
-                        <Col sm = {2}>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-
-                        </Col>
-                        <Col sm = {2}>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-                            <img src='/images/vase.jpg' class="img-thumbnail"></img>
-
-                        </Col>
+                    <Row>
 
                         <Col sm = {MARGIN}></Col>
-                    </FormGroup>
+                        <Col>
+                            <ImageUpload doUpload={this.state.doUpload} uploadPath={IMG_UPLOAD} artifactID={this.state.artifactID} />
+                            <br />
+                        </Col>
+                        <Col sm = {MARGIN}></Col> 
 
+                    </Row>
 
+                    {/* VIDEOS */}
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                        <h2 className="text-left" >Add a catagory</h2>
+                        <h2 className="text-left" >Add Videos</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
+                    <Row>
 
-                    
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                            <VideoUpload doUpload={this.state.doUpload} uploadPath={VIDEO_UPLOAD} artifactID={this.state.artifactID} />
+                            <br />
+                        </Col>
+                        <Col sm = {MARGIN}></Col> 
+
+                    </Row>
+
+                    {/*CATEGORY*/}
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h2 className="text-left" >Add a category</h2>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row> 
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
                         <Col sm={HALF -1}>
                             <Input 
                                 onChange={this.onChange}
-                                value={this.state.catagory}
+                                value={this.state.category}
                                 type="select" 
-                                id="catagory"
+                                id="category"
+                                name="category"
                                 >
-
-                                <option>Other</option>
+                                {/* The first option is the same as the default state */}
                                 <option>Jewlery</option>
                                 <option>Clothes</option>
                                 <option>Tool</option>
@@ -258,10 +340,8 @@ class AddArtifact extends Component {
                                 <option>Photo</option>
                                 <option>Other</option>
                         </Input>
-                        <ErrorAlert errorMsg={errors.Catagory} />
+                        <ErrorAlert errorMsg={errors.category} />
                         </Col>
-
-
                         <Col sm = {MARGIN}></Col>
                     </FormGroup>
 
@@ -273,62 +353,150 @@ class AddArtifact extends Component {
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
-                    
+                    {/*TAGS*/}
+                   
                     <FormGroup row>
                         <Col sm = {MARGIN}></Col>
-                        <Col sm={HALF -1}>
-                        <InputGroup>
-                            <InputGroupAddon addonType="prepend"><Button>Add tag</Button> </InputGroupAddon>
+                        <Col sm={HALF}>
+                        <ReactTags
+                            tags={tags}
+                            delimiters={delimiters}
+                            handleDelete={this.handleDelete}
+                            handleAddition={this.handleAddition}
+                            handleDrag={this.handleDrag}
+                            handleTagClick={this.handleTagClick}
+                        />
+                        <ErrorAlert errorMsg={errors.tag} />
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </FormGroup>
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <h2 className="text-left" >Sharing</h2>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+
+                {/* For radio buttons ensure name is the same so that users can only select one */}
+                <Row>
+                    <Col sm = {MARGIN*2}></Col>
+                    <Col sm = {HALF} >
+                    <FormGroup check>
+                        <Label check>
                             <Input 
-                            placeholder="Add tags for others to search for your artifact"
-                                />
-                            </InputGroup>
-                            <ErrorAlert errorMsg={errors.Keywords} />
-                        </Col>
-
-                        <Col sm = {MARGIN}></Col>
+                            type="radio"
+                                name="isPublic"
+                                onChange={this.onChange}
+                                value={this.state.isPublic}
+                                id = "private"
+                                />{' '}
+                            Private - Only you can view your artifact 
+                        </Label>
                     </FormGroup>
+                    </Col>
+                </Row>
 
-
-
-                    <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <h2 className="text-left" >Other details (optional)</h2>
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
-                    </Row>
-
-                    <FormGroup row>
-                        <Col sm = {MARGIN}></Col>
-                        <Label htmlFor="Date Made" sm={2}>Date Made:</Label>
-                        <Col sm={2}>
-                        <Input
+                <Row>
+                    <Col sm = {MARGIN*2}></Col>
+                    <Col sm = {HALF}>
+                    <FormGroup check>
+                        <Label check>
+                            <Input type="radio" 
+                            name="isPublic"
                             onChange={this.onChange}
-                            value={this.state.date}
-                            type="date"
-                            name="date"
-                            id="date"
-                            />
-                            <ErrorAlert errorMsg={errors.Date} />
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
+                            value={this.state.isPublic}
+                            id = "friends" 
+                            />{' '}
+                            Friends - Your friends can view your artifact 
+                        </Label>
                     </FormGroup>
+                    </Col>
+                </Row>
 
+                <Row>
+                    <Col sm = {MARGIN*2}></Col>
+                    <Col sm = {HALF}>
+                    <FormGroup check disabled>
+                        <Label check>
+                            <Input type="radio" 
+                            name="isPublic"
+                            onChange={this.onChange}
+                            value={this.state.isPublic}
+                            id = "public"
+                            />{' '}
+                            Public - Everyone can view your artifact 
+                        </Label>
+                    </FormGroup>
+                    </Col>
+                </Row>
+
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <ErrorAlert errorMsg={errors.isPublic} />
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <br />
+                    <h2 className="text-left" >Other details (optional)</h2>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+
+                {/*DATE*/}
+
+                <FormGroup row>
+                    <Col sm = {MARGIN}></Col>
+                    <Label htmlFor="dateMade" sm={2}>Date Made:</Label>
+                    <Col sm={2}>
+                    <Input
+                        onChange={this.onChange}
+                        value={this.state.dateMade}
+                        type="date"
+                        name="dateMade"
+                        id="dateMade"
+                        />
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </FormGroup>
+
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <Button>Submit</Button>
+                    </Col>
+                </Row>
                 </Form>
-
-
                 <p className="text-center mt-3 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>
                 </Container>
-
             </div>
-
         )
-
     }
-
-
-
 }
 
-export default AddArtifact;
+AddArtifact.propTypes = {
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired,
+    files: PropTypes.object.isRequired,
+    setVidUploading: PropTypes.func.isRequired,
+    setImgUploading: PropTypes.func.isRequired,
+    setHasNoVids: PropTypes.func.isRequired,
+    setHasNoImgs: PropTypes.func.isRequired,
+    addNewArtifact: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors,
+    files: state.files
+});
+
+export default connect(
+    mapStateToProps,
+    {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs, addNewArtifact}
+)(AddArtifact);
