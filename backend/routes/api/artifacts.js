@@ -55,13 +55,22 @@ router.post('/searchartifacts', function(req, res, next) {
                     return res.status(200).send(artifacts);
                 });
         } else {
-            // Otherwise they are allowed to search for public artifacts, plus the ones they have created or set to friend level privacy
-            Artifact.find({$text: { $search: req.body.searchString }, $or: [ {isPublic: "private"}, {isPublic: "friends"}, {ownerID: user.id}] }, {score: { $meta: `textScore` }} )
+            // Otherwise they are allowed to search for public artifacts, plus the ones they have created or artifacts that belong to their friend level privacy
+            Artifact.find({$text: { $search: req.body.searchString }}, {score: { $meta: `textScore` }} )
                 .sort({score: {$meta: `textScore`}})
                 .exec(function (err, artifacts) {
+                    console.log(artifacts.length);
                     if (err) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
                     }
+
+                    User.findById(user.id, )
+                    var filteredArtifacts = [];
+                    // Filter out Friend level artifacts that the user is not a friend of
+                    for (const artifact of artifacts) {
+                        
+                    }
+                    
                     return res.status(200).send(artifacts);
                 });
         }

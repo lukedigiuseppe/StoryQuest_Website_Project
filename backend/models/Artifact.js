@@ -63,7 +63,7 @@ ArtifactSchema.index({
 }, {
     weights: {
         name: 5, 
-        keywords: 3, 
+        tags: 3, 
         story: 2
     }
 });
