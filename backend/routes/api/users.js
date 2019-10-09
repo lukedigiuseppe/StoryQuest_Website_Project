@@ -341,4 +341,59 @@ router.get('/profile/:email', function(req, res) {
 });
 
 
+router.get('/profile/all_info/:id', function(req, res) {
+    
+    const userid = req.params.id;
+
+    User.findById(userid, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send(err);
+        }
+
+        if (!user) {
+            return res.status(404).send("Error: User not found.");
+        }
+
+        else{
+            return res.status(200).send({
+                publicName:user.publicName, 
+                firstName: user.firstName, 
+                lastName:user.lastName,
+                location:user.location,
+                dateCreated:user.dateCreated,    
+            });
+        }
+
+
+    });
+
+});
+
+router.get('/profile/profile_image/:id', function(req, res) {
+    
+    const userid = req.params.id;
+
+    User.findById(userid, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.status(400).send(err);
+        }
+
+        if (!user) {
+            return res.status(404).send("Error: User not found.");
+        }
+
+        imgStore.readImage(user.avatarImg, function(err, content) {
+            if (err) {
+                return res.status(500).send("Error: Unable to retrieve image from database");
+            }
+            return res.status(200).send(content);
+        });
+
+
+    });
+
+});
+
 module.exports = router;

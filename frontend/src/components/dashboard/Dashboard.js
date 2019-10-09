@@ -10,7 +10,7 @@ const encrypt = require('../../utils/encryption').encrypt;
 
 class Dashboard extends Component {
 
-    constructor(props) {
+    constructor(props) {https://www.google.com.au/
         super(props);
         this.state = {
             message: '',

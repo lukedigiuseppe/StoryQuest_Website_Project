@@ -283,6 +283,8 @@ router.get('/artifact/:artifactID', (req, res, next) => {
 router.delete('/delete_artifact/:artifactID', (req, res, next) => {
 
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
+        console.log("NOT FOUND")
         
         if (err) { 
             return next(err); 
@@ -299,7 +301,9 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
             }
 
             if (!artifact) {
+                console.log("NOT FOUND")
                 return res.status(404).send("Artifact not found.");
+
             }
 
             // Check if owner of the artifact, can then delete it

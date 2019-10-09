@@ -20,3 +20,5 @@ export const addNewArtifact = (artifactData, callback) => dispatch => {
         })
         );
 };
+
+

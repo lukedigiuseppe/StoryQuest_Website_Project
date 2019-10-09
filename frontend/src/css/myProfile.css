@@ -19,6 +19,28 @@
     max-height: min-content;
 }
 
+.artifactBox{
+    border-radius: 2%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    font-family: 'Merriweather', sans-serif;
+    max-height: auto;
+}
+.tHeader{
+    font-family: 'Merriweather', sans-serif;
+    font-weight: bold;
+    align-self: center;
+    font-size: 20px;
+}
+
+.tMHeader{
+    font-family: 'Merriweather', sans-serif;
+    font-weight: bold;
+    font-size: 30px;
+    padding-top: 10px;
+    alignment: center;
+}
+
 .profilePic {
     border-radius: 50%;
     display: block;

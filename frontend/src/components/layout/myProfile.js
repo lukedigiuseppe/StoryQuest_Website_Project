@@ -1,29 +1,36 @@
 import React, {Component} from 'react';
-import {Container, Row, Col, Jumbotron, Button, Form, Input} from 'reactstrap';
-import ProfileNavBar from './profileNavBar'
+import {Container, Row, Col} from 'reactstrap';
+import ProfileNavBar from './profileNavBar';
 import MobileMenu2 from './MobileMenu';
 import '../../css/myProfile.css';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
+const Artifact = props => (
+    <tr>
+        <td>
+            <Link to={"/view_artifact/"+props.artifacts._id}>{props.artifacts.name}</Link>
+        </td>
+        <td>{props.artifacts.story.substring(0,25)} ...</td>
+        <td>{props.artifacts.dateMade} </td>
+    </tr>
+)
 
 class myProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: "",
+            birthDate: "",
             publicName: "",
             firstName: "",
             lastName: "",
             location:"",
             dateCreated: "",
-
-
-            field1: "",
-            field2: "",
-            field3: "",
-            field4: ""
+            artifacts: []
         }
     }
 
@@ -33,6 +40,7 @@ class myProfile extends Component {
         axios.get('/userinfo'),
         axios.get('/artifacts')])
             .then(axios.spread((userRes, artiRes) => {
+                console.log(artiRes)
                 this.setState({
                     email: userRes.data.email,
                     birthDate: userRes.data.birthDate,
@@ -41,22 +49,26 @@ class myProfile extends Component {
                     lastName: userRes.data.lastName,
                     location: userRes.data.location,
                     dateCreated: userRes.data.dateCreated,
-                    avatarImg: userRes.data.avatarImg,
                     artifacts: artiRes.data
-                })
-
+                });
             }))
-                .catch(err => {// This catches any errors such as 400 replies etc. or any errors from the backend. How you deal with it is up to you. But usually printing an error to the console,
-                    // or you can have a separate error field in the state that you can check for errors in the render method.
+                .catch(err => {
                     console.log(err);
                 });
     }
 
+    // artifactList() {
+    //     return this.state.artifacts.map(function(currentArtifact, i){
+    //         return <li key={i}><ArtifactBlock artifactData={currentArtifact} /></li>;
+    //     });
+    // }
 
-    onChange = (e) => {
-
-        this.setState({ [e.target.id]: e.target.value });
+    artifactList() {
+        return this.state.artifacts.map(function(currArtifact, i){
+            return <Artifact artifacts={currArtifact} key={i} />;
+        })
     }
+
     render() {
         return(
             <div className="myProfile">
@@ -92,8 +104,24 @@ class myProfile extends Component {
                     </Row>
                 </Container>
                 <br></br><br></br>
+                <Container className="artifactBox">
+                <div>
+                    <div className="d-flex justify-content-centre"> <p className="tMHeader">Your Artifacts</p></div>
+                    <table className="table table-striped" size="sm" justify-content-centre>
+                        <thead>
+                        <tr>
+                            <th className="tHeader">Name</th>
+                            <th className="tHeader">Your Story</th>
+                            <th className="tHeader">Date Made</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        { this.artifactList() }
+                        </tbody>
+                    </table>
+                </div>
+                </Container>
             </div>
-
         )
     }
 }
@@ -102,14 +130,10 @@ myProfile.propTypes = {
     auth: PropTypes.object.isRequired
 };
 
-// MapStateToProps is a function we define and is only required when accessing the store for the global state of the application. This basically allows us to automatically assign the global state object to this component and
-// then pass it in as props. Thus we are then allowed to access it from within the component by calling this.props.auth. Note we call auth here because that is the name of the authorisation state from the
-// store that I have created. Just use auth and follow it, should work for all components that we will be making.
+
 const mapStateToProps = state => ({
     auth: state.auth
 });
 
-// Now is the important part, here we have to connect the component to the store (remember global app state is stored there). To do this we have to write in the following format for the export
-// export default connect("pass the mapStateToProps function here")(class_name) where class_name is the name of this react component.
 
 export default connect(mapStateToProps)(myProfile);
