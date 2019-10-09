@@ -250,9 +250,20 @@ router.post('/upload_profile_image', (req, res, next) => {
                                     }
                                 });
                         } else {
-                            if (!res.headersSent) {
-                                return res.status(400).send({message: "Profile image upload failed."})
-                            }
+                            // The old image no longer exists in the database
+                            user.avatarImg = file._id;
+                            user.save()
+                                .then(() => {
+                                    if (!res.headersSent) {
+                                        return res.status(200).send({message: "Profile image added successfully."});
+                                    }
+                                })
+                                .catch(err => {
+                                    console.err(err);
+                                    if (!res.headersSent) {
+                                        return res.status(500).send(err)
+                                    }
+                                });
                         }
                     })
                 } else {
