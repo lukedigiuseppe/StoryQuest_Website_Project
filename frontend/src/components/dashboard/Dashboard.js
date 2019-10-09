@@ -5,6 +5,9 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {logoutUser} from "../../actions/authActions";
 import axios from "axios";
+import ProfileNavBar from '../layout/profileNavBar';
+import MobileMenu2 from '../layout/MobileMenu';
+import {Container} from "reactstrap";
 
 const encrypt = require('../../utils/encryption').encrypt;
 
@@ -68,16 +71,21 @@ class Dashboard extends Component {
         const { user } = this.props.auth;
         return(
             <div style={{ height: "76vh"}} className="container valign-wrapper">
+                <Container className="d-none d-lg-flex"><ProfileNavBar /></Container>
+                <Container className="d-lg-none"><MobileMenu2 /></Container>
+                <br /><br /><br />
+                <br /><br /><br />
                 <div className="row">
                     <div className="col s12 center-align">
                         <h4>
                             <b>Hey there,</b> {user.name}
                             <p className="flow-text grey-text text-darken-1">
-                                You are logged into a full-stack{" "}<span style={{ fontFamily: "monospace"}}>MERN</span> app 👏
+                                Welcome to StoryQuest
                             </p>
                             <p><img src={`data:image/jpeg;base64,${this.state.profileImgData}`} /></p>
                             <p><a href="/profile_image">Upload a new profile picture</a></p> 
-                            <p><a href="/add_artifact">Add an artifact</a></p> 
+                            <p><a href="/add_artifact">Add an artifact</a></p>
+                            <p><a href="/myProfile">View your profile</a></p>
                         </h4>
                         <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} onClick={this.onLogoutClick} className="btn btn-large waves-effect waves-light hoverable blue accent-3">Logout</button>
                         <br />
