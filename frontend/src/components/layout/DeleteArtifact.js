@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import {deleteArtifact} from '../../actions/artifactActions';
-import {Link, withRouter}  from 'react-router-dom';
-import {connect} from 'react-redux';
+import {Link}  from 'react-router-dom';
 //import PropTypes from "prop-types";
-//import {connect} from 'react-redux';
 //import {registerUser} from '../../actions/authActions';
 //import classnames from 'classnames';
 import {
@@ -46,13 +43,10 @@ class DeleteArtifact extends Component{
 
     yesClick()  {
 
-        this.props.deleteArtifact(this.props.match.params.id, (res) => {
-            console.log(res);
-            
-        });
+        axios.delete('http://localhost:5000/api/delete_artifact/' + this.props.match.params.id);
 
 
-        window.location = '/';
+        //window.location = '/myprofile';
     }
 
 
@@ -152,13 +146,5 @@ class DeleteArtifact extends Component{
 
 }
 
-const mapStateToProps = state => ({
-    auth: state.auth,
-    errors: state.errors,
-    files: state.files
-});
 
-export default connect(
-    mapStateToProps,
-    {deleteArtifact}
-)(DeleteArtifact);
+export default (DeleteArtifact);
