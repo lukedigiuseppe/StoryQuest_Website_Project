@@ -35,6 +35,13 @@ module.exports = function validateAddArtifact(data) {
         errors.isPublic = "A privacy setting must be entered."
     }
 
+    // Check that if date made is non-empty then make sure that it is a valid date
+    if (!Validator.isEmpty(data.dateMade)) {
+        if (!Validator.isBefore(data.dateMade)) {
+            errors.dateMade = "The date you have entered is invalid. It cannot be a date in the future";
+        }
+    }
+
     return {
         errors,
         isValid: isEmpty(errors)

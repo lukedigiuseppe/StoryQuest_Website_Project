@@ -483,9 +483,18 @@ class AddArtifact extends Component {
                         name="dateMade"
                         id="dateMade"
                         />
+                    
                     </Col>
                     <Col sm = {MARGIN}></Col>
                 </FormGroup>
+
+                <Row>
+                    <Col sm = {MARGIN}></Col>
+                    <Col>
+                        <ErrorAlert errorMsg={errors.dateMade} />
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
 
                 <Row>
                     <Col sm = {MARGIN}></Col>
