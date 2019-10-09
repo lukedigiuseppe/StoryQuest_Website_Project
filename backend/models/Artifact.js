@@ -48,6 +48,7 @@ const ArtifactSchema = mongoose.Schema(
         },
         "dateMade" : {
             type: Date,
+            default: Date.now
         },
         "dateAdded" : {
             type: Date,
