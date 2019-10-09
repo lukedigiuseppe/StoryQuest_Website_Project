@@ -62,40 +62,45 @@ router.post('/searchartifacts', function(req, res, next) {
                     if (err) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
                     }
-
                     var filteredArtifacts = [];
+                    console.log(artifacts);
+                    // Counter to track the number of async callbacks finished.
+                    var artifactsProcessed = 0;
                     // Filter out Friend level artifacts that the user is not a friend of
-                    for (const artifact of artifacts) {
-                        if (artifact.ownerID === user.id) {
-                            filteredArtifacts.push(artifact);
-                        }
-                        // User.findById(artifact.ownerID, (err, foundUser) => {
-                        //     if (err) {
-                        //         if (!res.headersSent) {
-                        //             return res.status(500).send(err);
-                        //         }
-                        //     }
-    
-                        //     if (!user) {
-                        //         if (!res.headersSent) {
-                        //             return res.status(404).send({message: "User not found."});
-                        //         }
-                        //     }
+                    artifacts.forEach((artifact, index, artifactArr) => {
+                        User.findById(artifact.ownerID, (err, foundUser) => {
+                            if (err) {
+                                if (!res.headersSent) {
+                                    return res.status(500).send(err);
+                                }
+                            }
+
+                            if (!user) {
+                                if (!res.headersSent) {
+                                    return res.status(404).send({message: "User not found."});
+                                }
+                            }
                             
-                        //     // If its the owner then add to search results
-                        //     if (foundUser.id === user.id) {
-                        //         filteredArtifacts.push(artifact);
-                        //         // Check if the user is a friend of the owner and that the artifact is set to friend level privacy
-                        //     } else if (foundUser.knownUsers.includes(user.email)) {
-                        //         if (artifact.isPublic === "friends") {
-                        //             filteredArtifacts.push(artifact);
-                        //         }
-                        //     } 
-                        // });
-                    }
-                    return res.status(200).send(filteredArtifacts);
-                    // if (filteredArtifacts.length !== 0) {
-                    // }
+                            // If its the owner then add to search results
+                            if (foundUser.id === user.id) {
+                                filteredArtifacts.push(artifact);
+                                // Check if the user is a friend of the owner and that the artifact is set to friend level privacy
+                            } else if (artifact.isPublic === "friends") {
+                                if (foundUser.knownUsers.includes(user.email)) {
+                                    filteredArtifacts.push(artifact);
+                                }
+                            }  else if (artifact.isPublic === "public") {
+                                // Then we add to search results regardless
+                                filteredArtifacts.push(artifact);
+                            }
+
+                            artifactsProcessed++;
+
+                            if (artifactsProcessed === artifactArr.length) {
+                                return res.status(200).send(filteredArtifacts);
+                            }
+                        });
+                    })
                 });
         }
     })(req, res, next);
