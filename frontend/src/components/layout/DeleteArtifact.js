@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-
+import {deleteArtifact} from '../../actions/artifactActions';
 import {Link, withRouter}  from 'react-router-dom';
+import {connect} from 'react-redux';
 //import PropTypes from "prop-types";
 //import {connect} from 'react-redux';
 //import {registerUser} from '../../actions/authActions';
@@ -10,7 +11,7 @@ import {
     Container,
     Col,
     Row,
-    UncontrolledCarousel 
+    Button
 } from 'reactstrap';
 
 
@@ -26,6 +27,55 @@ const BANNER = "/images/cover.png";
 
 
 class DeleteArtifact extends Component{
+
+
+    constructor(props) {
+        super(props);
+
+    
+        this.state = {
+            name: "",
+
+
+        }
+
+
+        this.yesClick = this.yesClick.bind(this);
+
+    }
+
+    yesClick()  {
+
+        this.props.deleteArtifact(this.props.match.params.id, (res) => {
+            console.log(res);
+            
+        });
+
+
+        window.location = '/';
+    }
+
+
+
+
+    componentDidMount(){
+        axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
+            .then(res => {
+                console.log(res.data);
+                // We then call setState here to assign the information we got back into our state so that we can render it.
+                this.setState({
+                    name: res.data.name,
+                })
+            })
+
+
+            .catch(err => {
+            
+                console.log(err);
+            });
+
+
+    }
 
     render(){
 
@@ -58,7 +108,7 @@ class DeleteArtifact extends Component{
                 <Row>
                     <Col xs = "1"></Col>
                     <Col xs = "10">
-                        <p  className= "text-center" style={{paddingLeft: "30px"}, {fontSize: "40px"}}>Are you sure you want to remove _____</p>
+                        <p  className= "text-center" style={{paddingLeft: "30px"}, {fontSize: "40px"}}>Are you sure you want to remove "{this.state.name}"?</p>
                     </Col>
                     <Col xs = "1"></Col>
                 </Row>
@@ -71,6 +121,26 @@ class DeleteArtifact extends Component{
                 </Row>
 
 
+                <Row>
+                    <Col xs = "4"></Col>
+
+                    <Col xs = "2">
+                        <Button onClick = {this.yesClick}size ="lg" block> Yes</Button>
+                    </Col>
+
+                    <Col xs = "2">
+                        <Button href= {"/view_artifact/" + this.props.match.params.id} size ="lg" block> No </Button>
+
+                    </Col>
+
+
+                    <Col xs = "4"></Col>
+                </Row>
+
+
+
+                
+
 
                 
                 </Container>
@@ -82,4 +152,13 @@ class DeleteArtifact extends Component{
 
 }
 
-export default DeleteArtifact;
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors,
+    files: state.files
+});
+
+export default connect(
+    mapStateToProps,
+    {deleteArtifact}
+)(DeleteArtifact);

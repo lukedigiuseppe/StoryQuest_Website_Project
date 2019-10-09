@@ -20,3 +20,18 @@ export const addNewArtifact = (artifactData, callback) => dispatch => {
         })
         );
 };
+
+
+export const deleteArtifact = (artifactID, callback) => dispatch => {
+    axios
+        .post('/delete_artifact/' + artifactID)
+        .then(res => {
+            callback(res);
+        })
+        .catch(err => dispatch({
+            type: GET_ERRORS,
+            payload: err.response.data
+        })
+        );
+
+};

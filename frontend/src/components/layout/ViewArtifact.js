@@ -26,14 +26,6 @@ const BANNER = "/images/cover.png";
 
 
 
-const items = [
-    {
-      src: '/images/vase.jpg',
-      altText: 'Slide 1',
-      caption: 'Slide 1',
-      header: 'Slide 1 Header'
-    },
-  ];
 
 class ViewArtifact extends Component{
 
