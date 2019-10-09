@@ -10,7 +10,7 @@ const encrypt = require('../../utils/encryption').encrypt;
 
 class Dashboard extends Component {
 
-    constructor(props) {https://www.google.com.au/
+    constructor(props) {
         super(props);
         this.state = {
             message: '',
@@ -44,7 +44,7 @@ class Dashboard extends Component {
     onSubmit = (e) => {
 
         e.preventDefault();
-        const data = encrypt(this.state.videoID);
+        // const data = encrypt(this.state.videoID);
 
         // axios.post('/delete_video/' + this.state.artifactID, data)
         //     .then(res => {
@@ -75,7 +75,7 @@ class Dashboard extends Component {
                             <p className="flow-text grey-text text-darken-1">
                                 You are logged into a full-stack{" "}<span style={{ fontFamily: "monospace"}}>MERN</span> app 👏
                             </p>
-                            <p><img src={`data:image/jpeg;base64,${this.state.profileImgData}`} /></p>
+                            <p><img src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt="" /></p>
                             <p><a href="/profile_image">Upload a new profile picture</a></p> 
                             <p><a href="/add_artifact">Add an artifact</a></p> 
                         </h4>

@@ -63,7 +63,6 @@ router.post('/searchartifacts', function(req, res, next) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
                     }
                     var filteredArtifacts = [];
-                    console.log(artifacts);
                     // Counter to track the number of async callbacks finished.
                     var artifactsProcessed = 0;
                     // Filter out Friend level artifacts that the user is not a friend of
