@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from '../App';
 import ErrorAlert from '../components/alerts/ErrorAlert';
 import MobileMenu from '../components/layout/MobileMenu';
 import TopMenu from '../components/layout/TopMenu';
@@ -8,12 +7,6 @@ import Welcome from '../components/layout/Welcome';
 import MainSearch from '../components/layout/MainSearch';
 
 // This file contains rendering of different layout components that are isolated. To check that they do not throw errors
-
-it('renders App without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
-});
 
 it('renders ErrorAlert without crashing', () => {
     const div = document.createElement('div');

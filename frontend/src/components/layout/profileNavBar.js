@@ -16,9 +16,18 @@ import {
     DropdownItem,
 } from 'reactstrap';
 
+import PropTypes from "prop-types";
+import {connect} from "react-redux";
+import {logoutUser} from "../../actions/authActions";
+
 const LOGO = '/images/storyQuest.png'
 
-class TopMenu extends Component {
+class ProfileNavBar extends Component {
+
+    onLogoutClick = (e) => {
+        e.preventDefault();
+        this.props.logoutUser();
+    };
 
     render() {
         return(
@@ -51,7 +60,7 @@ class TopMenu extends Component {
                                         <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
                                         <DropdownMenu right>
                                             <DropdownItem href="/myprofile"><Button>My Profile</Button></DropdownItem>
-                                            <DropdownItem href="/logout"><Button>Logout</Button></DropdownItem>
+                                            <DropdownItem href="/login"><Button onClick={this.onLogoutClick}>Logout</Button></DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                 </Nav>
@@ -64,4 +73,16 @@ class TopMenu extends Component {
     };
 }
 
-export default TopMenu;
+ProfileNavBar.propTypes = {
+    logoutUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+};
+
+const MapStateToProps = state => ({
+    auth: state.auth
+});
+
+export default connect(
+    MapStateToProps, 
+    {logoutUser}
+)(ProfileNavBar);
