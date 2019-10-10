@@ -16,8 +16,6 @@ import '../../css/viewArtifact.css';
 import axios from 'axios';
 
 
-// Compononent that creates the regsitration page for new users.
-// Need to add code that redirects to another page after pressing submit
 
 
 const BANNER = "/images/cover.png";
@@ -28,35 +26,34 @@ class DeleteArtifact extends Component{
 
     constructor(props) {
         super(props);
-
+         /*Prepare the artifact information */
     
         this.state = {
             name: "",
-
-
         }
-
 
         this.yesClick = this.yesClick.bind(this);
 
     }
 
+    /*If confirmed, delete the artifact and redirect to homepage*/
     yesClick()  {
 
-        axios.delete('http://localhost:5000/api/delete_artifact/' + this.props.match.params.id);
+        axios.delete('http://localhost:5000/delete_artifact/' + this.props.match.params.id);
 
 
-        //window.location = '/myprofile';
+        window.location = '/myprofile';
     }
 
 
 
 
     componentDidMount(){
+        {/*Get the artifact name for display*/}
         axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
             .then(res => {
                 console.log(res.data);
-                // We then call setState here to assign the information we got back into our state so that we can render it.
+               
                 this.setState({
                     name: res.data.name,
                 })
@@ -75,6 +72,7 @@ class DeleteArtifact extends Component{
 
         return(
         <div>
+            {/*Helmet*/}
             <Helmet> 
                     <meta charset="utf-8" />
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -90,7 +88,7 @@ class DeleteArtifact extends Component{
 
                 <Container className="register-box bg-light rounded-lg">
 
-                 {/*Form title*/}
+                 {/*Back to home*/}
                  <Row>
                      <Col xs = "6">
                         <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
@@ -98,6 +96,8 @@ class DeleteArtifact extends Component{
                         </Link>
                     </Col>
                 </Row>
+
+                {/*As if they want to remove this*/}
 
                 <Row>
                     <Col xs = "1"></Col>
@@ -114,7 +114,7 @@ class DeleteArtifact extends Component{
                     <Col xs = "1"></Col>
                 </Row>
 
-
+                {/*Buttons to say yes or no to the deletion*/}
                 <Row>
                     <Col xs = "4"></Col>
 

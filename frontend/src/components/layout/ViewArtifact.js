@@ -33,7 +33,8 @@ class ViewArtifact extends Component{
 
     constructor(props) {
         super(props);
-
+             
+        /*Prepare the artifact information */
     
         this.state = {
             name: "",
@@ -49,6 +50,9 @@ class ViewArtifact extends Component{
     }
 
     componentDidMount() {
+
+
+         /*Get the artifact information from backend using axios */
         axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
             .then(res => {
                 console.log(res.data);
@@ -61,10 +65,12 @@ class ViewArtifact extends Component{
                     isPublic: res.data.isPublic,
                     ownerID: res.data.ownerID,
                 })
+
+                /*Get the owner ID from backend, so name can be displayed*/
                 axios.get('http://localhost:5000/api/users/profile/all_info/' + this.state.ownerID )
                     .then(res => {
                          console.log(res.data);
-                // We then call setState here to assign the information we got back into our state so that we can render it.
+              
                             this.setState({
                                 ownerName: res.data.publicName,
                         
@@ -83,6 +89,8 @@ class ViewArtifact extends Component{
                 console.log(err);
             });
 
+
+        /*Get, process and package the images so reactstrap can display them */
         axios.get('/artifact/' + this.props.match.params.id)
         .then(res => {
             res.data.images.forEach(imageID => {
@@ -115,14 +123,13 @@ class ViewArtifact extends Component{
 
     }
 
-    // For posting form information, it gets a little more complicated. We will require two functions, onChange and onSubmit. 
-    // onChange is the function that is run whenever there is a change in the input fields of the form. So we normally update the component state in this function.
-    // onSubmit is the function tha
-
+    
     render(){
 
         return(
             <div>
+
+                {/*Hemet*/}
                 <Helmet> 
                     <meta charset="utf-8" />
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -148,6 +155,8 @@ class ViewArtifact extends Component{
 
                     
                 </Row>
+
+                {/*Item name*/}
                 <Row>
                     <Col xs = "6">
                         <h1 className="text-left" style={{paddingLeft: "30px"}}>{this.state.name}</h1>
@@ -156,6 +165,8 @@ class ViewArtifact extends Component{
 
                     
                 </Row>
+
+                {/*Item date*/}
                 <Row>   
                     <Col xs = "2">
                 
@@ -173,6 +184,7 @@ class ViewArtifact extends Component{
 
                 </Row>
 
+                {/*Item story*/}
                 <Row>
                      <Col xs = "1"></Col>
                     <Col>
@@ -192,6 +204,9 @@ class ViewArtifact extends Component{
                     <Col xs = "1"></Col>
 
                 </Row>
+
+
+                {/*Item imaeges*/}
 
                 <Row>
 

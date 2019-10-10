@@ -23,7 +23,7 @@ import ImageUpload from '../media/ImageUpload';
 import VideoUpload from '../media/VideoUpload';
 
 import '../../css/tags.css';
-import '../../css/addArtifact.css';
+import '../../css/addArtifact.css'; 
 
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
@@ -47,7 +47,7 @@ class AddArtifact extends Component {
 
     constructor(props) {
         super(props);
-
+            /*Prepare the artifact information */
         this.state = {
             name: "",
             story: "",
@@ -83,6 +83,7 @@ class AddArtifact extends Component {
         this.setState(state => ({ tags: [...state.tags, tag] }));
     }
     
+   /*Dealing with tags */
     handleDrag(tag, currPos, newPos) {
         const tags = [...this.state.tags];
         const newTags = tags.slice();
@@ -93,7 +94,7 @@ class AddArtifact extends Component {
         // re-render
         this.setState({ tags: newTags });
     }
-
+    /*Handle clicking tags */
     handleTagClick(index) {
         console.log('The tag at index ' + index + ' was clicked');
     }
@@ -116,6 +117,8 @@ class AddArtifact extends Component {
         //     // Redirect to home page
         //     this.props.history.push('/');
         // }
+
+        /*Video/image uploading */
         if (this.props.files.imgUploaded && this.props.files.hasImgs) {
             this.props.setImgUploading();
             this.props.setHasNoImgs();
@@ -401,6 +404,7 @@ class AddArtifact extends Component {
                 </Row>
 
                 {/* For radio buttons ensure name is the same so that users can only select one */}
+                {/*Choose artifact privacy */}
                 <Row>
                     <Col sm = {MARGIN*2}></Col>
                     <Col sm = {HALF} >
