@@ -7,6 +7,17 @@ import {Helmet} from "react-helmet";
 import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+
+const Artifact = props => (
+    <tr>
+        <td>
+            <Link to={"/view_artifact/"+props.artifacts._id}>{props.artifacts.name}</Link>
+        </td>
+        <td>{props.artifacts.story.substring(0,25)} ...</td>
+        <td>{props.artifacts.dateMade} </td>
+    </tr>
+)
 
 
 class Profile extends Component {
@@ -14,7 +25,7 @@ class Profile extends Component {
     constructor(props) {
         super(props);
 
-        
+        /*States for user info*/
         this.state = {
             publicName: "",
             firstName: "",
@@ -22,12 +33,15 @@ class Profile extends Component {
             location:"",
             dateCreated: "",
             profileImage: "",
+            artifacts: [],
             
     
         }
     }
 
     componentDidMount() {
+
+        {/*Get user info from backend database*/}
       
         axios.get("http://localhost:5000/api/users/profile/all_info/" + this.props.match.params.id)
             .then(res => {
@@ -40,15 +54,25 @@ class Profile extends Component {
                     dateCreated: res.data.dateCreated,
                 })
             })
-        
-            axios.get("http://localhost:5000/api/users/profile/profile_image/" + this.props.match.params.id)
-            .then(res => {
-                // We then call setState here to assign the information we got back into our state so that we can render it.
+
+            {/*get and deal with prifile image for dsiplay*/}
+        axios.get("http://localhost:5000/api/users/profile/profile_image/" + this.props.match.params.id)
+        .then(res => {
+            // We then call setState here to assign the information we got back into our state so that we can render it.
+            this.setState({
+                profileImage: res.data,
+            })
+        })
+
+
+        axios.get('/artifacts/' + this.props.match.params.id)
+            .then(res =>{
+
                 this.setState({
-                   profileImage: res.data,
+                    artifacts: res.data
                 })
             })
-        
+
             .catch(err => {
                 console.log(err);
             });
@@ -56,6 +80,13 @@ class Profile extends Component {
         
   
     }
+
+    artifactList() {
+        return this.state.artifacts.map(function(currArtifact, i){
+            return <Artifact artifacts={currArtifact} key={i} />;
+        })
+    }
+
 
 
     onChange = (e) => {
@@ -95,8 +126,25 @@ class Profile extends Component {
                         <a href="https://icons8.com/icon/102561/verified-account">Verified Account icon by Icons8</a>
                     </p>
                     <br></br>
-
                    </Container>
+
+                   <Container className="artifactBox">
+                <div>
+                    <div className="d-flex justify-content-centre"> <p className="tMHeader">Your Artifacts</p></div>
+                    <table className="table table-striped" size="sm" justify-content-centre>
+                        <thead>
+                        <tr>
+                            <th className="tHeader">Name</th>
+                            <th className="tHeader">Your Story</th>
+                            <th className="tHeader">Date Made</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        { this.artifactList() }
+                        </tbody>
+                    </table>
+                </div>
+                </Container>
 
 
             </div>
