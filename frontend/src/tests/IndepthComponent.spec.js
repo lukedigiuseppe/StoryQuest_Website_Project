@@ -4,9 +4,12 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import App from '../App';
+import { Provider } from "react-redux";
+import store from "../store";
+
 
 it('renders Find an artifact heading in homepage', () => {
-    const wrapper = mount(<App />);
+    const wrapper = mount(<Provider store={store}><App /></Provider>);
     const findArtifact = <h1 className="display-3 ">Find an artifact</h1>
     expect(wrapper).toContainReact(findArtifact);
 });

@@ -98,7 +98,7 @@ class myProfile extends Component {
                     <title>My Profile</title>
                 </Helmet>
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
-                <Container className="d-none d-lg-flex"><ProfileNavBar /></Container>
+                <Container className="d-none d-lg-flex"><ProfileNavBar history={this.props.history}/></Container>
                 <Container className="d-lg-none"><MobileMenu2 /></Container>
                 <br /><br /><br />
                 <br /><br /><br />
@@ -128,8 +128,8 @@ class myProfile extends Component {
                 <br></br><br></br>
                 <Container className="artifactBox">
                 <div>
-                    <div className="d-flex justify-content-centre"> <p className="tMHeader">Your Artifacts</p></div>
-                    <table className="table table-striped" size="sm" justify-content-centre>
+                    <div className="d-flex justify-content-center"><p className="tMHeader">Your Artifacts</p></div>
+                    <table className="table table-striped justify-content-center" size="sm" >
                         <thead>
                         <tr>
                             <th className="tHeader">Name</th>

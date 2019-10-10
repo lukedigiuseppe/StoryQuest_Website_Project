@@ -20,13 +20,14 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {logoutUser} from "../../actions/authActions";
 
-const LOGO = '/images/storyQuest.png'
+const LOGO = '/images/storyQuest.png';
 
 class ProfileNavBar extends Component {
 
     onLogoutClick = (e) => {
         e.preventDefault();
         this.props.logoutUser();
+        this.props.history.push('/login');
     };
 
     render() {
@@ -60,7 +61,7 @@ class ProfileNavBar extends Component {
                                         <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
                                         <DropdownMenu right>
                                             <DropdownItem href="/myprofile"><Button>My Profile</Button></DropdownItem>
-                                            <DropdownItem href="/login"><Button onClick={this.onLogoutClick}>Logout</Button></DropdownItem>
+                                            <DropdownItem href="/login"><Button onClick={this.onLogoutClick}>Logout</Button></DropdownItem> 
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                 </Nav>
@@ -76,6 +77,7 @@ class ProfileNavBar extends Component {
 ProfileNavBar.propTypes = {
     logoutUser: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
 };
 
 const MapStateToProps = state => ({
