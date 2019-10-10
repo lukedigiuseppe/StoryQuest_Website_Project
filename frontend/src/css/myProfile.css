@@ -42,7 +42,6 @@
 }
 
 .profilePic {
-
     display: block;
     padding: 10px;
     max-width:200px;
@@ -56,9 +55,27 @@
 
 }
 
+.edit-text {
+    font-size: 20px;
+    justify-content: left;
+    align-items: left;
+    margin-top: 10px;
+    flex-direction: row;
+    text-align: left;
+}
+
+.view-text {
+    text-align: left;
+    width: 400px;
+    word-wrap: break-word;
+}
+
 .greeting {
     font-family: 'Merriweather', sans-serif;
     font-size: 25px;
+    text-align: center;
+    width: 200px;
+    word-wrap: break-word;
 }
 
 .basicText{

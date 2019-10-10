@@ -7,8 +7,8 @@ module.exports = function validateUpdateProfile(data) {
     let errors = {};
 
     // Convert empty fields to an empty string so that we can use validator functions
-    data.firstName = !isEmpty(data.firstName) ? data.email: "";
-    data.lastName = !isEmpty(data.lastName) ? data.password: "";
+    data.firstName = !isEmpty(data.firstName) ? data.firstName: "";
+    data.lastName = !isEmpty(data.lastName) ? data.lastName: "";
     data.publicName = !isEmpty(data.publicName) ? data.publicName: "";
     data.newFriend = !isEmpty(data.newFriend) ? data.newFriend: "";
     data.location = !isEmpty(data.location) ? data.location: "";

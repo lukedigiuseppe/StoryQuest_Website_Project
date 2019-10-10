@@ -116,13 +116,6 @@ class Login extends Component {
                         />
                         <ErrorAlert errorMsg={errors.password} />
                         <ErrorAlert errorMsg={errors.passwordincorrect} />
-                        <div className="checkbox mb-3">
-                            <Label>
-                                {/* Remember me functionality currently does not work */}
-                                <Input type="checkbox" value="rememberMe" />
-                                Remember me
-                            </Label>
-                        </div>
                         <Button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</Button>
                         <p className="mt-3 mb-2">Don't have an account? <Link style={{color: "blue"}} to="/register">Register here</Link></p>
                         <p className="mt-5 mb-3 text-muted">&copy; Team FrankTheTank 2019</p>

@@ -14,7 +14,7 @@ class App extends Component {
 
     render() {
 
-        const navMenu = this.props.auth.isAuthenticated ? <Container className="d-none d-lg-flex"><ProfileNavBar /></Container> : <Container className="d-none d-lg-flex"><TopMenu /></Container>;
+        const navMenu = this.props.auth.isAuthenticated ? <Container className="d-none d-lg-flex"><ProfileNavBar history={this.props.history}/></Container> : <Container className="d-none d-lg-flex"><TopMenu /></Container>;
 
         return(
             <div>

@@ -8,6 +8,9 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import EdiText from 'react-editext';
+// Used to check if Friend email entered is a valid email
+// import Validator from 'validator';
 
 const Artifact = props => (
     <tr>
@@ -18,6 +21,8 @@ const Artifact = props => (
         <td>{props.artifacts.dateMade} </td>
     </tr>
 )
+
+const MAX_FIELD_LEN = 50;
 
 class myProfile extends Component {
     constructor(props) {
@@ -34,6 +39,12 @@ class myProfile extends Component {
             profileImgData: "",
             artifacts: []
         }
+
+        this.onSavePublicName = this.onSavePublicName.bind(this);
+        this.onSaveFirstName = this.onSaveFirstName.bind(this);
+        this.onSaveLastName = this.onSaveLastName.bind(this);
+        this.onSaveEmail = this.onSaveEmail.bind(this);
+        this.onSaveLocation = this.onSaveLocation.bind(this);
     }
 
 
@@ -58,36 +69,111 @@ class myProfile extends Component {
     //             console.log(err);
     //          });
 
-        // Make first two requests
-        const [firstRes] = await Promise.all([
-            axios.get('/userinfo'),
-        ]);
+        // If user isn't logged in then redirect to login page and don't do the requests
+        if (!this.props.auth.isAuthenticated) {
+            this.props.history.push('/login');
+        } else {
+            // Make first two requests
+            const [firstRes] = await Promise.all([
+                axios.get('/userinfo'),
+            ]);
 
-        // Make third request using responses from the first two
-        const secondRes = await axios.get('/artifacts/' + firstRes.data._id);
-        const thirdRes = await axios.get('/api/users/profile/' + firstRes.data.email);
+            // Make third request using responses from the first two
+            const secondRes = await axios.get('/artifacts/' + firstRes.data._id);
+            const thirdRes = await axios.get('/api/users/profile/' + firstRes.data.email);
 
-        // Update state once with all 3 responses
-        this.setState({
-            email: firstRes.data.email,
-            birthDate: firstRes.data.birthDate,
-            publicName: firstRes.data.publicName,
-            firstName: firstRes.data.firstName,
-            lastName: firstRes.data.lastName,
-            location: firstRes.data.location,
-            dateCreated: firstRes.data.dateCreated,
-            userID: firstRes.data._id,
-            profileImgData: thirdRes.data,
-            artifacts: secondRes.data
-        });
-
-
+            // Update state once with all 3 responses
+            this.setState({
+                email: firstRes.data.email,
+                birthDate: firstRes.data.birthDate,
+                publicName: firstRes.data.publicName,
+                firstName: firstRes.data.firstName,
+                lastName: firstRes.data.lastName,
+                location: firstRes.data.location,
+                dateCreated: firstRes.data.dateCreated,
+                userID: firstRes.data._id,
+                profileImgData: thirdRes.data,
+                artifacts: secondRes.data
+            });
+        }
     }
 
     artifactList() {
         return this.state.artifacts.map(function(currArtifact, i){
             return <Artifact artifacts={currArtifact} key={i} />;
         })
+    }
+
+    // Save functions that run whenever the user saves an edit entry. This would POST to the backend to change values
+    onSavePublicName(val) {
+        this.setState({publicName: val});
+        const newData = {
+            publicName: val
+        }
+        axios.patch('/api/users/update', newData)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    onSaveFirstName(val) {
+        this.setState({firstName: val});
+        const newData = {
+            firstName: val
+        }
+        console.log(newData.firstName);
+        axios.patch('/api/users/update', newData)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    onSaveLastName(val) {
+        this.setState({lastName: val});
+        const newData = {
+            lastName: val
+        }
+        axios.patch('/api/users/update', newData)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    onSaveEmail(val) {
+        this.setState({email: val});
+        const newData = {
+            email: val
+        }
+        axios.patch('/api/users/update', newData)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    onSaveLocation(val) {
+        this.setState({location: val});
+        const newData = {
+            location: val
+        }
+        axios.patch('/api/users/update', newData)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     render() {
@@ -107,19 +193,154 @@ class myProfile extends Component {
                         <Col sm={{ size: 'auto', offset: 1}}>
                             <Container className="picBox">
                                 <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
-
                                 <div className="d-flex justify-content-center">
                                     <p className="greeting">Hi {this.state.publicName}!</p>
                                 </div>
                         </Container></Col>
                         <Col sm={{ size: '7', offset: 1.5 }}>
                             <Container className="profileBox">
-                                <div className="d-flex justify-content-left"> <p className="name">Public Name: {this.state.publicName}</p></div>
-                                <div className="d-flex justify-content-left"><p className="name">First Name: {this.state.firstName}</p></div>
-                                <div className="d-flex justify-content-left"> <p className="name">Last Name: {this.state.lastName}</p></div>
-                                <div className="d-flex justify-content-left"><p className="name">Email: {this.state.email}</p></div>
-                                <div className="d-flex justify-content-left"><p className="name">Location: {this.state.location}</p></div>
-                                <div className="d-flex justify-content-left"><p className="name">Date Joined: {this.state.dateCreated}</p></div>
+                                <div className="d-flex justify-content-left input-group">
+                                    <Row className="justify-content-left"> 
+                                        <Col xs="auto" className="edit-text">
+                                        {/* Buffer with spaces to make all field names the same length */}
+                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "67px"}}>Email&nbsp;</div>
+                                        </Col>
+                                        <Col xs="auto" className="no-gutters">
+                                            <p className="name edit-text">{this.state.email}</p>
+                                        </Col>
+                                    </Row>
+                                </div>
+                                <div className="d-flex justify-content-left input-group">
+                                    <Row className="justify-content-left"> 
+                                        <Col xs="auto" className="edit-text">
+                                        {/* Buffer with spaces to make all field names the same length */}
+                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "12px"}}>Date Joined&nbsp;</div>
+                                        </Col>
+                                        <Col xs="auto" className="no-gutters">
+                                            <p className="name edit-text">{this.state.dateCreated}</p>
+                                        </Col>
+                                    </Row>
+                                </div>
+                                <div className="d-flex justify-content-left input-group">
+                                    <Row>
+                                        <Col xs="auto" className="edit-text">
+                                            <div style={{borderRight: "2px solid grey", height: "30px"}}>Public Name&nbsp;</div>
+                                        </Col>
+                                        <Col xs="auto">
+                                        <EdiText
+                                            type='text' 
+                                            validation={val => val.length <= MAX_FIELD_LEN}
+                                            validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
+                                            viewContainerClassName='edit-text input-group'
+                                            viewProps={{
+                                                style: {textAlign: "left", width: "380px", wordWrap: "break-word"}
+                                            }}
+                                            editButtonClassName='btn-sm btn-secondary'
+                                            editButtonContent='Edit'
+                                            saveButtonContent='Apply'
+                                            saveButtonClassName='btn-sm btn-secondary'
+                                            cancelButtonContent='Cancel'
+                                            cancelButtonClassName='btn-sm btn-primary'
+                                            inputProps={{
+                                                className: 'justify-content-left'
+                                            }}
+                                            value={this.state.publicName}
+                                            onSave={this.onSavePublicName}
+                                        />
+                                        </Col>
+                                    </Row>
+                                </div>
+                                <div className="d-flex justify-content-left input-group">
+                                <Row className="justify-content-left"> 
+                                    <Col xs="auto" className="edit-text">
+                                    {/* Buffer with spaces to make all field names the same length */}
+                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "16px"}}>First Name&nbsp;</div>
+                                    </Col>
+                                    <Col xs="auto" className="no-gutters">
+                                        <EdiText
+                                            type='text'
+                                            validation={val => val.length <= MAX_FIELD_LEN}
+                                            validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."} 
+                                            viewContainerClassName='edit-text input-group'
+                                            viewProps={{
+                                                style: {textAlign: "left", width: "380px", wordWrap: "break-word"}
+                                            }}
+                                            editButtonClassName='btn-sm btn-secondary'
+                                            editButtonContent='Edit'
+                                            saveButtonContent='Apply'
+                                            saveButtonClassName='btn-sm btn-secondary'
+                                            cancelButtonContent='Cancel'
+                                            cancelButtonClassName='btn-sm btn-primary'
+                                            inputProps={{
+                                                className: 'justify-content-left'
+                                            }}
+                                            value={this.state.firstName}
+                                            onSave={this.onSaveFirstName}
+                                        />
+                                    </Col>
+                                </Row>
+                                </div>
+                                <div className="d-flex justify-content-left input-group">
+                                <Row className="justify-content-left"> 
+                                    <Col xs="auto" className="edit-text">
+                                    {/* Pad to align everything to the longest field*/}
+                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "20px"}}>Last Name&nbsp;</div>
+                                    </Col>
+                                    <Col xs="auto" className="no-gutters">
+                                        <EdiText
+                                            type='text' 
+                                            validation={val => val.length <= MAX_FIELD_LEN}
+                                            validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
+                                            viewContainerClassName='edit-text input-group'
+                                            viewProps={{
+                                                style: {textAlign: "left", width: "380px", wordWrap: "break-word"}
+                                            }}
+                                            editButtonClassName='btn-sm btn-secondary'
+                                            editButtonContent='Edit'
+                                            saveButtonContent='Apply'
+                                            saveButtonClassName='btn-sm btn-secondary'
+                                            cancelButtonContent='Cancel'
+                                            cancelButtonClassName='btn-sm btn-primary'
+                                            inputProps={{
+                                                className: 'justify-content-left'
+                                            }}
+                                            value={this.state.lastName}
+                                            onSave={this.onSaveLastName}
+                                        />
+                                    </Col>
+                                </Row>
+                                </div>
+
+                                <div className="d-flex justify-content-left input-group">
+                                <Row className="justify-content-left" style={{paddingBottom: "10px"}}> 
+                                    <Col xs="auto" className="edit-text">
+                                    {/* Buffer with spaces to make all field names the same length */}
+                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "39px"}}>Location&nbsp;</div>
+                                    </Col>
+                                    <Col xs="auto" className="no-gutters">
+                                        <EdiText
+                                            type='text' 
+                                            validation={val => val.length <= MAX_FIELD_LEN}
+                                            validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
+                                            viewContainerClassName='edit-text input-group'
+                                            viewProps={{
+                                                style: {textAlign: "left", width: "380px", wordWrap: "break-word"}
+                                            }}
+                                            editButtonClassName='btn-sm btn-secondary'
+                                            editButtonContent='Edit'
+                                            saveButtonContent='Apply'
+                                            saveButtonClassName='btn-sm btn-secondary'
+                                            cancelButtonContent='Cancel'
+                                            cancelButtonClassName='btn-sm btn-primary'
+                                            inputProps={{
+                                                className: 'justify-content-left'
+                                            }}
+                                            value={this.state.location}
+                                            onSave={this.onSaveLocation}
+                                        />
+                                    </Col>
+                                </Row>
+                                </div>
                             </Container>
                             </Col>
                         <Col></Col>
@@ -152,10 +373,8 @@ myProfile.propTypes = {
     auth: PropTypes.object.isRequired
 };
 
-
 const mapStateToProps = state => ({
     auth: state.auth
 });
-
 
 export default connect(mapStateToProps)(myProfile);
