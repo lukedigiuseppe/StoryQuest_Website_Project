@@ -204,12 +204,27 @@ router.get('/artifact/:serial/:passcode', (req, res) => {
     })
 
 });
+// @route GET /artifact/:ownerID
+// @desc View a single artifact based owner ID. Only the artifact owner and authorised users are allowed
+//       to view via this URL.
+// @access Restricted
+router.get('/artifacts/:ownerID', (req, res) => {
+    var ownerVal = req.params.ownerID;
+        Artifact.find({ownerID: ownerVal}, function (err, artifact) {
+            if (err) {
+                res.send(err)
+            } else {
+                res.send(artifact);
+            }
+        })
+});
+
 
 // @route GET /artifact/:artifactID
 // @desc View a single artifact based on its unique database ID. Only the artifact owner and authorised users are allowed
 //       to view via this URL.
 // @access Restricted
-router.get('/artifact/:artifactID', (req, res, next) => { 
+router.get('/artifact/:artifactID', (req, res, next) => {
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
 
         var artifactID = req.params.artifactID;
@@ -275,6 +290,8 @@ router.get('/artifact/:artifactID', (req, res, next) => {
         })
     })(req, res, next);
 });
+
+
 
 // @route DELETE /delete_artifact/:artifactID
 // @desc View a single artifact based on its serial number.

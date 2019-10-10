@@ -30,38 +30,59 @@ class myProfile extends Component {
             lastName: "",
             location:"",
             dateCreated: "",
+            userID:"",
+            profileImgData: "",
             artifacts: []
         }
     }
 
 
-    componentDidMount() {
-    axios.all([
-        axios.get('/userinfo'),
-        axios.get('/artifacts')])
-            .then(axios.spread((userRes, artiRes) => {
-                console.log(artiRes)
-                this.setState({
-                    email: userRes.data.email,
-                    birthDate: userRes.data.birthDate,
-                    publicName: userRes.data.publicName,
-                    firstName: userRes.data.firstName,
-                    lastName: userRes.data.lastName,
-                    location: userRes.data.location,
-                    dateCreated: userRes.data.dateCreated,
-                    artifacts: artiRes.data
-                });
-            }))
-                .catch(err => {
-                    console.log(err);
-                });
-    }
+    async componentDidMount() {
+    // axios.all([
+    //     axios.get('/userinfo'),
+    //     axios.get('/artifacts/'+this.props._id)])
+    //         .then(axios.spread((userRes, artiRes) => {
+    //             this.setState({
+    //                 email: userRes.data.email,
+    //                 birthDate: userRes.data.birthDate,
+    //                 publicName: userRes.data.publicName,
+    //                 firstName: userRes.data.firstName,
+    //                 lastName: userRes.data.lastName,
+    //                 location: userRes.data.location,
+    //                 dateCreated: userRes.data.dateCreated,
+    //                 userID: userRes.data._id,
+    //                 artifacts: artiRes.data
+    //             });
+    //         }))
+    //         .catch(err => {
+    //             console.log(err);
+    //          });
 
-    // artifactList() {
-    //     return this.state.artifacts.map(function(currentArtifact, i){
-    //         return <li key={i}><ArtifactBlock artifactData={currentArtifact} /></li>;
-    //     });
-    // }
+        // Make first two requests
+        const [firstRes] = await Promise.all([
+            axios.get('/userinfo'),
+        ]);
+
+        // Make third request using responses from the first two
+        const secondRes = await axios.get('/artifacts/' + firstRes.data._id);
+        const thirdRes = await axios.get('/api/users/profile/' + firstRes.data.email);
+
+        // Update state once with all 3 responses
+        this.setState({
+            email: firstRes.data.email,
+            birthDate: firstRes.data.birthDate,
+            publicName: firstRes.data.publicName,
+            firstName: firstRes.data.firstName,
+            lastName: firstRes.data.lastName,
+            location: firstRes.data.location,
+            dateCreated: firstRes.data.dateCreated,
+            userID: firstRes.data._id,
+            profileImgData: thirdRes.data,
+            artifacts: secondRes.data
+        });
+
+
+    }
 
     artifactList() {
         return this.state.artifacts.map(function(currArtifact, i){
@@ -85,7 +106,8 @@ class myProfile extends Component {
                     <Row>
                         <Col sm={{ size: 'auto', offset: 1}}>
                             <Container className="picBox">
-                                <img className ="profilePic" src='/images/thomas.jpeg' alt='user profile pic'/>
+                                <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+
                                 <div className="d-flex justify-content-center">
                                     <p className="greeting">Hi {this.state.publicName}!</p>
                                 </div>
