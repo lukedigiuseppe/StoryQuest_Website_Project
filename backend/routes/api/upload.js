@@ -169,6 +169,59 @@ router.post('/upload_artifact_video', function(req, res, next) {
             const contentType = mime.lookup(path.extname(NEWPATH));
             if (contentType) {
                 if (contentType.includes('video')) {
+                    // Create a Media document to store the local file path and also assign it to the artifact that is associated with it
+                    // We rename the uploaded file to the object ID for the media object just created.
+                    var newMedia = new Media();
+                    newMedia.filePath = form.uploadDir + '/' + newMedia._id + path.extname(NEWPATH);
+                    // Calculate the md5 hash
+                    fs.readFile(NEWPATH, (err, buf) => {
+                        if (err) {
+                            throw err;
+                        }
+                        newMedia.md5 = md5(buf);
+                    });
+                    // Now rename the actual file
+                    fs.rename(NEWPATH, newMedia.filePath, (err) => {
+                        if (err) {
+                            throw err;
+                        }
+                    });
+                    // Assign the video to the artifact object
+                    Artifact.findById(req.headers.artifactid, function(err, artifact) {
+                        if (err) {
+                            console.log(err);
+                            if (!res.headersSent) {
+                                return res.sendStatus(500);
+                            }
+                        }
+
+                        // Check if artifact exists
+                        if (!artifact) {
+                            if (!res.headersSent) {
+                                return res.status(404).send("The artifact for this media object does not exist.");
+                            }
+                        }
+
+                        newMedia.artifactID = req.headers.artifactid;
+                        newMedia.save()
+                            .then( doc => {
+                                console.log(doc);
+                                // Assign the ID to the artifact
+                                artifact.videos.push(newMedia._id);
+                                artifact.save()
+                                    .catch(err => {
+                                        throw err;
+                                    });
+                            })
+                            .catch(err => {
+                                throw err;
+                            });
+                        // On successful creation return response to update Uppy's progress if the other upload isn't done yet.
+                        if (!res.headersSent) {
+                            return res.status(200).send(newMedia);
+                        }
+                    });
+
                     vidStore.uploadVideo(NEWPATH, file.name, function(err, file) {
                         if (err) {
                             if (!res.headersSent) {
@@ -226,59 +279,6 @@ router.post('/upload_artifact_video', function(req, res, next) {
                                 }
                             });
                         });
-                    });
-
-                    // Create a Media document to store the local file path and also assign it to the artifact that is associated with it
-                    // We rename the uploaded file to the object ID for the media object just created.
-                    var newMedia = new Media();
-                    newMedia.filePath = form.uploadDir + '/' + newMedia._id + path.extname(NEWPATH);
-                    // Calculate the md5 hash
-                    fs.readFile(NEWPATH, (err, buf) => {
-                        if (err) {
-                            throw err;
-                        }
-                        newMedia.md5 = md5(buf);
-                    });
-                    // Now rename the actual file
-                    fs.rename(NEWPATH, newMedia.filePath, (err) => {
-                        if (err) {
-                            throw err;
-                        }
-                    });
-                    // Assign the video to the artifact object
-                    Artifact.findById(req.headers.artifactid, function(err, artifact) {
-                        if (err) {
-                            console.log(err);
-                            if (!res.headersSent) {
-                                return res.sendStatus(500);
-                            }
-                        }
-
-                        // Check if artifact exists
-                        if (!artifact) {
-                            if (!res.headersSent) {
-                                return res.status(404).send("The artifact for this media object does not exist.");
-                            }
-                        }
-
-                        newMedia.artifactID = req.headers.artifactid;
-                        newMedia.save()
-                            .then( doc => {
-                                console.log(doc);
-                                // Assign the ID to the artifact
-                                artifact.videos.push(newMedia._id);
-                                artifact.save()
-                                    .catch(err => {
-                                        throw err;
-                                    });
-                            })
-                            .catch(err => {
-                                throw err;
-                            });
-                        // On successful creation return response to update Uppy's progress if the other upload isn't done yet.
-                        if (!res.headersSent) {
-                            return res.status(200).send(newMedia);
-                        }
                     });
                 }
             }

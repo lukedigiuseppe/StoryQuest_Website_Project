@@ -55,14 +55,51 @@ router.post('/searchartifacts', function(req, res, next) {
                     return res.status(200).send(artifacts);
                 });
         } else {
-            // Otherwise they are allowed to search for public artifacts, plus the ones they have created or set to friend level privacy
-            Artifact.find({$text: { $search: req.body.searchString }, $or: [ {isPublic: "private"}, {isPublic: "friends"}, {ownerID: user.id}] }, {score: { $meta: `textScore` }} )
+            // Otherwise they are allowed to search for public artifacts, plus the ones they have created or artifacts that belong to their friend level privacy
+            Artifact.find({$text: { $search: req.body.searchString }, $or: [{isPublic: "public"}, {isPublic: "friends"}, {ownerID: user.id}]}, {score: { $meta: `textScore` }} )
                 .sort({score: {$meta: `textScore`}})
                 .exec(function (err, artifacts) {
                     if (err) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
                     }
-                    return res.status(200).send(artifacts);
+                    var filteredArtifacts = [];
+                    // Counter to track the number of async callbacks finished.
+                    var artifactsProcessed = 0;
+                    // Filter out Friend level artifacts that the user is not a friend of
+                    artifacts.forEach((artifact, index, artifactArr) => {
+                        User.findById(artifact.ownerID, (err, foundUser) => {
+                            if (err) {
+                                if (!res.headersSent) {
+                                    return res.status(500).send(err);
+                                }
+                            }
+
+                            if (!user) {
+                                if (!res.headersSent) {
+                                    return res.status(404).send({message: "User not found."});
+                                }
+                            }
+                            
+                            // If its the owner then add to search results
+                            if (foundUser.id === user.id) {
+                                filteredArtifacts.push(artifact);
+                                // Check if the user is a friend of the owner and that the artifact is set to friend level privacy
+                            } else if (artifact.isPublic === "friends") {
+                                if (foundUser.knownUsers.includes(user.email)) {
+                                    filteredArtifacts.push(artifact);
+                                }
+                            }  else if (artifact.isPublic === "public") {
+                                // Then we add to search results regardless
+                                filteredArtifacts.push(artifact);
+                            }
+
+                            artifactsProcessed++;
+
+                            if (artifactsProcessed === artifactArr.length) {
+                                return res.status(200).send(filteredArtifacts);
+                            }
+                        });
+                    })
                 });
         }
     })(req, res, next);
