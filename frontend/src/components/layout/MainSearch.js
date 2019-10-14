@@ -1,11 +1,69 @@
 import React, {Component} from 'react';
 import {Button, Container, Row, Col, Form, Input} from 'reactstrap';
+import axios from "axios";
+import {Link} from "react-router-dom";
 
 
 const searchBG = '/backgrounds/search_bg.jpg';
 
-class MainSearch extends Component {
+const Artifact = props => (
+    <tr>
+        <td>
+            <Link to={"/view_artifact/"+props.artifacts._id}>{props.artifacts.name}</Link>
+        </td>
+        <td>{props.artifacts.story.substring(0,25)} ...</td>
+        <td>{props.artifacts.dateMade} </td>
+    </tr>
+)
 
+class MainSearch extends Component {
+    // only need to hold the artifact list and the search text to search
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            search: "",
+            artifacts: []
+        }
+    }
+
+    // on starting the website mount the the artifact list with all the artifacts
+    componentDidMount() {
+        axios.all([
+            axios.get('/artifacts')])
+            .then(axios.spread((artiRes) => {
+                console.log(artiRes)
+                this.setState({
+                    artifacts: artiRes.data
+                });
+            }))
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    // when a search is made you narrow down the artifact list to the specific artifacts
+    componentDidUpdate(prevProps) {
+        axios.all([axios.post('/searchartifacts')])
+            .then(axios.spread((artiRes) => {
+            console.log(artiRes)
+            this.setState({
+                artifacts: artiRes.data
+            });
+        }))
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    // properly write the list
+    artifactList() {
+        return this.state.artifacts.map(function(currArtifact, i){
+            return <Artifact artifacts={currArtifact} key={i} />;
+        })
+    }
+
+    // render everything
     render() {
         return(
             <Container className="pt-md-5 pb-md-5 rounded-lg" style={{backgroundImage: `url(${searchBG})`}} fluid>
@@ -23,10 +81,27 @@ class MainSearch extends Component {
                     </Col>
                     <Col>
                         <Form>
-                            <Button type="submit" className="btn btn-primary">Search</Button>
+                            <button onClick=>Search</button>
                         </Form>
                     </Col>
                 </Row>
+                <Container className="artifactBox">
+                    <div>
+                        <div className="d-flex justify-content-centre"> <p className="tMHeader">Artifact List</p></div>
+                        <table className="table table-striped" size="sm" justify-content-centre>
+                            <thead>
+                            <tr>
+                                <th className="tHeader">Name</th>
+                                <th className="tHeader">Story</th>
+                                <th className="tHeader">Date Made</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            { this.artifactList() }
+                            </tbody>
+                        </table>
+                    </div>
+                </Container>
             </Container>
         )
     };
