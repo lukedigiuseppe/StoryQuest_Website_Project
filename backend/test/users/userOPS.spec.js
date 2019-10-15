@@ -146,4 +146,123 @@ describe('User database operations', () => {
                 });
         });
     });
+
+    // Test /PATCH /api/users/update
+    describe('/PATCH /api/users/update', () => {
+        // This is the auth token to be assigned to the header
+        var authToken = null;
+        // This is the max length the validator will allow
+        const MAX_LEN = 50;
+
+        // Run once before all of the tests begin
+        before('log in the test user', (done) => {
+            // Get the returned auth token
+
+            var userLogin = {
+                email: userData.email,
+                password: userData.password
+            }
+
+            chai.request(server)
+                .post('/api/users/login')
+                .send(userLogin)
+                .end((err, res) => {
+                    authToken = res.body.token;
+                    done();
+                });
+        });
+
+        it("should NOT be able to update a user's details if they are not logged in", (done) => {
+
+            const updateData = {
+                firstName: "hello",
+                lastName: "jacky",
+                publicName: "jayqueline",
+                location: "new jersey"
+            }
+
+            chai.request(server)
+                .patch('/api/users/update')
+                .send(updateData)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(401);
+                    res.text.should.eql("Unauthorised user. Please login to update details.");
+                    // Check that details are still the same
+                    User.findOne({firstName: userData.firstName}, (err, user) => {
+                        should.equal(err, null);
+                        should.not.equal(user, null);
+                        user.should.have.property("firstName").eql(userData.firstName);
+                        user.should.have.property("lastName").eql(userData.lastName);
+                        user.should.have.property("publicName").eql(userData.publicName);
+                        user.should.have.property("location").eql(userData.location);
+                        done();
+                    });
+                });
+        });
+
+        it("should NOT be able to update the user's details if they provide invalid information even if they are logged in", (done) => {
+            
+            const invalidData = {
+                firstName: "a reallllllllllllllllllllllllllllllllllllllllyyyyyyyyyyyyy lllllllllllllllllllloooooooooooooooonnnnnnnnnnnnnnnnggggggggggggg naaaaaaaame",
+                lastName: "a reallllllllllllllllllllllllllllllllllllllllyyyyyyyyyyyyy lllllllllllllllllllloooooooooooooooonnnnnnnnnnnnnnnnggggggggggggg naaaaaaaame",
+                publicName: "a reallllllllllllllllllllllllllllllllllllllllyyyyyyyyyyyyy lllllllllllllllllllloooooooooooooooonnnnnnnnnnnnnnnnggggggggggggg naaaaaaaame",
+                location: "aaaaaaaaa rrrrrrrrrreeeeeeeeeeeeeaaaaaaaaaaaallllllllllllllyyyyyyyyyyy llllllllllllloooooooooonnnnnnnnnnnnnggggggggggg lllllllooooooocccccccccaaaaaaaatttttttiiiiiooonn"
+            }
+
+            chai.request(server)
+                .patch('/api/users/update')
+                .set("Authorization", authToken)
+                .send(invalidData)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(400);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('firstName').eql("Firstname must be between 0 and " + MAX_LEN + " characters long.");
+                    res.body.should.have.property('lastName').eql("Lastname must be between 0 and " + MAX_LEN + " characters long.");
+                    res.body.should.have.property('publicName').eql("Publicname must be between 0 and " + MAX_LEN + " characters long.");
+                    res.body.should.have.property('location').eql("The location must be between 0 and " + MAX_LEN + " characters long.");
+                    // Check that details are still the same
+                    User.findOne({firstName: userData.firstName}, (err, user) => {
+                        should.equal(err, null);
+                        should.not.equal(user, null);
+                        user.should.have.property("firstName").eql(userData.firstName);
+                        user.should.have.property("lastName").eql(userData.lastName);
+                        user.should.have.property("publicName").eql(userData.publicName);
+                        user.should.have.property("location").eql(userData.location);
+                        done();
+                    });
+                });
+        });
+
+        it("should UPDATE a user's details if they are logged in and provide valid information", (done) => {
+
+            const updateData = {
+                firstName: "hello",
+                lastName: "jacky",
+                publicName: "jayqueline",
+                location: "new jersey"
+            }
+
+            chai.request(server)
+                .patch('/api/users/update')
+                .set("Authorization", authToken)
+                .send(updateData)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(201);
+                    res.text.should.eql("Profile successfully updated.");
+                    // Check that the details have actually changed
+                    User.findOne({firstName: updateData.firstName}, (err, user) => {
+                        should.equal(err, null);
+                        should.not.equal(user, null);
+                        user.should.have.property("firstName").eql(updateData.firstName);
+                        user.should.have.property("lastName").eql(updateData.lastName);
+                        user.should.have.property("publicName").eql(updateData.publicName);
+                        user.should.have.property("location").eql(updateData.location);
+                        done();
+                    });
+                });
+        });
+    });
 });

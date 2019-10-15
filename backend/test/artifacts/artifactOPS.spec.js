@@ -385,7 +385,7 @@ describe('Artifact database operations', () => {
     });
 
     // Test /GET artifact/:artifactid
-    describe('/GET/artifact/:artifactid route', () => {
+    describe('/GET /artifact/:artifactid route', () => {
 
         // Add in some dummy artifacts for each privacy level and store the corresponding artifact IDs
 
@@ -517,4 +517,61 @@ describe('Artifact database operations', () => {
 
     });
     
+    // Test /DELETE /delete_artifact/:artifactID
+    describe('/DELETE /delete_artifact/:artifactID route', () => {
+
+        var artifactID = null;
+
+        const dummy = {
+            name: "search public dummy artifact",
+            story: "Hey this is a test artifact",
+            tags: ["test", "dummy tags"],
+            category: 'vase',
+            isPublic: 'public' 
+        }
+
+        before('add a dummy artifact to delete', (done) => {
+            chai.request(server)
+                .post('/newArtifact')
+                .set("Authorization", authToken)
+                .send(dummy)
+                .end((err, res) => {
+                    artifactID = res.body._id;
+                    done();
+                });
+        });
+
+        it('should NOT delete the artifact if there is no user logged in', (done) => {
+            chai.request(server)
+                .delete('/delete_artifact/' + artifactID)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(401);
+                    res.text.should.eql("Unauthorised user, you are not the owner of this artifact.");
+                    done();
+                }); 
+        });
+
+        it('should DELETE the artifact if the owner of it is logged in', (done) => {
+            chai.request(server)
+                .delete('/delete_artifact/' + artifactID)
+                .set("Authorization", authToken)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(200);
+                    res.text.should.eql("Delete successful.");
+                    Artifact.find({}, (err, artifacts) => {
+                        should.equal(err, null);
+                        artifacts.length.should.eql(0);
+                        done();
+                    });
+                });
+        });
+
+        after('clean artifact collection', (done) => {
+            Artifact.deleteMany({}, (err) => {
+                done();
+            });
+        });
+    });
 });

@@ -300,8 +300,6 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
 
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
 
-        console.log("NOT FOUND")
-        
         if (err) { 
             return next(err); 
         }
