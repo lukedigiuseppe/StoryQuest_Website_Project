@@ -1,0 +1,2 @@
+This file is just here so that GITHUB reatins the folder structure. It deletes it when upload is empty, but we need a directory called upload for the 
+backend to work properly.

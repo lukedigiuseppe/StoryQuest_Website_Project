@@ -1,42 +1,49 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "The backend for running the RESTFUL APIs to be used by the REACT frontend",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "server": "NODE_ENV=dev nodemon server.js",
-    "test": "mocha --timeout 100000 --reporter=spec --exit"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "chai-datetime": "^1.5.0",
-    "concurrently": "^4.1.2",
-    "cors": "^2.8.5",
-    "crypto-random-string": "^3.0.1",
-    "express": "^4.17.1",
-    "formidable": "^1.2.1",
-    "is-empty": "^1.2.0",
-    "jsonwebtoken": "^8.5.1",
-    "jwt-decode": "^2.2.0",
-    "md5": "^2.2.1",
-    "mime": "^2.4.4",
-    "mime-types": "^2.1.24",
-    "mongoose": "^5.7.1",
-    "mongoose-gridfs": "^1.2.8",
-    "morgan": "^1.9.1",
-    "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0",
-    "validator": "^11.1.0"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-http": "^4.3.0",
-    "mocha": "^6.2.1",
-    "nodemon": "^1.19.2"
-  }
+    "name": "storyquest-backend",
+    "version": "1.0.0",
+    "description": "The backend for running the RESTFUL APIs to be used by the REACT frontend",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "server": "NODE_ENV=dev nodemon server.js",
+        "test": "mocha --timeout 100000 --reporter=spec --exit"
+    },
+    "keywords": [
+        "storyquest",
+        "backend",
+        "heroku"
+    ],
+    "engines": {
+        "node": "12.10.0"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.0",
+        "chai-datetime": "^1.5.0",
+        "concurrently": "^4.1.2",
+        "cors": "^2.8.5",
+        "crypto-random-string": "^3.0.1",
+        "express": "^4.17.1",
+        "formidable": "^1.2.1",
+        "is-empty": "^1.2.0",
+        "jsonwebtoken": "^8.5.1",
+        "jwt-decode": "^2.2.0",
+        "md5": "^2.2.1",
+        "mime": "^2.4.4",
+        "mime-types": "^2.1.24",
+        "mongoose": "^5.7.1",
+        "mongoose-gridfs": "^1.2.8",
+        "morgan": "^1.9.1",
+        "passport": "^0.4.0",
+        "passport-jwt": "^4.0.0",
+        "validator": "^11.1.0"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "chai-http": "^4.3.0",
+        "mocha": "^6.2.1",
+        "nodemon": "^1.19.2"
+    }
 }
