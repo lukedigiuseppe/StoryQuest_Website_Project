@@ -27,30 +27,21 @@ class MainSearch extends Component {
         }
     }
 
-    // on starting the website mount the the artifact list with all the artifacts
-    componentDidMount() {
-        axios.all([
-            axios.get('/artifacts')])
+    onChange = (e) => {
+        this.setState({[e.target.id]: e.target.value});
+    }
+
+    onSubmit = (e) => {
+        e.preventDefault()
+        console.log(this.state);
+
+        axios.all([axios.post('/searchartifacts', {searchString: this.state.search})])
             .then(axios.spread((artiRes) => {
                 console.log(artiRes)
                 this.setState({
                     artifacts: artiRes.data
                 });
             }))
-            .catch(err => {
-                console.log(err);
-            });
-    }
-
-    // when a search is made you narrow down the artifact list to the specific artifacts
-    componentDidUpdate(prevProps) {
-        axios.all([axios.post('/searchartifacts')])
-            .then(axios.spread((artiRes) => {
-            console.log(artiRes)
-            this.setState({
-                artifacts: artiRes.data
-            });
-        }))
             .catch(err => {
                 console.log(err);
             });
@@ -65,6 +56,7 @@ class MainSearch extends Component {
 
     // render everything
     render() {
+
         return(
             <Container className="pt-md-5 pb-md-5 rounded-lg" style={{backgroundImage: `url(${searchBG})`}} fluid>
                 <br />
@@ -76,12 +68,17 @@ class MainSearch extends Component {
                     {/* Create two columns, one to hold the search bar and the other for the button */}
                     <Col sm={{size: 7, offset: 2}}>
                         <Form>
-                            <Input type="search" className="mr-2" placeholder="Enter keyword or Artifact ID"/>
+                            <Input type="search"
+                                   id="search"
+                                   className="mr-2"
+                                   onChange={this.onChange}
+                                   value={this.state.search}
+                                   placeholder="Enter keyword or Artifact ID"/>
                         </Form>
                     </Col>
                     <Col>
                         <Form>
-                            <button onClick=>Search</button>
+                            <button onClick={this.onSubmit}>Search</button>
                         </Form>
                     </Col>
                 </Row>
