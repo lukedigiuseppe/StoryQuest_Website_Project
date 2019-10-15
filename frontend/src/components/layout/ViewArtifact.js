@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
+import {Link}  from 'react-router-dom';
+import PropTypes from "prop-types";
+import {connect} from 'react-redux';
+import Loading from './Loading';
+import {setUserLoading, setUserNotLoading} from '../../actions/authActions';
 
-import {Link, withRouter}  from 'react-router-dom';
-//import PropTypes from "prop-types";
-//import {connect} from 'react-redux';
-//import {registerUser} from '../../actions/authActions';
-//import classnames from 'classnames';
 import {
     Container,
     Col,
@@ -18,18 +18,9 @@ import '../../css/viewArtifact.css';
 import axios from 'axios';
 
 
-// Compononent that creates the regsitration page for new users.
-// Need to add code that redirects to another page after pressing submit
-
-
 const BANNER = "/images/cover.png";
 
-
-
-
 class ViewArtifact extends Component{
-
-
 
     constructor(props) {
         super(props);
@@ -51,6 +42,7 @@ class ViewArtifact extends Component{
 
     componentDidMount() {
 
+        this.props.setUserLoading();
 
          /*Get the artifact information from backend using axios */
         axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
@@ -76,24 +68,26 @@ class ViewArtifact extends Component{
                         
                             })
                         })
-            .catch(err => {
-            
-                console.log(err);
-            });
-
+                    .catch(err => {
+                        console.log(err);
+                    });
             })
-
-
             .catch(err => {
-            
                 console.log(err);
             });
-
 
         /*Get, process and package the images so reactstrap can display them */
         axios.get('/artifact/' + this.props.match.params.id)
         .then(res => {
-            res.data.images.forEach(imageID => {
+
+            // If we don't have images set to not load anymore
+            if (res.data.images.length === 0) {
+                this.props.setUserNotLoading();
+            }
+
+            // Set a counter to check when all images have been retrieved
+            var counter = 0;
+            res.data.images.forEach((imageID, index, imageArr)=> {
                 axios.get('/artifact_images/' + this.props.match.params.id + '/' + imageID)
                     .then(res => {
                         this.setState(prevState => ({
@@ -107,6 +101,11 @@ class ViewArtifact extends Component{
                                     }
                                 ]
                             }));
+                        counter++;
+                        if (counter === imageArr.length) {
+                            // We have finished loading all images so display the page
+                            this.props.setUserNotLoading();
+                        }
                     })
                     .catch(err => {
                         console.log(err);
@@ -116,15 +115,27 @@ class ViewArtifact extends Component{
         .catch(err => {
             console.log(err);
         });
-
-
-        
-
-
     }
-
     
     render(){
+
+        if (this.props.auth.loading) {
+            return (
+                <Loading />
+            )
+        }
+
+        // If there are no images don't display the carousel by default
+        var carouselComp = <Row></Row>
+
+        if (this.state.images.length !== 0) {
+            carouselComp = 
+                <Row>
+                    <Col sm={{ size: 6, order: 2, offset: 3 }}>
+                        <UncontrolledCarousel items={this.state.images} autoPlay={false} />
+                    </Col>
+                </Row>
+        }
 
         return(
             <div>
@@ -187,8 +198,8 @@ class ViewArtifact extends Component{
                 {/*Item story*/}
                 <Row>
                      <Col xs = "1"></Col>
-                    <Col>
-                    <p  className= "text-center" style={{paddingLeft: "30px"}, {fontSize: "30px"}}>Story</p>
+                    <Col xs = "10">
+                    <p  className= "text-center" style={{fontSize: "30px"}}>Story</p>
                     </Col>
 
                     <Col xs = "1"></Col>
@@ -198,31 +209,16 @@ class ViewArtifact extends Component{
                 <Row>
                     <Col xs = "1"></Col>
 
-                    <Col>
-                    <p className="text-center" style={{paddingLeft: "30px"}}> {this.state.story}</p></Col>
+                    <Col xs = "10">
+                    <p className="text-center" > {this.state.story}</p></Col>
 
                     <Col xs = "1"></Col>
-
                 </Row>
 
 
-                {/*Item imaeges*/}
-
-                <Row>
-
-
-
-    
-                    <Col sm={{ size: 6, order: 2, offset: 3 }}>
-                        <UncontrolledCarousel items={this.state.images} autoPlay={false} />
-                    </Col>
-
-    
-
-                </Row>
-
-            
-
+                {/*Item images*/}
+                {carouselComp}
+                
                 </Container>
 
 
@@ -230,12 +226,19 @@ class ViewArtifact extends Component{
         )
 
     }
-
-
 }
 
+ViewArtifact.propTypes = {
+    auth: PropTypes.object.isRequired,
+    setUserLoading: PropTypes.func.isRequired,
+    setUserNotLoading: PropTypes.func.isRequired
+};
 
+const mapStateToProps = state => ({
+    auth: state.auth
+});
 
-
-
-export default ViewArtifact;
+export default connect(
+    mapStateToProps,
+    { setUserLoading, setUserNotLoading }
+)(ViewArtifact);
