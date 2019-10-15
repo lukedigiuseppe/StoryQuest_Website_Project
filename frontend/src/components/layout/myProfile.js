@@ -9,6 +9,9 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import EdiText from 'react-editext';
+import Loading from './Loading';
+import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
+
 // Used to check if Friend email entered is a valid email
 // import Validator from 'validator';
 
@@ -49,30 +52,13 @@ class myProfile extends Component {
 
 
     async componentDidMount() {
-    // axios.all([
-    //     axios.get('/userinfo'),
-    //     axios.get('/artifacts/'+this.props._id)])
-    //         .then(axios.spread((userRes, artiRes) => {
-    //             this.setState({
-    //                 email: userRes.data.email,
-    //                 birthDate: userRes.data.birthDate,
-    //                 publicName: userRes.data.publicName,
-    //                 firstName: userRes.data.firstName,
-    //                 lastName: userRes.data.lastName,
-    //                 location: userRes.data.location,
-    //                 dateCreated: userRes.data.dateCreated,
-    //                 userID: userRes.data._id,
-    //                 artifacts: artiRes.data
-    //             });
-    //         }))
-    //         .catch(err => {
-    //             console.log(err);
-    //          });
-
         // If user isn't logged in then redirect to login page and don't do the requests
         if (!this.props.auth.isAuthenticated) {
             this.props.history.push('/login');
         } else {
+            // Set the screen to loading
+            this.props.setUserLoading();
+            
             // Make first two requests
             const [firstRes] = await Promise.all([
                 axios.get('/userinfo'),
@@ -95,6 +81,9 @@ class myProfile extends Component {
                 profileImgData: thirdRes.data,
                 artifacts: secondRes.data
             });
+
+            // After retrieving all of the data display the profile page
+            this.props.setUserNotLoading();
         }
     }
 
@@ -177,6 +166,13 @@ class myProfile extends Component {
     }
 
     render() {
+
+        if (this.props.auth.loading) {
+            return (
+                <Loading />
+            )
+        }
+
         return(
             <div className="myProfile">
                 {/* Change the header for the home menu */}
@@ -370,11 +366,16 @@ class myProfile extends Component {
 }
 
 myProfile.propTypes = {
-    auth: PropTypes.object.isRequired
+    auth: PropTypes.object.isRequired,
+    setUserLoading: PropTypes.func.isRequired,
+    setUserNotLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     auth: state.auth
 });
 
-export default connect(mapStateToProps)(myProfile);
+export default connect(
+    mapStateToProps,
+    { setUserLoading, setUserNotLoading }
+)(myProfile);
