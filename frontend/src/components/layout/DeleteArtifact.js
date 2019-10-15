@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {Link}  from 'react-router-dom';
-//import PropTypes from "prop-types";
-//import {registerUser} from '../../actions/authActions';
-//import classnames from 'classnames';
+import {connect} from 'react-redux';
+import PropTypes from "prop-types";
+import Loading from './Loading';
+import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 import {
     Container,
     Col,
@@ -14,9 +15,6 @@ import {
 
 import '../../css/viewArtifact.css';
 import axios from 'axios';
-
-
-
 
 const BANNER = "/images/cover.png";
 
@@ -37,38 +35,51 @@ class DeleteArtifact extends Component{
     }
 
     /*If confirmed, delete the artifact and redirect to homepage*/
-    yesClick()  {
+    yesClick() {
+        // Set to loading
+        this.props.setUserLoading();
 
-        axios.delete('http://localhost:5000/delete_artifact/' + this.props.match.params.id);
-
-
-        window.location = '/myprofile';
+        axios.delete('http://localhost:5000/delete_artifact/' + this.props.match.params.id)
+            .then(res => {
+                this.props.setUserNotLoading();
+                window.location = '/myprofile';
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.status === 404) {
+                    this.props.history.push('/404');
+                }
+                this.props.setUserNotLoading();
+            });
     }
 
-
-
-
     componentDidMount(){
-        {/*Get the artifact name for display*/}
+        this.props.setUserLoading();
+        // Get the artifact name for display
         axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
             .then(res => {
                 console.log(res.data);
-               
                 this.setState({
-                    name: res.data.name,
-                })
+                    name: res.data.name
+                });
+                this.props.setUserNotLoading();
             })
-
-
             .catch(err => {
-            
                 console.log(err);
+                if (err.response.status === 404) {
+                    this.props.history.push('/404');
+                }
+                this.props.setUserNotLoading();
             });
-
-
     }
 
     render(){
+
+        if (this.props.auth.loading) {
+            return (
+                <Loading />
+            )
+        }
 
         return(
         <div>
@@ -102,14 +113,14 @@ class DeleteArtifact extends Component{
                 <Row>
                     <Col xs = "1"></Col>
                     <Col xs = "10">
-                        <p  className= "text-center" style={{paddingLeft: "30px"}, {fontSize: "40px"}}>Are you sure you want to remove "{this.state.name}"?</p>
+                        <p  className= "text-center" style={{paddingLeft: "30px", fontSize: "40px"}}>Are you sure you want to remove "{this.state.name}"?</p>
                     </Col>
                     <Col xs = "1"></Col>
                 </Row>
                 <Row>
                     <Col xs = "1"></Col>
                     <Col xs = "10">
-                        <p  className= "text-center" style={{paddingLeft: "30px"}, {fontSize: "30px"}}>This will be perminent.</p>
+                        <p  className= "text-center" style={{paddingLeft: "30px", fontSize: "30px"}}>This will be permanent.</p>
                     </Col>
                     <Col xs = "1"></Col>
                 </Row>
@@ -147,4 +158,17 @@ class DeleteArtifact extends Component{
 }
 
 
-export default (DeleteArtifact);
+DeleteArtifact.propTypes = {
+    auth: PropTypes.object.isRequired,
+    setUserLoading: PropTypes.func.isRequired,
+    setUserNotLoading: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+
+export default connect(
+    mapStateToProps,
+    { setUserLoading, setUserNotLoading }
+)(DeleteArtifact);

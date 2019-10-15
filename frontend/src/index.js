@@ -25,9 +25,9 @@ import Profile from "./components/layout/Profile";
 import MyProfile from "./components/layout/myProfile";
 import DeleteArtifact from "./components/layout/DeleteArtifact";
 import EditArtifact from "./components/layout/EditArtifact";
+import FourOFour from "./components/layout/FourOFour";
 
-
-import Image from "./components/layout/Image";
+import Image from "./components/layout/ImageSample";
 import Video from "./components/layout/VideoTest";
 import ProfileUpload from "./components/dashboard/ProfileUpload";
 
@@ -61,18 +61,22 @@ const routing = (
     <Provider store={store}>
         <Router>
             <div>
-                <Route exact path="/" component={App} />  
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/register" component={Register} />
-                <Route exact path="/add_artifact" component ={AddArtifact} />
-                <Route exact path="/view_artifact/:id" component ={ViewArtifact} />
-                <Route exact path="/profile/:id" component={Profile} />
-                <Route exact path="/myprofile" component= {MyProfile} />
-                <Route exact path="/image" component={Image} />
-                <Route exact path="/video/:artifactid" component={Video} />
-                <Route exact path="/sample" component={Sample} />
-                <Route exact path="/delete_artifact/:id" component ={DeleteArtifact} />
-                <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
+                <Switch>
+                    <Route exact path="/" component={App} />  
+                    <Route exact path="/login" component={Login} />
+                    <Route exact path="/register" component={Register} />
+                    <Route exact path="/add_artifact" component ={AddArtifact} />
+                    <Route exact path="/view_artifact/:id" component ={ViewArtifact} />
+                    <Route exact path="/profile/:id" component={Profile} />
+                    <Route exact path="/myprofile" component= {MyProfile} />
+                    <Route exact path="/image" component={Image} />
+                    <Route exact path="/video/:artifactid" component={Video} />
+                    <Route exact path="/sample" component={Sample} />
+                    <Route exact path="/delete_artifact/:id" component ={DeleteArtifact} />
+                    <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
+                    {/* Generic component so that all undefined routes redirect to 404 page */}
+                    <Route component ={FourOFour} />
+                </Switch>
                 <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />

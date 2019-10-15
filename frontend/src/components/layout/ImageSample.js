@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 
 
-class Image extends Component {
+class ImageSample extends Component {
 
     constructor(props) {
         super(props);
@@ -60,4 +60,4 @@ class Image extends Component {
     }
 }
 
-export default Image;
+export default ImageSample;

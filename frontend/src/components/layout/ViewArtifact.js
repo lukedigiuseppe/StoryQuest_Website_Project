@@ -70,10 +70,18 @@ class ViewArtifact extends Component{
                         })
                     .catch(err => {
                         console.log(err);
+                        if (err.response.status === 404) {
+                            this.props.history.push('/404');
+                        }
+                        this.props.setUserNotLoading();
                     });
             })
             .catch(err => {
                 console.log(err);
+                if (err.response.status === 404) {
+                    this.props.history.push('/404');
+                }
+                this.props.setUserNotLoading();
             });
 
         /*Get, process and package the images so reactstrap can display them */
@@ -109,11 +117,19 @@ class ViewArtifact extends Component{
                     })
                     .catch(err => {
                         console.log(err);
+                        if (err.response.status === 404) {
+                            this.props.history.push('/404');
+                        }
+                        this.props.setUserNotLoading();
                     });
             });
         })
         .catch(err => {
             console.log(err);
+            if (err.response.status === 404) {
+                this.props.history.push('/404');
+            }
+            this.props.setUserNotLoading();
         });
     }
     
@@ -218,7 +234,7 @@ class ViewArtifact extends Component{
 
                 {/*Item images*/}
                 {carouselComp}
-                
+
                 </Container>
 
 
