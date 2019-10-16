@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import {connect} from 'react-redux';
 import Loading from './Loading';
 import {setUserLoading, setUserNotLoading} from '../../actions/authActions';
+import ReactPlayer from 'react-player';
 
 import {
     Container,
@@ -17,6 +18,7 @@ import {
 import '../../css/viewArtifact.css';
 import axios from 'axios';
 
+const encrypt = require('../../utils/encryption').encrypt;
 
 const BANNER = "/images/cover.png";
 
@@ -37,6 +39,10 @@ class ViewArtifact extends Component{
             images: [],
 
             ownerName: "",
+
+            iv: "",
+            enc: "",
+            videoSRC: "",
         }
     }
 
@@ -61,11 +67,9 @@ class ViewArtifact extends Component{
                 /*Get the owner ID from backend, so name can be displayed*/
                 axios.get('http://localhost:5000/api/users/profile/all_info/' + this.state.ownerID )
                     .then(res => {
-                         console.log(res.data);
-              
+                            console.log(res.data);
                             this.setState({
                                 ownerName: res.data.publicName,
-                        
                             })
                         })
                     .catch(err => {
@@ -82,6 +86,19 @@ class ViewArtifact extends Component{
                     this.props.history.push('/404');
                 }
                 this.props.setUserNotLoading();
+            });
+
+        axios.get("/artifact/" + this.props.match.params.id)
+            .then(res => {
+                // Just get the first video of every artifact as long as it has a video
+                if (typeof(res.data.videos) !== 'undefined' && res.data.videos.length > 0) {
+                    const data = encrypt(res.data.videos[0]);
+                    this.setState({
+                        iv: data.iv,
+                        enc: data.encryptedData,
+                        videoSRC: "/video/" + data.iv + "/" + data.encryptedData
+                    });
+                }
             });
 
         /*Get, process and package the images so reactstrap can display them */
@@ -131,6 +148,7 @@ class ViewArtifact extends Component{
             }
             this.props.setUserNotLoading();
         });
+
     }
     
     render(){
@@ -151,6 +169,42 @@ class ViewArtifact extends Component{
                         <UncontrolledCarousel items={this.state.images} autoPlay={false} />
                     </Col>
                 </Row>
+        }
+
+        const {videoSRC} = this.state;
+
+        let videoPlayer;
+
+        if (videoSRC === "") {
+            // Display message saying there is no video
+            videoPlayer = 
+            <Row>
+                <Col sm={{ size: 6, order: 2, offset: 3 }}>
+                    <h1 className="text-center">No video for this artifact. It might still be processing, check back later</h1>
+                </Col>
+            </Row>
+        } else {
+            videoPlayer =  
+            <Row>
+                <Col sm={{ size: 6, order: 2, offset: 3 }}>
+                    <ReactPlayer 
+                        url={videoSRC} 
+                        config={{
+                            file: {
+                                attributes: {
+                                    autoPlay: true,
+                                    preload: "metadata"
+                                }
+                            }
+                        }}
+                        width='100%' 
+                        height='100%' 
+                        controls 
+                        loop
+                        onError={e => this.props.history.push('/video/' + this.props.match.params.id)}
+                    />
+                </Col>
+            </Row>
         }
 
         return(
@@ -231,13 +285,33 @@ class ViewArtifact extends Component{
                     <Col xs = "1"></Col>
                 </Row>
 
-
                 {/*Item images*/}
+                <Row>
+                    <Col xs = "1"></Col>
+                    <Col xs = "10">
+                    <p  className= "text-center" style={{fontSize: "30px"}}>Images</p>
+                    </Col>
+
+                    <Col xs = "1"></Col>
+
+                </Row>
                 {carouselComp}
 
+                <br /><br /><br />
+
+                {/* Videos */}
+                <Row>
+                    <Col xs = "1"></Col>
+                    <Col xs = "10">
+                    <p  className= "text-center" style={{fontSize: "30px"}}>Video</p>
+                    </Col>
+
+                    <Col xs = "1"></Col>
+
+                </Row>
+                {videoPlayer}
+
                 </Container>
-
-
             </div>
         )
 
