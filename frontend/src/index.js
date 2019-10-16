@@ -74,12 +74,10 @@ const routing = (
                     <Route exact path="/sample" component={Sample} />
                     <Route exact path="/delete_artifact/:id" component ={DeleteArtifact} />
                     <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
-                    {/* Generic component so that all undefined routes redirect to 404 page */}
-                    <Route component ={FourOFour} />
-                </Switch>
-                <Switch>
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />
+                    {/* Generic component so that all undefined routes redirect to 404 page. If no other route is matched, then this one will be */}
+                    <Route component ={FourOFour} />
                 </Switch>
             </div>
         </Router>

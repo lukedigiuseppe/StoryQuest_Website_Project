@@ -71,7 +71,7 @@ class Dashboard extends Component {
         const { user } = this.props.auth;
         return(
             <div style={{ height: "76vh"}} className="container valign-wrapper">
-                <Container className="d-none d-lg-flex"><ProfileNavBar /></Container>
+                <Container className="d-none d-lg-flex"><ProfileNavBar history={this.props.history} /></Container>
                 <Container className="d-lg-none"><MobileMenu2 /></Container>
                 <br /><br /><br />
                 <br /><br /><br />
