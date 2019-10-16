@@ -4,7 +4,6 @@ const express = require("express");
 const router = express.Router();
 const formidable = require("formidable");
 const fs = require("fs");
-const md5 = require("md5");
 const path = require("path");
 const imgStore = require('../../storageEngines/imageStorageEngine');
 const vidStore = require('../../storageEngines/videoStorageEngine');
@@ -173,114 +172,108 @@ router.post('/upload_artifact_video', function(req, res, next) {
                     // We rename the uploaded file to the object ID for the media object just created.
                     var newMedia = new Media();
                     newMedia.filePath = form.uploadDir + '/' + newMedia._id + path.extname(NEWPATH);
-                    // Calculate the md5 hash
-                    fs.readFile(NEWPATH, (err, buf) => {
+
+                    // Now rename the actual file
+                    fs.rename(NEWPATH, newMedia.filePath, (err) => {
                         if (err) {
                             throw err;
                         }
-                        newMedia.md5 = md5(buf);
-                        // Now rename the actual file
-                        fs.rename(NEWPATH, newMedia.filePath, (err) => {
+
+                        // Assign the video to the artifact object
+                        Artifact.findById(req.headers.artifactid, function(err, artifact) {
                             if (err) {
-                                throw err;
+                                console.log(err);
+                                if (!res.headersSent) {
+                                    return res.sendStatus(500);
+                                }
+                            }
+
+                            // Check if artifact exists
+                            if (!artifact) {
+                                if (!res.headersSent) {
+                                    return res.status(404).send("The artifact for this media object does not exist.");
+                                }
+                            }
+
+                            newMedia.artifactID = req.headers.artifactid;
+                            newMedia.save()
+                                .then( doc => {
+                                    console.log(doc);
+                                    // Assign the ID to the artifact
+                                    artifact.videos.push(newMedia._id);
+                                    artifact.save()
+                                        .catch(err => {
+                                            throw err;
+                                        });
+                                })
+                                .catch(err => {
+                                    throw err;
+                                });
+                            // On successful creation return response to update Uppy's progress if the other upload isn't done yet.
+                            if (!res.headersSent) {
+                                return res.status(200).send(newMedia);
                             }
                         });
-                    });
-                    
-                    // Assign the video to the artifact object
-                    Artifact.findById(req.headers.artifactid, function(err, artifact) {
-                        if (err) {
-                            console.log(err);
-                            if (!res.headersSent) {
-                                return res.sendStatus(500);
-                            }
-                        }
 
-                        // Check if artifact exists
-                        if (!artifact) {
-                            if (!res.headersSent) {
-                                return res.status(404).send("The artifact for this media object does not exist.");
+                        vidStore.uploadVideo(newMedia.filePath, file.name, function(err, file) {
+                            if (err) {
+                                if (!res.headersSent) {
+                                    return res.sendStatus(500);
+                                }
                             }
-                        }
 
-                        newMedia.artifactID = req.headers.artifactid;
-                        newMedia.save()
-                            .then( doc => {
-                                console.log(doc);
-                                // Assign the ID to the artifact
-                                artifact.videos.push(newMedia._id);
-                                artifact.save()
-                                    .catch(err => {
-                                        throw err;
-                                    });
-                            })
-                            .catch(err => {
-                                throw err;
+                            // Assign the video to the artifact object
+                            Artifact.findById(req.headers.artifactid, function(err, artifact) {
+                                if (err) {
+                                    console.log(err);
+                                    if (!res.headersSent) {
+                                        return res.sendStatus(500);
+                                    }
+                                }
+
+                                // Check if artifact exists
+                                if (!artifact) {
+                                    if (!res.headersSent) {
+                                        return res.status(404).send("The artifact for this media object does not exist.");
+                                    }
+                                }
+
+                                // Delete from media collection and from the artifact videos array
+                                Media.findOneAndDelete({artifactID: artifact._id, filePath: newMedia.filePath}, (err, media) => {
+                                    // If media exists then remove it from the artifact video array, otherwise just add the ID
+                                    if (media) {
+                                        // Assign the ID to the artifact
+                                        artifact.videos.push(file._id);
+                                        var index = artifact.videos.indexOf(media._id);
+                                        if (index > -1) {
+                                            // Greater than -1 means, that media ID was found successfully
+                                            artifact.videos.splice(index, 1);
+                                        }
+                                        artifact.save()
+                                            .catch(err => {
+                                                throw err;
+                                            });
+                                        // Remove the local file has been successfully added to MongoDB
+                                        fs.unlink(media.filePath, (err) => {
+                                            if (err) {
+                                                throw err;
+                                            }
+                                            if (!res.headersSent) {
+                                                return res.sendStatus(500);
+                                            }
+                                        });
+                                    } else {
+                                        // Assign the ID to the artifact
+                                        artifact.videos.push(file._id);
+                                        artifact.save()
+                                            .catch(err => {
+                                                throw err;
+                                            });
+                                    }
+                                });
                             });
-                        // On successful creation return response to update Uppy's progress if the other upload isn't done yet.
-                        if (!res.headersSent) {
-                            return res.status(200).send(newMedia);
-                        }
+                        });
                     });
-
-                    // vidStore.uploadVideo(NEWPATH, file.name, function(err, file) {
-                    //     if (err) {
-                    //         if (!res.headersSent) {
-                    //             return res.sendStatus(500);
-                    //         }
-                    //     }
-
-                    //     // Assign the video to the artifact object
-                    //     Artifact.findById(req.headers.artifactid, function(err, artifact) {
-                    //         if (err) {
-                    //             console.log(err);
-                    //             if (!res.headersSent) {
-                    //                 return res.sendStatus(500);
-                    //             }
-                    //         }
-
-                    //         // Check if artifact exists
-                    //         if (!artifact) {
-                    //             if (!res.headersSent) {
-                    //                 return res.status(404).send("The artifact for this media object does not exist.");
-                    //             }
-                    //         }
-
-                    //         // Delete from media collection and from the artifact videos array
-                    //         Media.findOneAndDelete({artifactID: artifact._id, md5: file.md5}, (err, media) => {
-                    //             // If media exists then remove it from the artifact video array, otherwise just add the ID
-                    //             if (media) {
-                    //                 // Assign the ID to the artifact
-                    //                 artifact.videos.push(file._id);
-                    //                 var index = artifact.videos.indexOf(media._id);
-                    //                 if (index > -1) {
-                    //                     // Greater than -1 means, that media ID was found successfully
-                    //                     artifact.videos.splice(index, 1);
-                    //                 }
-                    //                 artifact.save()
-                    //                     .catch(err => {
-                    //                         throw err;
-                    //                     });
-                    //                 // Remove the local file has been successfully added to MongoDB
-                    //                 fs.unlink(media.filePath, (err) => {
-                    //                     if (err) {
-                    //                         throw err;
-                    //                     }
-                    //                     if (!res.headersSent) {
-                    //                         return res.sendStatus(500);
-                    //                     }
-                    //                 });
-                    //             } else {
-                    //                 // Assign the ID to the artifact
-                    //                 artifact.videos.push(file._id);
-                    //                 artifact.save()
-                    //                     .catch(err => {
-                    //                         throw err;
-                    //                     });
-                    //             }
-                    //         });
-                    //     });
-                    // });
                 }
             }
         });

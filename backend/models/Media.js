@@ -9,16 +9,10 @@ const MediaSchema = mongoose.Schema(
             isRequired: true,
             default: ""
         },
-        // The below 2 fields are used to identify this media object uniquely for deletion should the exact same file be uploaded.
         "artifactID": {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'artifact',
             default : null
-        },
-        "md5": {
-            type: String,
-            isRequired: true,
-            default: ""
         }
     }
 );
