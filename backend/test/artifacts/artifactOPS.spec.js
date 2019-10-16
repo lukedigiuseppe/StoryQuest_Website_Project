@@ -1,9 +1,12 @@
 const common = require('../common');
+const jwtDecode = require('jwt-decode');
 const chai = common.chai;
 const chaiHTTP = common.chaiHTTP;
 const Artifact = common.Artifact;
+const User = common.User;
 const server = common.server;
 const userData = common.userData;
+const friendData = common.friendData;
 const should = common.should;
 
 
@@ -13,8 +16,12 @@ chai.use(chaiHTTP);
 describe('Artifact database operations', () => {
     // Our suite of tests to run
 
-    // This is the auth token to be assigned to the header
-    var authToken = null;
+    // This is the user auth token to be assigned to the header for adding artifacts as well as the corresponding User Mongo ID
+    var userAuthToken = null;
+    var userID = null;
+    // This is the friend auth token to be assigned for checking friend level privacy artifacts as well as the corresponding Friend Mongo ID
+    var friendAuthToken = null;
+    var friendID = null;
 
     // Run once before all of the tests begin
     before('log in the test user', (done) => {
@@ -29,8 +36,38 @@ describe('Artifact database operations', () => {
             .post('/api/users/login')
             .send(userLogin)
             .end((err, res) => {
-                authToken = res.body.token;
-                done();
+                userAuthToken = res.body.token;
+                // Get the users ID
+                var userEmail = jwtDecode(userAuthToken.split('Bearer ')[1]).email;
+                User.findOne({email: userEmail}, (err, user) => {
+                    if (user) {
+                        userID = user.id;
+                    }
+                    done();
+                });
+            });
+    });
+
+    // Register and login the friend user, also add test@gmail.com as a known user
+    before('register and login friend user', (done) => {
+        chai.request(server)
+            .post('/api/users/register')
+            .send(friendData)
+            .end((err, res) => {
+                friendID = res.body._id;
+                chai.request(server)
+                    .post('/api/users/login')
+                    .send({email: friendData.email, password: friendData.password})
+                    .end((err, res) => {
+                        friendAuthToken = res.body.token;
+                        chai.request(server)
+                            .patch('/api/users/update')
+                            .set("Authorization", friendAuthToken)
+                            .send({newFriend: "test@gmail.com"})
+                            .end((err, res) => {
+                                done();
+                            });
+                    });
             });
     });
 
@@ -78,7 +115,7 @@ describe('Artifact database operations', () => {
         before('add one private dummy artifact to database', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(privateDummy)
                 .end((err, res) => {
                     done();
@@ -92,7 +129,7 @@ describe('Artifact database operations', () => {
             for (var i = 0; i < 3; i++) {
                 chai.request(server)
                     .post('/newArtifact')
-                    .set("Authorization", authToken)
+                    .set("Authorization", userAuthToken)
                     .send(publicDummy)
                     .end((err, res) => {
                         counter++;
@@ -164,7 +201,7 @@ describe('Artifact database operations', () => {
 
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(newArtifact)
                 .end((err, res) => {
                     should.equal(err, null);
@@ -188,7 +225,7 @@ describe('Artifact database operations', () => {
 
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(newArtifact)
                 .end((err, res) => {
                     should.equal(err, null);
@@ -244,7 +281,7 @@ describe('Artifact database operations', () => {
         before('add a public dummy artifact to search', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(publicDummy)
                 .end((err, res) => {
                     done();
@@ -254,7 +291,7 @@ describe('Artifact database operations', () => {
         before('add a private dummy artifact', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(privateDummy)
                 .end((err, res) => {
                     done();
@@ -264,14 +301,14 @@ describe('Artifact database operations', () => {
         before('add a friends dummy artifact', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", friendAuthToken)
                 .send(friendDummy)
                 .end((err, res) => {
                     done();
                 });
         });
 
-        it('should return all public artifacts in an array related to "dummy" when "dummy" is entered as the search text', (done) => {
+        it('should return all public artifacts in an array related to "dummy" when "dummy" is entered as the search text, when the user is NOT LOGGED IN', (done) => {
             const searchText = {
                 searchString: "dummy"
             };
@@ -283,6 +320,7 @@ describe('Artifact database operations', () => {
                     should.equal(err, null);
                     res.should.have.status(200);
                     res.body.should.be.a('array');
+                    res.body.length.should.be.eql(1);
                     for (artifact of res.body) {
                         artifact.should.have.property('ownerID').not.eql(null);
                         artifact.should.have.property('isPublic').eql('public');
@@ -294,60 +332,6 @@ describe('Artifact database operations', () => {
                 });
         });
 
-        it('should return all public and private artifacts in an array related to "dummy" when "dummy" is entered as search text and there are both public and private artifacts', (done) => {
-            const searchText = {
-                searchString: "dummy"
-            }
-
-            chai.request(server)
-                .post('/searchartifacts')
-                .send(searchText)
-                .end((err, res) => {
-                    should.equal(err, null);
-                    res.should.have.status(200);
-                    res.body.should.be.a('array');
-                    for (artifact of res.body) {
-                        artifact.should.have.property('ownerID').not.eql(null);
-                        artifact.should.have.property('isPublic');
-                        artifact.isPublic.should.satisfy( (isPublic) => {
-                            return (isPublic === 'public') || (isPublic === "private");
-                        });
-                        artifact.should.have.property('name').not.eql('');
-                        artifact.should.have.property('story').not.eql('');
-                        artifact.should.have.property('category').not.eql('');
-                    }
-                    done();
-                })
-        });
-
-        it('should only return all public, friends and private artifacts in an array related to "dummy" when "dummy" is entered as search text and there are both public, friends and private artifacts when the user is NOT LOGGED IN', 
-        (done) => {
-            const searchText = {
-                searchString: "dummy"
-            }
-
-            chai.request(server)
-                .post('/searchartifacts')
-                .send(searchText)
-                .end((err, res) => {
-                    should.equal(err, null);
-                    res.body.should.be.a('array');
-                    res.should.have.status(200);
-                    res.body.length.should.be.eql(1);
-                    for (artifact of res.body) {
-                        artifact.should.have.property('ownerID').not.eql(null);
-                        artifact.should.have.property('isPublic');
-                        artifact.isPublic.should.satisfy( (isPublic) => {
-                            return (isPublic === 'public') || (isPublic === "private") || (isPublic === 'friends');
-                        });
-                        artifact.should.have.property('name').not.eql('');
-                        artifact.should.have.property('story').not.eql('');
-                        artifact.should.have.property('category').not.eql('');
-                    }
-                    done();
-                })
-        });
-
         it('should only return all public, friends and private artifacts in an array related to "dummy" when "dummy" is entered as search text and there are both public, friends and private artifacts when the user is LOGGED IN', 
         (done) => {
             const searchText = {
@@ -356,7 +340,7 @@ describe('Artifact database operations', () => {
 
             chai.request(server)
                 .post('/searchartifacts')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(searchText)
                 .end((err, res) => {
                     should.equal(err, null);
@@ -364,11 +348,19 @@ describe('Artifact database operations', () => {
                     res.body.should.be.a('array');
                     res.body.length.should.be.eql(3);
                     for (artifact of res.body) {
-                        artifact.should.have.property('ownerID').not.eql(null);
                         artifact.should.have.property('isPublic');
-                        artifact.isPublic.should.satisfy( (isPublic) => {
-                            return (isPublic === 'public') || (isPublic === "private") || (isPublic === 'friends');
-                        });
+                        artifact.should.have.property('ownerID').not.eql(null);
+                        if (artifact.isPublic === 'private') {
+                            artifact.ownerID.should.satisfy((ownerID) => {
+                                return ownerID.includes(userID);
+                            });
+                        } else if (artifact.isPublic === 'friends') {
+                            artifact.ownerID.should.satisfy((ownerID) => {
+                                return ownerID.includes(friendID);
+                            });
+                        } else {
+                            artifact.isPublic.should.eql('public');
+                        }
                         artifact.should.have.property('name').not.eql('');
                         artifact.should.have.property('story').not.eql('');
                         artifact.should.have.property('category').not.eql('');
@@ -420,7 +412,7 @@ describe('Artifact database operations', () => {
         before('add a public dummy artifact to search', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(publicDummy)
                 .end((err, res) => {
                     publicID = res.body._id;
@@ -431,7 +423,7 @@ describe('Artifact database operations', () => {
         before('add a private dummy artifact', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(privateDummy)
                 .end((err, res) => {
                     privateID = res.body._id;
@@ -442,7 +434,7 @@ describe('Artifact database operations', () => {
         before('add a friends dummy artifact', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(friendDummy)
                 .end((err, res) => {
                     friendID = res.body._id;
@@ -480,7 +472,7 @@ describe('Artifact database operations', () => {
         it('should return the artifact data for a PRIVATE artifact if the user who has created it is logged in', (done) => {
             chai.request(server)
                 .get('/artifact/' + privateID)
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .end((err, res) => {
                     should.equal(err, null);
                     res.should.have.status(200);
@@ -496,7 +488,7 @@ describe('Artifact database operations', () => {
         it('should return the artifact data for a FRIEND artifact if the user who has created it is logged in', (done) => {
             chai.request(server)
                 .get('/artifact/' + friendID)
-                .set("Authorization", authToken)
+                .set("Authorization", friendAuthToken)
                 .end((err, res) => {
                     should.equal(err, null);
                     res.should.have.status(200);
@@ -507,6 +499,22 @@ describe('Artifact database operations', () => {
                     res.body.should.have.property('category').eql(friendDummy.category);
                     done();
                 });
+        });
+
+        it('should return the artifact for a FRIEND artifact if the logged in user is a friend of the owner of that artifact', (done) => {
+            chai.request(server)
+            .get('/artifact/' + friendID)
+            .set("Authorization", userAuthToken)
+            .end((err, res) => {
+                should.equal(err, null);
+                res.should.have.status(200);
+                res.body.should.be.a('object')
+                res.body.should.have.property('name').eql(friendDummy.name);
+                res.body.should.have.property('story').eql(friendDummy.story);
+                res.body.should.have.property('tags').eql(friendDummy.tags.join(' '));
+                res.body.should.have.property('category').eql(friendDummy.category);
+                done();
+            });
         });
 
         after('delete dummy artifact', (done) => {
@@ -533,7 +541,7 @@ describe('Artifact database operations', () => {
         before('add a dummy artifact to delete', (done) => {
             chai.request(server)
                 .post('/newArtifact')
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .send(dummy)
                 .end((err, res) => {
                     artifactID = res.body._id;
@@ -555,7 +563,7 @@ describe('Artifact database operations', () => {
         it('should DELETE the artifact if the owner of it is logged in', (done) => {
             chai.request(server)
                 .delete('/delete_artifact/' + artifactID)
-                .set("Authorization", authToken)
+                .set("Authorization", userAuthToken)
                 .end((err, res) => {
                     should.equal(err, null);
                     res.should.have.status(200);

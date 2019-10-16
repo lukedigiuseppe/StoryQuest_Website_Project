@@ -264,5 +264,31 @@ describe('User database operations', () => {
                     });
                 });
         });
+
+        it("should be able to add a new user as a friend or 'known user' to a user's details if they are logged in and provide a valid email address", (done) => {
+            const updateData = {
+                newFriend: "friendly@gmail.com"
+            }
+
+            chai.request(server)
+                .patch('/api/users/update')
+                .set("Authorization", authToken)
+                .send(updateData)
+                .end((err, res) => {
+                    should.equal(err, null);
+                    res.should.have.status(201);
+                    res.text.should.eql("Profile successfully updated.");
+                    // Check that the details have actually changed
+                    User.findOne({email: userData.email}, (err, user) => {
+                        should.equal(err, null);
+                        should.not.equal(user, null);
+                        user.should.have.property("knownUsers");
+                        user.knownUsers.should.satisfy((knownUsers) => {
+                            return knownUsers.includes(updateData.newFriend);
+                        });
+                        done();
+                    });
+                })
+        })
     });
 });

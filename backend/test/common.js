@@ -24,6 +24,17 @@ const userData = {
     birthDate: "2015-03-25"
 };
 
+const friendData = {
+    firstName: "FriendBeta",
+    lastName: "Friendly",
+    publicName: "McFriendy",
+    email: "friendly@gmail.com",
+    confirmEmail: "friendly@gmail.com",
+    password: "test123",
+    confirmPass: "test123",
+    birthDate: "2015-03-25"
+}
+
 exports.Artifact = Artifact;
 exports.User = User;
 exports.chai = chai;
@@ -31,3 +42,4 @@ exports.chaiHTTP = chaiHTTP;
 exports.server = server;
 exports.should = should;
 exports.userData = userData;
+exports.friendData = friendData;
