@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css?family=Merriweather|Oxygen:700|Barlow|Libre+Franklin|Varela+Round&display=swap');
+
+.profile{
+    background-color: #F5F3EC;
+}
+.picBox{
+    border-radius: 2%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    text-align: center;
+    background-color: white;
+
+}
+
+.profileBox{
+    border-radius: 2%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    font-family: 'Merriweather', sans-serif;
+    max-height: min-content;
+}
+
+.artifactBox{
+    border-radius: 2%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    font-family: 'Merriweather', sans-serif;
+    max-height: auto;
+}
+.tHeader{
+    font-family: 'Merriweather', sans-serif;
+    font-weight: bold;
+    align-self: center;
+    font-size: 20px;
+}
+
+.tMHeader{
+    font-family: 'Merriweather', sans-serif;
+    font-weight: bold;
+    font-size: 30px;
+    padding-top: 10px;
+    alignment: center;
+}
+
+.profilePic {
+    display: block;
+    padding: 10px;
+    max-width:200px;
+    text-align: center;
+}
+
+.name {
+    font-family: 'Merriweather', sans-serif;
+    font-size: 20px;
+    padding-top: 2px;
+
+}
+
+.edit-text {
+    font-size: 20px;
+    justify-content: left;
+    align-items: left;
+    margin-top: 10px;
+    flex-direction: row;
+    text-align: left;
+}
+
+.view-text {
+    text-align: left;
+    width: 400px;
+    word-wrap: break-word;
+}
+
+.greeting {
+    font-family: 'Merriweather', sans-serif;
+    font-size: 25px;
+    text-align: center;
+    width: 200px;
+    word-wrap: break-word;
+}
+
+.basicText{
+    font-size:15px;
+    font-family: 'Barlow', sans-serif;
+    align-self: left;
+
+}
+
+.card{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+}
+
+
+.icon{
+    max-height: 30px;
+
+}
+.artifactInfo{
+    padding: 10px;
+}
