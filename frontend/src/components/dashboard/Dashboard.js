@@ -9,7 +9,6 @@ import ProfileNavBar from '../layout/profileNavBar';
 import MobileMenu2 from '../layout/MobileMenu';
 import {Container} from "reactstrap";
 
-const encrypt = require('../../utils/encryption').encrypt;
 
 class Dashboard extends Component {
 
