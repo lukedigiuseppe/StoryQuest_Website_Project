@@ -45,6 +45,7 @@ router.post('/searchartifacts', function(req, res, next) {
             return next(err);
         }
 
+
         // If it is a guest or unregsitered user, they are only allowed to search for public artifacts
         if (!user) {
             Artifact.find({$text: { $search: req.body.searchString }, isPublic: "public"}, {score: { $meta: `textScore` }} )
@@ -62,6 +63,11 @@ router.post('/searchartifacts', function(req, res, next) {
                 .exec(function (err, artifacts) {
                     if (err) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
+                    }
+
+                    // When there are no artifacts just send back the empty array, no need to continue checking
+                    if (artifacts.length === 0) {
+                        return res.status(200).send(artifacts);
                     }
                     var filteredArtifacts = [];
                     // Counter to track the number of async callbacks finished.
@@ -95,7 +101,6 @@ router.post('/searchartifacts', function(req, res, next) {
                             }
 
                             artifactsProcessed++;
-
                             if (artifactsProcessed === artifactArr.length) {
                                 return res.status(200).send(filteredArtifacts);
                             }
@@ -496,7 +501,8 @@ router.get('/artifact_images/:artifactID/:imageID', (req, res, next) => {
             // Read the image and determine whether or not send it depending on user authentication
             imgStore.readImage(imageID, function(err, imgData) {
                 if (err) {
-                    return res.status(500).send(err);
+                    // Return a 404 if image is not found
+                    return res.status(404).send(JSON.stringify(err));
                 }
 
                 // Check if non-logged in user

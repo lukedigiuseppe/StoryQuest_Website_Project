@@ -26,6 +26,7 @@ import MyProfile from "./components/layout/myProfile";
 import DeleteArtifact from "./components/layout/DeleteArtifact";
 import EditArtifact from "./components/layout/EditArtifact";
 import FourOFour from "./components/layout/FourOFour";
+import ArtifactsList from './components/layout/ArtifactsList';
 
 import Image from "./components/layout/ImageSample";
 import Video from "./components/layout/VideoTest";
@@ -74,6 +75,7 @@ const routing = (
                     <Route exact path="/sample" component={Sample} />
                     <Route exact path="/delete_artifact/:id" component ={DeleteArtifact} />
                     <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
+                    <Route path="/list/:searchString" component={ArtifactsList} />
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />
                     {/* Generic component so that all undefined routes redirect to 404 page. If no other route is matched, then this one will be */}

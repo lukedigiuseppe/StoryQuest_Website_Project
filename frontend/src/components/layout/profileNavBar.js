@@ -41,10 +41,10 @@ class ProfileNavBar extends Component {
                             <Col className="d-none d-lg-flex justify-content-start">
                                 <Nav className="mlx-auto" navbar>
                                     <NavItem className="d-flex align-items-center">
-                                        <NavLink className="font-weight-bold " href="/">Home</NavLink>
+                                        <NavLink className="font-weight-bold " href="/">My Artifacts</NavLink>
                                     </NavItem>
                                     <NavItem className="d-flex align-items-center">
-                                        <NavLink className="font-weight-bold " href="/">My Artifacts</NavLink>
+                                        <NavLink className="font-weight-bold " href="/add_artifact">Add An Artifact</NavLink>
                                     </NavItem>
                                 </Nav>
                             </Col>
