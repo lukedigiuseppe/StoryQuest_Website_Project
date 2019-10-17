@@ -99,7 +99,8 @@ class ArtifactBlock extends Component {
                     <Col xs={7} className="artifact-text text-left" style={{paddingLeft: "10px", paddingRight: "10px", paddingBottom: "10px", paddingTop: "10px"}}>
                         <h2>{this.state.artifactName}</h2>
                         <h3>{this.state.artifactDate}</h3>
-                        <p>{this.state.artifactStory.substring(0,150)} ...</p>
+                        {/* This bit of code concatenates the story text if it exceeds 150 characters to make it fit nicer into the box */}
+                        <p>{(this.state.artifactStory.length > 150) ? this.state.artifactStory.substring(0,150) + "..." : this.state.artifactStory}</p>
                     </Col>
 
                     <Col xs={2} className="artifact-link-box">
