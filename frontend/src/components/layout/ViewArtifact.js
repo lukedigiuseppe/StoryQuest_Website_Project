@@ -174,7 +174,7 @@ class ViewArtifact extends Component{
 
         if (this.state.images.length !== 0) {
             carouselComp = 
-                <Row>
+                <Row >
                     <Col sm={{ size: 6, order: 2, offset: 3 }}>
                         <UncontrolledCarousel items={this.state.images} autoPlay={false} />
                     </Col>

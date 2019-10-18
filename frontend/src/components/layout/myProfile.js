@@ -26,6 +26,7 @@ const Artifact = props => (
 )
 
 const MAX_FIELD_LEN = 50;
+const NO_IMG = '/images/no-image-placeholder.png';
 
 class myProfile extends Component {
     constructor(props) {
@@ -51,7 +52,7 @@ class myProfile extends Component {
     }
 
 
-    async componentDidMount() {
+    componentDidMount() {
         // If user isn't logged in then redirect to login page and don't do the requests
         if (!this.props.auth.isAuthenticated) {
             this.props.history.push('/login');
@@ -60,30 +61,63 @@ class myProfile extends Component {
             this.props.setUserLoading();
             
             // Make first two requests
-            const [firstRes] = await Promise.all([
-                axios.get('/userinfo'),
-            ]);
+            axios.get('/userinfo')
+                .then(firstRes => {
+                    axios.get('/artifacts/' + firstRes.data._id)
+                        .then(secondRes => {
+                            axios.get('/api/users/profile/' + firstRes.data.email)
+                                .then(thirdRes => {
+                                    // Update state once with all 3 responses
+                                    this.setState({
+                                        email: firstRes.data.email,
+                                        birthDate: firstRes.data.birthDate,
+                                        publicName: firstRes.data.publicName,
+                                        firstName: firstRes.data.firstName,
+                                        lastName: firstRes.data.lastName,
+                                        location: firstRes.data.location,
+                                        dateCreated: new Date(firstRes.data.dateCreated).toDateString(),
+                                        userID: firstRes.data._id,
+                                        profileImgData: thirdRes.data,
+                                        artifacts: secondRes.data
+                                    });
+                                    // After retrieving all of the data display the profile page
+                                    this.props.setUserNotLoading();
+                                })
+                                .catch(err => {
+                                    if (err.response.status === 404) {
+                                        this.setState({
+                                            email: firstRes.data.email,
+                                            birthDate: firstRes.data.birthDate,
+                                            publicName: firstRes.data.publicName,
+                                            firstName: firstRes.data.firstName,
+                                            lastName: firstRes.data.lastName,
+                                            location: firstRes.data.location,
+                                            dateCreated: new Date(firstRes.data.dateCreated).toDateString(),
+                                            userID: firstRes.data._id,
+                                            artifacts: secondRes.data
+                                        });
+                                        this.props.setUserNotLoading();
+                                    }
+                                });
+                        })
+                        .catch(err => {
+                            if (err.response.status === 401) {
+                                this.props.history.push('/login');
+                                this.props.setUserNotLoading();
+                            }
+                        })
 
-            // Make third request using responses from the first two
-            const secondRes = await axios.get('/artifacts/' + firstRes.data._id);
-            const thirdRes = await axios.get('/api/users/profile/' + firstRes.data.email);
-
-            // Update state once with all 3 responses
-            this.setState({
-                email: firstRes.data.email,
-                birthDate: firstRes.data.birthDate,
-                publicName: firstRes.data.publicName,
-                firstName: firstRes.data.firstName,
-                lastName: firstRes.data.lastName,
-                location: firstRes.data.location,
-                dateCreated: new Date(firstRes.data.dateCreated).toDateString(),
-                userID: firstRes.data._id,
-                profileImgData: thirdRes.data,
-                artifacts: secondRes.data
-            });
-
-            // After retrieving all of the data display the profile page
-            this.props.setUserNotLoading();
+                })
+                .catch(err => {
+                    // Check the response err code for first request
+                    if (err.response.status === 404) {
+                        this.props.history.push('/404');
+                        this.props.setUserNotLoading();
+                    } else if (err.response.status === 401) {
+                        this.props.history.push('/login');
+                        this.props.setUserNotLoading();
+                    }
+                });
         }
     }
 
@@ -173,6 +207,14 @@ class myProfile extends Component {
             )
         }
 
+        var profileIMG;
+        // Set a no profile image placeholder if there was no profile image
+        if (this.state.profileImgData === "") {
+            profileIMG = <img className ="profilePic" src={NO_IMG} alt='user profile pic'/>
+        } else {
+            profileIMG = <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+        }
+
         return(
             <div className="myProfile">
                 {/* Change the header for the home menu */}
@@ -188,7 +230,7 @@ class myProfile extends Component {
                     <Row>
                         <Col sm={{ size: 'auto', offset: 1}}>
                             <Container className="picBox">
-                                <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+                                {profileIMG}
                                 <div className="d-flex justify-content-center">
                                     <p className="greeting">Hi {this.state.publicName}!</p>
                                 </div>

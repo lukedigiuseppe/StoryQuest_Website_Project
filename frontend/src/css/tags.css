@@ -26,7 +26,8 @@
   /* Styles for selected tags */
   div.ReactTags__selected span.ReactTags__tag {
       border: 1px solid #ddd;
-      background: #F47B53;
+      background: #0079a3;
+      color: white;
       font-size: 16px;
       display: inline-block;
       padding: 5px;
