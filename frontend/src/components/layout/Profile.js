@@ -41,7 +41,7 @@ class Profile extends Component {
 
     componentDidMount() {
 
-        // Get user info from backend database
+        /*Get user info from backend database*/
       
         axios.get("http://localhost:5000/api/users/profile/all_info/" + this.props.match.params.id)
             .then(res => {
@@ -55,7 +55,7 @@ class Profile extends Component {
                 })
             })
 
-            // get and deal with prifile image for dsiplay 
+            /*get and deal with prifile image for dsiplay*/
         axios.get("http://localhost:5000/api/users/profile/profile_image/" + this.props.match.params.id)
         .then(res => {
             // We then call setState here to assign the information we got back into our state so that we can render it.
