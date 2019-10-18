@@ -6,6 +6,8 @@ import {connect} from 'react-redux';
 import Loading from './Loading';
 import {setUserLoading, setUserNotLoading} from '../../actions/authActions';
 import ReactPlayer from 'react-player';
+import ProfileNavBar from './profileNavBar';
+import TopMenu from './TopMenu';
 
 import {
     Container,
@@ -20,7 +22,9 @@ import axios from 'axios';
 
 const encrypt = require('../../utils/encryption').encrypt;
 
-const BANNER = "/images/cover.png";
+const NO_IMG = "/images/no-image-placeholder.png";
+const NO_VID = "/images/no-video-placeholder.jpg";
+
 
 class ViewArtifact extends Component{
 
@@ -53,13 +57,12 @@ class ViewArtifact extends Component{
          /*Get the artifact information from backend using axios */
         axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
             .then(res => {
-                console.log(res.data);
                 // We then call setState here to assign the information we got back into our state so that we can render it.
                 this.setState({
                     name: res.data.name,
                     story: res.data.story,
                     category: res.data.category,
-                    dateMade: res.data.dateMade,
+                    dateMade: new Date(res.data.dateMade).toDateString(),
                     isPublic: res.data.isPublic,
                     ownerID: res.data.ownerID,
                 })
@@ -160,7 +163,14 @@ class ViewArtifact extends Component{
         }
 
         // If there are no images don't display the carousel by default
-        var carouselComp = <Row></Row>
+        var carouselComp = 
+            <Row>
+                <Col style={{textAlign: "center"}} sm={{ size: 6, order: 2, offset: 3 }}>
+                    <img alt="" src={NO_IMG} style={{ height: "250px", width: "250px"}}/>
+                    <br /><br />
+                    <h2 className="text-center">No Images found.</h2>
+                </Col>
+            </Row>
 
         if (this.state.images.length !== 0) {
             carouselComp = 
@@ -179,8 +189,10 @@ class ViewArtifact extends Component{
             // Display message saying there is no video
             videoPlayer = 
             <Row>
-                <Col sm={{ size: 6, order: 2, offset: 3 }}>
-                    <h1 className="text-center">No video for this artifact. It might still be processing, check back later</h1>
+                <Col style={{textAlign: "center"}} sm={{ size: 6, order: 2, offset: 3 }}>
+                    <img alt="" src={NO_VID} style={{ height: "250px", width: "250px"}}/>
+                    <br /><br />
+                    <h2 className="text-center">No video for this artifact.</h2>
                 </Col>
             </Row>
         } else {
@@ -207,6 +219,8 @@ class ViewArtifact extends Component{
             </Row>
         }
 
+        const navMenu = this.props.auth.isAuthenticated ? <Container className="d-none d-lg-flex"><ProfileNavBar history={this.props.history}/></Container> : <Container className="d-none d-lg-flex"><TopMenu /></Container>;
+
         return(
             <div>
 
@@ -217,14 +231,9 @@ class ViewArtifact extends Component{
                     <title>{this.state.name}</title>
                 </Helmet>
 
+                {navMenu}
 
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
-
-                <Container className="register-box bg-light rounded-lg">
+                <Container className="artifact-box bg-light rounded-lg">
 
                  {/*Form title*/}
                  <Row>
@@ -237,39 +246,38 @@ class ViewArtifact extends Component{
                     
                 </Row>
 
+                <br />
+
                 {/*Item name*/}
                 <Row>
                     <Col xs = "6">
                         <h1 className="text-left" style={{paddingLeft: "30px"}}>{this.state.name}</h1>
                     </Col>
-                
-
-                    
                 </Row>
+
+                <br />
 
                 {/*Item date*/}
                 <Row>   
-                    <Col xs = "2">
-                
-                         <h5 className="text-left" style={{paddingLeft: "30px"}}>Date: {this.state.dateMade.slice(0, 10)}</h5>
+                    <Col xs = "4" className="text-left">
+                         <h5 style={{paddingLeft: "30px"}}>Date: {this.state.dateMade}</h5>
                     </Col>
 
-                    <Col xs = "8" ></Col>
+                    <Col xs = "4" ></Col>
 
-                    <Col xs = "2">
-
-                        <Link to={"/profile/"  + this.state.ownerID} style={{fontSize: "20px"}}> User: {this.state.ownerName}
-                        </Link>
-
+                    <Col xs = "4" className="text-right">
+                        <h5 style={{fontSize: "20px", paddingRight: "30px"}}>User: <Link to={"/profile/"  + this.state.ownerID} >{this.state.ownerName}</Link></h5>
                     </Col>
 
                 </Row>
+
+                <br />
 
                 {/*Item story*/}
                 <Row>
                      <Col xs = "1"></Col>
                     <Col xs = "10">
-                    <p  className= "text-center" style={{fontSize: "30px"}}>Story</p>
+                        <h1 className= "text-center">Story</h1>
                     </Col>
 
                     <Col xs = "1"></Col>
@@ -285,11 +293,13 @@ class ViewArtifact extends Component{
                     <Col xs = "1"></Col>
                 </Row>
 
+                <br />
+
                 {/*Item images*/}
                 <Row>
                     <Col xs = "1"></Col>
                     <Col xs = "10">
-                    <p  className= "text-center" style={{fontSize: "30px"}}>Images</p>
+                    <h1  className= "text-center">Images</h1>
                     </Col>
 
                     <Col xs = "1"></Col>
@@ -303,7 +313,7 @@ class ViewArtifact extends Component{
                 <Row>
                     <Col xs = "1"></Col>
                     <Col xs = "10">
-                    <p  className= "text-center" style={{fontSize: "30px"}}>Video</p>
+                    <h1 className= "text-center">Video</h1>
                     </Col>
 
                     <Col xs = "1"></Col>

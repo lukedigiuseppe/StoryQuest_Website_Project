@@ -21,7 +21,7 @@ const Artifact = props => (
             <Link to={"/view_artifact/"+props.artifacts._id}>{props.artifacts.name}</Link>
         </td>
         <td>{props.artifacts.story.substring(0,25)} ...</td>
-        <td>{props.artifacts.dateMade} </td>
+        <td>{new Date(props.artifacts.dateMade).toDateString()} </td>
     </tr>
 )
 
@@ -76,7 +76,7 @@ class myProfile extends Component {
                 firstName: firstRes.data.firstName,
                 lastName: firstRes.data.lastName,
                 location: firstRes.data.location,
-                dateCreated: firstRes.data.dateCreated,
+                dateCreated: new Date(firstRes.data.dateCreated).toDateString(),
                 userID: firstRes.data._id,
                 profileImgData: thirdRes.data,
                 artifacts: secondRes.data
@@ -199,7 +199,7 @@ class myProfile extends Component {
                                     <Row className="justify-content-left"> 
                                         <Col xs="auto" className="edit-text">
                                         {/* Buffer with spaces to make all field names the same length */}
-                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "67px"}}>Email&nbsp;</div>
+                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "3.5em"}}>Email&nbsp;</div>
                                         </Col>
                                         <Col xs="auto" className="no-gutters">
                                             <p className="name edit-text">{this.state.email}</p>
@@ -210,7 +210,7 @@ class myProfile extends Component {
                                     <Row className="justify-content-left"> 
                                         <Col xs="auto" className="edit-text">
                                         {/* Buffer with spaces to make all field names the same length */}
-                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "12px"}}>Date Joined&nbsp;</div>
+                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "0.5em"}}>Date Joined&nbsp;</div>
                                         </Col>
                                         <Col xs="auto" className="no-gutters">
                                             <p className="name edit-text">{this.state.dateCreated}</p>
@@ -220,7 +220,7 @@ class myProfile extends Component {
                                 <div className="d-flex justify-content-left input-group">
                                     <Row>
                                         <Col xs="auto" className="edit-text">
-                                            <div style={{borderRight: "2px solid grey", height: "30px"}}>Public Name&nbsp;</div>
+                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "0.2em"}}>Public Name&nbsp;</div>
                                         </Col>
                                         <Col xs="auto">
                                         <EdiText
@@ -250,7 +250,7 @@ class myProfile extends Component {
                                 <Row className="justify-content-left"> 
                                     <Col xs="auto" className="edit-text">
                                     {/* Buffer with spaces to make all field names the same length */}
-                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "16px"}}>First Name&nbsp;</div>
+                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "1em"}}>First Name&nbsp;</div>
                                     </Col>
                                     <Col xs="auto" className="no-gutters">
                                         <EdiText
@@ -280,7 +280,7 @@ class myProfile extends Component {
                                 <Row className="justify-content-left"> 
                                     <Col xs="auto" className="edit-text">
                                     {/* Pad to align everything to the longest field*/}
-                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "20px"}}>Last Name&nbsp;</div>
+                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "1em"}}>Last Name&nbsp;</div>
                                     </Col>
                                     <Col xs="auto" className="no-gutters">
                                         <EdiText
@@ -311,7 +311,7 @@ class myProfile extends Component {
                                 <Row className="justify-content-left" style={{paddingBottom: "10px"}}> 
                                     <Col xs="auto" className="edit-text">
                                     {/* Buffer with spaces to make all field names the same length */}
-                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "39px"}}>Location&nbsp;</div>
+                                        <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "2em"}}>Location&nbsp;</div>
                                     </Col>
                                     <Col xs="auto" className="no-gutters">
                                         <EdiText

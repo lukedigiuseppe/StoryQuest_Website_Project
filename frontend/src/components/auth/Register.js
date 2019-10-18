@@ -25,7 +25,6 @@ import '../../css/register.css';
 
 const INPUTWIDTH = 10;
 const DESCWIDTH = 2;
-const BANNER = "/images/cover.png"
 
 class Register extends Component {
 
@@ -89,6 +88,8 @@ class Register extends Component {
 
         const { errors } = this.state;
 
+        // Picks which navbar to use based on whether the user is logged in or not.
+
         return (
             <div>
                 {/* Change the title of the page */}
@@ -98,13 +99,8 @@ class Register extends Component {
                     <title>Register an account</title>
                 </Helmet>
 
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
                 {/* The form container */}
-                <Container className="register-box bg-light rounded-lg">
+                <Container style={{transform: "translate(0%, 5%)"}} className="register-box bg-light rounded-lg">
                     <Row>
                         <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
                         <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
