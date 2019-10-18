@@ -11,7 +11,7 @@ import store from "./store";
 
 // Import CSS files
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './css/customTheme.css'
+import './css/boldTheme.css'
 
 // Import our React components
 import App from './App';
