@@ -5,7 +5,7 @@ class Welcome extends Component {
 
     render() {
         return(
-            <div>
+            <div id="about">
                 <br />
                 <Container className="pt-md-5 pb-md-5 rounded-lg bg-light" fluid>
                     <Row className="pt-3">
@@ -34,10 +34,13 @@ class Welcome extends Component {
                 </Container>
                 <br />
                 <Jumbotron className="bg-light">
-                    <h1 className="display-3">What is Story Quest?</h1>
-                    <p className="lead">Slogan/Brief description goes here.</p>
+                    <h1 className="display-3">Story Quest</h1>
+                    <p className="lead">An Online Artifact registry</p>
                     <hr className="my-2" />
-                    <p>Long, detailed description goes here.</p>
+                    <p>Story Quest provides its users with a platform to store and preserve their stories. We allow people
+                    to upload items which may be of historical importance or important to them personally. The stories shared
+                    on our platform are kept safe on our database for your friends and family or the wider world if you choose.
+                    So have fun reading these stories and sharing yours with the world!</p>
                     <p className="lead">
                     <Button href="https://www.google.com.au" color="primary">Learn How</Button>
                     </p>
