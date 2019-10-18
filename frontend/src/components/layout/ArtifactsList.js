@@ -22,6 +22,7 @@ class ArtifactsList extends Component {
 
         this.state = {
             searchString: this.props.match.params.searchString,
+            searched: "",
             artifacts: []
         }
     }
@@ -52,6 +53,7 @@ class ArtifactsList extends Component {
     onSubmit = (e) => {
         e.preventDefault()
         var data = {searchString: this.state.searchString};
+        this.state.searched = this.state.searchString;
         axios.post('http://localhost:5000/searchartifacts', data)
             .then((res) => {
                 this.setState({
@@ -95,7 +97,7 @@ class ArtifactsList extends Component {
             <Container>
                 <Row>
                     <Col>
-                    <h2 style={{textAlign: "left"}}>No results for "{this.state.searchString}".</h2>
+                    <h2 style={{textAlign: "left"}}>No results for "{this.state.searched}".</h2>
                     <br />
                     <p style={{textAlign: "left"}}>
                         Try these search tips:
