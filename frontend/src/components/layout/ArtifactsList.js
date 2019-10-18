@@ -32,6 +32,7 @@ class ArtifactsList extends Component {
         if (this.state.searchString) {
             this.props.setUserLoading();
             var data = {searchString: this.state.searchString};
+            this.state.searched = this.state.searchString;
             axios.post('http://localhost:5000/searchartifacts', data)
                 .then((res) => {
                     this.setState({
