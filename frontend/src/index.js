@@ -28,6 +28,7 @@ import EditArtifact from "./components/layout/EditArtifact";
 import FourOFour from "./components/layout/FourOFour";
 import ArtifactsList from './components/layout/ArtifactsList';
 import MyArtifacts from './components/layout/MyArtifacts';
+import EditImages from './components/layout/EditImages';
 
 import Image from "./components/layout/ImageSample";
 import Video from "./components/layout/VideoTest";
@@ -78,6 +79,8 @@ const routing = (
                     <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
                     <Route exact path="/list/:searchString" component={ArtifactsList} />
                     <Route exact path="/myartifacts" component={MyArtifacts} />
+                    <Route exact path="/edit_images/:id" component ={EditImages} />
+
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />
                     {/* Generic component so that all undefined routes redirect to 404 page. If no other route is matched, then this one will be */}
