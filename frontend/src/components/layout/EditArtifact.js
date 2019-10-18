@@ -128,7 +128,42 @@ class EditArtifact extends Component{
             dateMade: this.state.dateMade
         };
 
+        axios.patch('http://localhost:5000/edit_artifact/' + this.props.match.params.id, editedArtifact) 
+            .then(res => { 
+                console.log(res); 
+            }) 
+            .catch(err => { 
+                console.log(err); 
+            }); 
+
     };
+
+     onChange = (e) => { 
+        const type = e.target.type; 
+        const id = e.target.id; 
+        const value = e.target.value; 
+        var isPublic = ""; 
+ 
+        // Set the public state depending on which radio button is checked. 
+        if (type === 'radio'){ 
+            if(e.target.checked){ 
+                if(id === 'private'){ 
+                    isPublic = "private"; 
+                } else if (id === 'friends') { 
+                    isPublic = "friends"; 
+                } else if(id === 'public'){ 
+                    isPublic = "public"; 
+                } 
+            } 
+            this.setState({ isPublic: isPublic }); 
+        } else { 
+            this.setState({ [id]: value }); 
+        } 
+    }; 
+
+
+
+ 
 
     componentDidMount() {
 
@@ -142,7 +177,7 @@ class EditArtifact extends Component{
                    name: res.data.name,
                    story: res.data.story,
                    category: res.data.category,
-                   dateMade: res.data.dateMade,
+                   dateMade: res.data.dateMade.slice(0,10),
                    isPublic: res.data.isPublic,
                    ownerID: res.data.ownerID,
                    tags: this.tagConvert(res.data.tags.split(" "))

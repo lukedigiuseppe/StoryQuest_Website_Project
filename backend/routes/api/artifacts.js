@@ -291,6 +291,56 @@ router.get('/artifact/:artifactID', (req, res, next) => {
     })(req, res, next);
 });
 
+router.patch('/edit_artifact/:artifactID', (req, res, next) => {
+
+
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+        console.log("trying")
+        if (err) { 
+            return next(err); 
+        }
+        if (!user) { 
+            
+            return res.status(401).send("Unauthorised user, you are not the owner of this artifact."); 
+            
+        }
+
+        var artifactID = req.params.artifactID;
+        Artifact.findById(artifactID, (err, artifact) => {
+
+
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            if (!artifact) {
+                console.log("NOT FOUND")
+                return res.status(404).send("Artifact not found.");
+
+            }
+
+
+            if (artifact.ownerID.includes(user.id)) {
+
+                artifact.name = req.body.name;
+                artifact.dateMade = req.body.date;
+                artifact.isPublic = req.body.isPublic;
+                artifact.story = req.body.story;
+                artifact.tags = req.body.tags;
+                artifact.catagory = req.body.catagory;
+
+
+            }
+
+            else {
+                // Unauth user
+                return res.status(401).send("Unauthorised user, you are not the owner of this artifact."); 
+            }
+
+        });
+    });(req, res, next);
+});
+
 
 
 // @route DELETE /delete_artifact/:artifactID
