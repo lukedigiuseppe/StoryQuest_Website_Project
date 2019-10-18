@@ -9,10 +9,6 @@ import ProfileNavBar from '../layout/profileNavBar';
 import MobileMenu2 from '../layout/MobileMenu';
 import {Container} from "reactstrap";
 
-<<<<<<< HEAD
-=======
-
->>>>>>> luke
 class Dashboard extends Component {
 
     constructor(props) {
