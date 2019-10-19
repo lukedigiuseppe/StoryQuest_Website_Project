@@ -20,6 +20,7 @@ const BANNER = "/images/cover.png";
 const MARGIN = 1;
 const HALF = 6;
 
+
 class DeleteImage extends Component {
 
     constructor(props) {
@@ -27,8 +28,17 @@ class DeleteImage extends Component {
         this.onDelete = this.onDelete.bind(this);
     }
 
-    onDelete () {
-        return this.props.image.id;
+    onDelete () { 
+        console.log(this.props.image.id)
+
+        axios.delete('/delete_image/' + this.props.artifactID + '/' + this.props.image.id)
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+
     }
     
     render () {
@@ -61,9 +71,9 @@ class EditImages extends Component{
     }
 
 
-    imageList() {
+    imageList(artifactID) {
         return this.state.images.map(function(currImage, i){
-            return <DeleteImage image={currImage} key={i} />;
+            return <DeleteImage image={currImage} artifactID = {artifactID}key={i} />;
         })
     }
 
@@ -135,7 +145,7 @@ class EditImages extends Component{
                     
                 </Row>
                 <br></br>
-
+              
                 <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
@@ -154,7 +164,7 @@ class EditImages extends Component{
                         </tr>
                         </thead>
                         <tbody>
-                        { this.imageList() }
+                        { this.imageList(this.props.match.params.id) }
                         </tbody>
                     </table>
 
