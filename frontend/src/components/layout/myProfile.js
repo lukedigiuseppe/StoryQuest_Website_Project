@@ -287,18 +287,6 @@ class myProfile extends Component {
                                         </Col>
                                     </Row>
                                 </div>
-
-                                <div className="d-flex justify-content-left input-group">
-                                    <Row className="justify-content-left"> 
-                                        <Col xs="auto" className="edit-text">
-                                        {/* Buffer with spaces to make all field names the same length */}
-                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "12px"}}>Date Joined&nbsp;</div>
-                                        </Col>
-                                        <Col xs="auto" className="no-gutters">
-                                            <p className="name edit-text">{this.state.dateCreated}</p>
-                                        </Col>
-                                    </Row>
-                                </div>
                                 <div className="d-flex justify-content-left input-group">
                                     <Row>
                                         <Col xs="auto" className="edit-text">
