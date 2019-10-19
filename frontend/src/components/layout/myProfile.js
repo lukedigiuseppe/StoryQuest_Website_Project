@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Container, Row, Col} from 'reactstrap';
+import {Container, Row, Col, UncontrolledCarousel} from 'reactstrap';
+// import {Image } from 'react-native';
 import ProfileNavBar from './profileNavBar';
 import MobileMenu2 from './MobileMenu';
 import '../../css/myProfile.css';
@@ -14,6 +15,7 @@ import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
 // Used to check if Friend email entered is a valid email
 // import Validator from 'validator';
+const Add = '/images/plus.png';
 
 const Artifact = props => (
     <tr>
@@ -222,6 +224,7 @@ class myProfile extends Component {
         }
 
         return(
+
             <div className="myProfile">
                 {/* Change the header for the home menu */}
                 <Helmet>
@@ -423,8 +426,10 @@ class myProfile extends Component {
                 </Container>
                 <br></br><br></br>
                 <Container className="artifactBox">
-                <div>
-                    <div className="d-flex justify-content-center"><p className="tMHeader">Your Artifacts</p></div>
+                   <div>
+                    <div className="d-flex justify-content-center"><p className="tMHeader">Your Artifacts</p>
+                        <Link to="/add_artifact"><img src={Add} className="icon" /></Link>
+                    </div>
                     <table className="table table-striped justify-content-center" size="sm" >
                         <thead>
                         <tr>
