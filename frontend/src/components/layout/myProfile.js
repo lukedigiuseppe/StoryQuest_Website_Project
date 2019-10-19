@@ -22,6 +22,12 @@ const Artifact = props => (
         </td>
         <td>{props.artifacts.story.substring(0,25)} ...</td>
         <td>{new Date(props.artifacts.dateMade).toDateString()} </td>
+        <td>
+            <Link to={"/edit_artifact/"+props.artifacts._id}>Edit</Link>
+        </td>
+        <td>
+            <Link to={"/delete_artifact/"+props.artifacts._id}>Delete</Link>
+        </td>
     </tr>
 )
 
@@ -231,6 +237,7 @@ class myProfile extends Component {
                         <Col sm={{ size: 'auto', offset: 1}}>
                             <Container className="picBox">
                                 <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+                                <a href="/profile_image">Edit Picture</a>
                                 <div className="d-flex justify-content-center">
                                 </div>
                         </Container></Col>
