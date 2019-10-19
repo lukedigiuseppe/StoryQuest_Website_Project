@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import {Container, Row} from 'reactstrap';
 import TopMenu from './TopMenu'
 import MobileMenu from './MobileMenu';
-import '../../css/profile.css';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+
+import '../../css/profile.css';
 
 const Artifact = props => (
     <tr>
@@ -15,10 +16,9 @@ const Artifact = props => (
             <Link to={"/view_artifact/"+props.artifacts._id}>{props.artifacts.name}</Link>
         </td>
         <td>{props.artifacts.story.substring(0,25)} ...</td>
-        <td>{props.artifacts.dateMade} </td>
+        <td>{new Date(props.artifacts.dateMade).toDateString()} </td>
     </tr>
 )
-
 
 class Profile extends Component {
    
@@ -56,7 +56,7 @@ class Profile extends Component {
             })
 
             /*get and deal with prifile image for dsiplay*/
-        axios.get("http://localhost:5000/api/users/profile/profile_image/" + this.props.match.params.id)
+        axios.get("http://localhost:5000/api/users/profile/" + this.props.auth.user.email)
         .then(res => {
             // We then call setState here to assign the information we got back into our state so that we can render it.
             this.setState({
@@ -87,17 +87,16 @@ class Profile extends Component {
         })
     }
 
-
-
     onChange = (e) => {
         this.setState({ [e.target.id]: e.target.value });
     }
+
     render() {
         return(
             <div className="profile">
                 {/* Change the header for the home menu */}
                 <Helmet>
-                    <title>My Profile</title>
+                    <title>Profile of {this.props.auth.user.name}</title>
                 </Helmet>
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
                     <Container className="d-none d-lg-flex"><TopMenu /></Container>
@@ -111,7 +110,7 @@ class Profile extends Component {
                             </div>
 
 
-                {/*<div className="d-flex justify-content-center"><img className ="icon" src='/images/locationpin.png' alt='location icon'/>Location: {this.state.location}</div> */}
+                <div className="d-flex justify-content-center"><img className ="icon" src='/images/locationpin.png' alt='location icon'/>Location: {this.state.location}</div>
                     <div className="d-flex justify-content-center"><img className ="icon" src='/images/tick.png' alt='date joined icon'/>Joined: {this.state.dateCreated.slice(0,10)}</div>
                     <Row></Row>
                     <Row></Row>
@@ -121,17 +120,11 @@ class Profile extends Component {
                     <br></br><br></br>
                 </Container>
                 <br></br><br></br>
-                <Container className="profileBox">
-                    <p> CREDITS (WILL MOD LATER):<br></br><a href="https://icons8.com/icon/19326/map-pin">Map Pin icon by Icons8</a><br></br>
-                        <a href="https://icons8.com/icon/102561/verified-account">Verified Account icon by Icons8</a>
-                    </p>
-                    <br></br>
-                   </Container>
 
-                   <Container className="artifactBox">
+                <Container className="artifactBox">
                 <div>
                     <div className="d-flex justify-content-centre"> <p className="tMHeader">Your Artifacts</p></div>
-                    <table className="table table-striped" size="sm" justify-content-centre>
+                    <table className="table table-striped" size="sm" >
                         <thead>
                         <tr>
                             <th className="tHeader">Name</th>
@@ -145,10 +138,7 @@ class Profile extends Component {
                     </table>
                 </div>
                 </Container>
-
-
             </div>
-
         )
     }
 }

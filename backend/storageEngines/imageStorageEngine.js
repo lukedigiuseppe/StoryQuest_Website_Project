@@ -55,7 +55,8 @@ module.exports.readImage = function readImage(objectID, callback) {
 
         // Check if image is null
         if (!image) {
-            callback(new Error("Image not found."));
+            var error = new Error("Image not found.");
+            callback(error);
             return;
         }
 

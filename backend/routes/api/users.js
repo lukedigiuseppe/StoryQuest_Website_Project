@@ -333,7 +333,7 @@ router.get('/profile/:email', function(req, res) {
         // Convert to base64 then send
         imgStore.readImage(user.avatarImg, function(err, content) {
             if (err) {
-                return res.status(500).send("Error: Unable to retrieve image from database");
+                return res.status(404).send("Error: Unable to retrieve image from database");
             }
             return res.status(200).send(content);
         });

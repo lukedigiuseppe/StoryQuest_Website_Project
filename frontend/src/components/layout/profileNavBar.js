@@ -41,10 +41,10 @@ class ProfileNavBar extends Component {
                             <Col className="d-none d-lg-flex justify-content-start">
                                 <Nav className="mlx-auto" navbar>
                                     <NavItem className="d-flex align-items-center">
-                                        <NavLink className="font-weight-bold " href="/">Home</NavLink>
+                                        <NavLink className="font-weight-bold " href="/myartifacts">My Artifacts</NavLink>
                                     </NavItem>
                                     <NavItem className="d-flex align-items-center">
-                                        <NavLink className="font-weight-bold " href="/">My Artifacts</NavLink>
+                                        <NavLink className="font-weight-bold " href="/add_artifact">Add An Artifact</NavLink>
                                     </NavItem>
                                 </Nav>
                             </Col>
@@ -58,7 +58,7 @@ class ProfileNavBar extends Component {
                             <Col className="d-none d-lg-flex justify-content-end">
                                 <Nav className="mrx-auto" navbar>
                                     <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
-                                        <DropdownToggle className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} /></DropdownToggle>
+                                        <DropdownToggle style={{display: "flex", alignItems: "center"}} className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} />{this.props.auth.user.name}</DropdownToggle>
                                         <DropdownMenu right>
                                             <DropdownItem href="/myprofile"><Button>My Profile</Button></DropdownItem>
                                             <DropdownItem href="/login"><Button onClick={this.onLogoutClick}>Logout</Button></DropdownItem> 

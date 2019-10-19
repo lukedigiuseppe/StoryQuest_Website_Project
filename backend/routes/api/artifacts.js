@@ -12,6 +12,7 @@ const cryptoString = require("crypto-random-string");
 
 // Load the validators
 const validateAddArtifact = require("../../validation/artifactValidator");
+const validateEditArtifact = require("../../validation/artifactUpdateValidatior");
  
 // Imports required for securing the routes. Allows passport to verify the JWT sent by the client.
 const passport = require('passport');
@@ -44,6 +45,7 @@ router.post('/searchartifacts', function(req, res, next) {
             return next(err);
         }
 
+
         // If it is a guest or unregsitered user, they are only allowed to search for public artifacts
         if (!user) {
             Artifact.find({$text: { $search: req.body.searchString }, isPublic: "public"}, {score: { $meta: `textScore` }} )
@@ -61,6 +63,11 @@ router.post('/searchartifacts', function(req, res, next) {
                 .exec(function (err, artifacts) {
                     if (err) {
                         return res.status(400).send("Error: Search function has failed. Try again later.");
+                    }
+
+                    // When there are no artifacts just send back the empty array, no need to continue checking
+                    if (artifacts.length === 0) {
+                        return res.status(200).send(artifacts);
                     }
                     var filteredArtifacts = [];
                     // Counter to track the number of async callbacks finished.
@@ -94,7 +101,6 @@ router.post('/searchartifacts', function(req, res, next) {
                             }
 
                             artifactsProcessed++;
-
                             if (artifactsProcessed === artifactArr.length) {
                                 return res.status(200).send(filteredArtifacts);
                             }
@@ -342,6 +348,75 @@ router.patch('/edit_artifact/:artifactID', (req, res, next) => {
 });
 
 
+// @route PATCH /update_artifact/:artifactID
+// @desc Updates an artifacts details for the given artifact ID, assuming that you are the owner of the artifact
+// @access Restricted
+router.patch('/update_artifact/:artifactID', (req, res, next) => {
+
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
+        if (err) {
+            return next(err);
+        }
+
+        if (!user) {
+            return res.status(401).send("Unauthorised user, you are not the owner of this artifact."); 
+        }
+
+        // Form validation for artifact update
+        const { errors, isValid } = validateEditArtifact(req.body);
+    
+        // Check validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+
+        const artifactID = req.params.artifactID;
+
+        Artifact.findById(artifactID, (err, artifact) => {
+
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            if (!artifact) {
+                return res.status(404).send("Artifact not found.");
+            }
+
+            if (artifact.ownerID.includes(user.id)) {
+                // Check if its empty, if empty don't update.
+                if (req.body.name) {
+                    artifact.name = req.body.name;
+                }
+                if (req.body.story) {
+                    artifact.story = req.body.story;
+                }
+                if (req.body.tags) {
+                    artifact.tags = req.body.tags.join(' ');
+                }
+                if (req.body.category) {
+                    artifact.category = req.body.category;
+                }
+                if (req.body.isPublic) {
+                    artifact.isPublic = req.body.isPublic;
+                }
+                if (req.body.dateMade) {
+                    artifact.dateMade = req.body.dateMade;
+                }
+            }
+
+            artifact.save()
+            .then(() => {
+                return res.status(201).send("Artifact successfully updated.");
+            })
+            .catch(err => {
+                console.error(err);
+                return res.status(500).send(err);
+            });
+        });
+    })(req, res, next);
+});
+
 
 // @route DELETE /delete_artifact/:artifactID
 // @desc View a single artifact based on its serial number.
@@ -365,9 +440,7 @@ router.delete('/delete_artifact/:artifactID', (req, res, next) => {
             }
 
             if (!artifact) {
-                console.log("NOT FOUND")
                 return res.status(404).send("Artifact not found.");
-
             }
 
             // Check if owner of the artifact, can then delete it
@@ -478,7 +551,8 @@ router.get('/artifact_images/:artifactID/:imageID', (req, res, next) => {
             // Read the image and determine whether or not send it depending on user authentication
             imgStore.readImage(imageID, function(err, imgData) {
                 if (err) {
-                    return res.status(500).send(err);
+                    // Return a 404 if image is not found
+                    return res.status(404).send(JSON.stringify(err));
                 }
 
                 // Check if non-logged in user

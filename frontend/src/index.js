@@ -11,7 +11,7 @@ import store from "./store";
 
 // Import CSS files
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './css/customTheme.css'
+import './css/boldTheme.css'
 
 // Import our React components
 import App from './App';
@@ -26,6 +26,8 @@ import MyProfile from "./components/layout/myProfile";
 import DeleteArtifact from "./components/layout/DeleteArtifact";
 import EditArtifact from "./components/layout/EditArtifact";
 import FourOFour from "./components/layout/FourOFour";
+import ArtifactsList from './components/layout/ArtifactsList';
+import MyArtifacts from './components/layout/MyArtifacts';
 
 import Image from "./components/layout/ImageSample";
 import Video from "./components/layout/VideoTest";
@@ -74,12 +76,12 @@ const routing = (
                     <Route exact path="/sample" component={Sample} />
                     <Route exact path="/delete_artifact/:id" component ={DeleteArtifact} />
                     <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
-                    {/* Generic component so that all undefined routes redirect to 404 page */}
-                    <Route component ={FourOFour} />
-                </Switch>
-                <Switch>
+                    <Route exact path="/list/:searchString" component={ArtifactsList} />
+                    <Route exact path="/myartifacts" component={MyArtifacts} />
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />
+                    {/* Generic component so that all undefined routes redirect to 404 page. If no other route is matched, then this one will be */}
+                    <Route component ={FourOFour} />
                 </Switch>
             </div>
         </Router>

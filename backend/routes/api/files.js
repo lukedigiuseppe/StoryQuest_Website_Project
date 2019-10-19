@@ -137,4 +137,43 @@ router.delete('/delete_image/:artifactID/:imageID', (req, res, next) => {
     })(req, res, next);
 });
 
+// @route DELETE /delete_profile_image
+// @desc Deletes the logged in user's profile image
+// @access Restricted
+router.delete('/delete_profile_image', (req, res, next) => {
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
+
+        if (err) {
+            return res.status(500).send(err);
+        }
+
+        if (!user) {
+            return res.sendStatus(401);
+        }
+
+        User.findById(user.id, (err, user) => {
+
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            if (!user) {
+                return res.sendStatus(401);
+            }
+
+            imgStore.deleteImage(user.avatarImg, (err, result) => {
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                if (result) {
+                    return res.status(200).send("Profile image delete successful.");
+                } else {
+                    // If an error wasn't triggered, then the only unsuccessful result would be from the image not existing
+                    return res.status(404).send("No profile image found");
+                }
+            })
+        });
+    })(req, res, next);
+})
+
 module.exports = router;

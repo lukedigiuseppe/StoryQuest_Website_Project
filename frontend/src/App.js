@@ -24,7 +24,6 @@ class App extends Component {
                 </Helmet>
 
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
-                {/* <Container className="d-none d-lg-flex"><TopMenu /></Container> */}
                 {navMenu}
                 <Container className="d-lg-none"><MobileMenu /></Container>
                 <br /><br /><br />

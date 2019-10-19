@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Merriweather|Oxygen:700|Barlow|Libre+Franklin|Varela+Round&display=swap');
 
 .profile{
-    background-color: #F5F3EC;
+    background-color: white;
 }
 .profileBox{
     border-radius: 2%;
@@ -10,9 +10,6 @@
     margin: auto;
     text-align: center;
     background-color: white;
-
-
-
 }
 .profilePic {
     border-radius: 50%;
@@ -24,13 +21,11 @@
 }
 
 .name {
-    font-family: 'Merriweather', sans-serif;
     font-size: 30px;
 }
 
 .basicText{
     font-size:15px;
-    font-family: 'Barlow', sans-serif;
     align-self: left;
 
 }
@@ -49,7 +44,4 @@
 }
 .artifactInfo{
     padding: 10px;
-}
-.navBar{
-
 }

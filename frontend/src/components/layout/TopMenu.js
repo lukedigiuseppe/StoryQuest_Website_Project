@@ -31,10 +31,10 @@ class TopMenu extends Component {
                             <Col className="d-none d-lg-flex justify-content-start">
                                 <Nav className="mlx-auto" navbar>
                                     <NavItem className="d-flex align-items-center">
-                                        <NavLink className="font-weight-bold " href="/">About</NavLink>
+                                        <NavLink className="font-weight-bold " href="#about">About</NavLink>
                                     </NavItem>
                                     <NavItem className="d-flex align-items-center">
-                                        <NavLink className="font-weight-bold " href="/">Getting Started</NavLink>
+                                        <NavLink className="font-weight-bold " href="/register">Getting Started</NavLink>
                                     </NavItem>
                                 </Nav>
                             </Col>
