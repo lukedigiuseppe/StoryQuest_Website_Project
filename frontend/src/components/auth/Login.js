@@ -13,7 +13,7 @@ import Loading from "../layout/Loading";
 
 import '../../css/login.css'
 
-const LOGO = '/images/storyQuest.png';
+const LOGO = '/images/logo.png';
 
 class Login extends Component {
 

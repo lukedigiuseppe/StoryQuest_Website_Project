@@ -20,7 +20,7 @@ import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {logoutUser} from "../../actions/authActions";
 
-const LOGO = '/images/storyQuest.png';
+const LOGO = '/images/cover.png';
 
 class ProfileNavBar extends Component {
 
@@ -50,7 +50,7 @@ class ProfileNavBar extends Component {
                             </Col>
 
                             <Col className="d-flex justify-content-xs-center justify-content-lg-center">
-                                <NavbarBrand className="d-inline-block p-1" href="/" style={{ width: 80 }}>
+                                <NavbarBrand className="d-inline-block p-1" href="/" style={{ width: 180}}>
                                     <img src={LOGO} alt="logo" className="position-relative img-fluid rounded-sm" />
                                 </NavbarBrand>
                             </Col>
