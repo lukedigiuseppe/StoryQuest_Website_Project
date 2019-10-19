@@ -5,8 +5,8 @@
     max-height: 10%;
 }
 
-.register-box {
-    transform: translate(0%, -2%);
+.artifact-box {
+    transform: translate(0%, 10%);
     padding-top: 20px;
     padding-bottom: 10px;
 }

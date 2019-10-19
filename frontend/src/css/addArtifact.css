@@ -1,17 +1,10 @@
-.banner-image {
-    margin: auto;
-    max-width: 100%;
-    height: 200px;
-    max-height: 10%;
-}
-
-.register-box {
-    transform: translate(0%, -2%);
+.artifact-box {
+    margin-bottom: 150px;
     padding-top: 20px;
     padding-bottom: 10px;
 }
 
-.register-form {
+.artifact-form {
     padding-top: 40px;
     padding-left: 10px;
     padding-right: 10px;

@@ -6,7 +6,10 @@ import PropTypes from "prop-types";
 import {connect} from 'react-redux';
 import {addNewArtifact} from '../../actions/artifactActions';
 import {setVidUploading, setImgUploading, setHasNoVids, setHasNoImgs} from '../../actions/fileActions';
+
 import ErrorAlert from '../alerts/ErrorAlert';
+import ProfileNavBar from '../layout/profileNavBar';
+import TopMenu from '../layout/TopMenu';
 
 import {
     Container,
@@ -28,7 +31,6 @@ import '../../css/addArtifact.css';
 // Compononent that creates the regsitration page for new users.
 // Need to add code that redirects to another page after pressing submit
 
-const BANNER = "/images/cover.png"
 const MARGIN = 1;
 const HALF = 6;
 
@@ -204,6 +206,14 @@ class AddArtifact extends Component {
     render(){
 
         const { tags, errors } = this.state;
+
+        // Pick which nav menu display depending on user login status
+        var navMenu;
+        if (this.props.auth.isAuthenticated) {
+            navMenu = <ProfileNavBar history={this.props.history} />
+        } else {
+            navMenu = <TopMenu />
+        }
         
         return(
             <div>
@@ -213,16 +223,11 @@ class AddArtifact extends Component {
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <title>Register an artifact</title>
                 </Helmet>
+
+                {/* Nav bar */}
+                {navMenu}
                 
-                {/*Banner*/}
-
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
-
-                <Container className="bg-light rounded-lg" style={{paddingTop: "20px", paddingBottom: "10px", transform: "translate(0%, -1%)"}}>
+                <Container className="artifact-box bg-light rounded-lg" style={{paddingTop: "20px", paddingBottom: "10px", transform: "translate(0%, 5%)"}}>
 
                 { /* back to home button*/} 
                 <Row>
@@ -233,7 +238,7 @@ class AddArtifact extends Component {
             
                 {/*FORM STARTS HERE*/}
 
-                <Form noValidate className="register-form" onSubmit={this.onSubmit}>
+                <Form noValidate className="artifact-form" onSubmit={this.onSubmit}>
                     <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
