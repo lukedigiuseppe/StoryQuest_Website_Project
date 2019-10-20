@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Helmet} from 'react-helmet';
-import {Container, Spinner} from 'reactstrap';
+import {Container, Spinner, Row, Col} from 'reactstrap';
 
 import '../../css/loading.css'
 
@@ -21,8 +21,13 @@ class Loading extends Component {
 
                 <div className="text-center loading-box bg-light">
                     <Container>
-                        <h1><img className="mb-4" src={LOGO} alt="" width="108" height="108" /></h1>
-                        <h1>Currently loading Please wait...</h1>
+                        <Row>
+                            <Col>
+                                <h1><img className="mb-1" src={LOGO} alt="" width="60%" height="60%" /></h1>
+                            </Col>
+                        </Row>
+                        <h1>Currently loading</h1>
+                        <h1> Please wait...</h1>
                         <Spinner style={{ width: '50px', height: '50px' }} />
                     </Container>
                 </div>
