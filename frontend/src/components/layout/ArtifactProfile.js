@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import {Link} from 'react-router-dom';
-import {Container, Row, Col, Button, Spinner} from 'reactstrap';
+import {Container, Row, Col, Spinner} from 'reactstrap';
 import axios from 'axios';
 
 import '../../css/ArtifactProfile.css';
