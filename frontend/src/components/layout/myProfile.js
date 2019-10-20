@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import EdiText from 'react-editext';
 import Loading from './Loading';
+import ArtifactBlock from './ArtifactProfile';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
 // Used to check if Friend email entered is a valid email
@@ -133,6 +134,11 @@ class myProfile extends Component {
         return this.state.artifacts.map(function(currArtifact, i){
             return <Artifact artifacts={currArtifact} key={i} />;
         })
+    }
+    artifactBlockList() {
+        return this.state.artifacts.map((currArtifact, i) => {
+            return <ArtifactBlock artifactData={currArtifact} key={i} />;
+        });
     }
 
     // Save functions that run whenever the user saves an edit entry. This would POST to the backend to change values
@@ -413,24 +419,11 @@ class myProfile extends Component {
                     </Row>
                 </Container>
                 <br></br><br></br>
+
                 <Container className="artifactBox">
-                   <div>
-                    <div className="d-flex justify-content-center"><p className="tMHeader">Your Artifacts</p>
-                        <Link to="/add_artifact"><img src={Add} className="icon" /></Link>
-                    </div>
-                    <table className="table table-striped justify-content-center" size="sm" >
-                        <thead>
-                        <tr>
-                            <th className="tHeader">Name</th>
-                            <th className="tHeader">Your Story</th>
-                            <th className="tHeader">Date Made</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        { this.artifactList() }
-                        </tbody>
-                    </table>
-                </div>
+                    <p className="tMHeader">Your Artifacts</p>
+
+                    { this.artifactBlockList() }
                 </Container>
             </div>
         )
