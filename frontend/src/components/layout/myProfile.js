@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Container, Row, Col, UncontrolledCarousel} from 'reactstrap';
+import {Container, Row, Col, Button} from 'reactstrap';
 // import {Image } from 'react-native';
 import ProfileNavBar from './profileNavBar';
 import MobileMenu2 from './MobileMenu';
@@ -50,7 +50,8 @@ class myProfile extends Component {
             dateCreated: "",
             userID:"",
             profileImgData: "",
-            artifacts: []
+            artifacts: [],
+            tableView: false
         }
 
         this.onSavePublicName = this.onSavePublicName.bind(this);
@@ -141,6 +142,12 @@ class myProfile extends Component {
         });
     }
 
+    onTableViewToggle = () => {
+        this.setState({
+            tableView: !this.state.tableView
+        });
+    }
+
     // Save functions that run whenever the user saves an edit entry. This would POST to the backend to change values
     onSavePublicName(val) {
         this.setState({publicName: val});
@@ -227,6 +234,31 @@ class myProfile extends Component {
             profileIMG = <img className ="profilePic" src={NO_IMG} alt='user profile pic'/>
         } else {
             profileIMG = <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+        }
+
+        // Different artifact table to view depending on user selection
+        var artifactTable;
+        if (this.state.tableView) {
+            // Display table view
+            artifactTable = 
+                <table className="table table-striped justify-content-center" size="sm" >
+                    <thead>
+                    <tr>
+                        <th className="tHeader">Name</th>
+                        <th className="tHeader">Your Story</th>
+                        <th className="tHeader">Date Made</th>
+                        {/* Two blank ones for the edit and delete buttons */}
+                        <th className="tHeader"></th>
+                        <th className="tHeader"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    { this.artifactList() }
+                    </tbody>
+                </table>
+        } else {
+            // Block view by default
+            artifactTable = this.artifactBlockList();
         }
 
         return(
@@ -422,8 +454,10 @@ class myProfile extends Component {
 
                 <Container className="artifactBox">
                     <p className="tMHeader">Your Artifacts</p>
+                    <p className="tMHeader"><Button onClick={this.onTableViewToggle}>Toggle View between Table or List</Button></p>
 
-                    { this.artifactBlockList() }
+                    {artifactTable}
+
                 </Container>
             </div>
         )
