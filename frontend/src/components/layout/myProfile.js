@@ -14,8 +14,10 @@ import Loading from './Loading';
 import ArtifactBlock from './ArtifactProfile';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
+// Used to check if Friend email entered is a valid email
+// import Validator from 'validator';
+const Add = '/images/plus.png';
 
-// Artifact table input. Reads in array of Artifacts
 const Artifact = props => (
     <tr>
         <td>
@@ -67,7 +69,7 @@ class myProfile extends Component {
         } else {
             // Set the screen to loading
             this.props.setUserLoading();
-
+            
             // Make first two requests
             axios.get('/userinfo')
                 .then(firstRes => {
@@ -129,7 +131,11 @@ class myProfile extends Component {
         }
     }
 
-    // Renders array of artifacts into a table
+    artifactList() {
+        return this.state.artifacts.map(function(currArtifact, i){
+            return <Artifact artifacts={currArtifact} key={i} />;
+        })
+    }
     artifactBlockList() {
         return this.state.artifacts.map((currArtifact, i) => {
             return <ArtifactBlock artifactData={currArtifact} key={i} />;
@@ -157,7 +163,6 @@ class myProfile extends Component {
             });
     }
 
-    // Edit Firstname
     onSaveFirstName(val) {
         this.setState({firstName: val});
         const newData = {
@@ -173,7 +178,6 @@ class myProfile extends Component {
             });
     }
 
-    // Edit Last Name
     onSaveLastName(val) {
         this.setState({lastName: val});
         const newData = {
@@ -188,7 +192,6 @@ class myProfile extends Component {
             });
     }
 
-    // Edit Email
     onSaveEmail(val) {
         this.setState({email: val});
         const newData = {
@@ -203,7 +206,6 @@ class myProfile extends Component {
             });
     }
 
-    // Edit Firstname
     onSaveLocation(val) {
         this.setState({location: val});
         const newData = {
@@ -274,17 +276,13 @@ class myProfile extends Component {
                 <Container>
                     <Row>
                         <Col sm={{ size: 'auto', offset: 1}}>
-                            {/*Container which holds profile picture and link to edit picture*/}
                             <Container className="picBox">
                                 <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
-                                {/*Link to route to upload a new image*/}
                                 <a href="/profile_image">Edit Picture</a>
                                 <div className="d-flex justify-content-center">
                                 </div>
                         </Container></Col>
                         <Col sm={{ size: '7', offset: 1.5 }}>
-
-                            {/*Container which holds user information and ability to edit inline*/}
                             <Container className="profileBox">
                                 <div className="d-flex justify-content-left input-group">
                                     <div className="d-flex justify-content-left input-group">
@@ -298,7 +296,7 @@ class myProfile extends Component {
                                             </Col>
                                         </Row>
                                     </div>
-                                    <Row className="justify-content-left">
+                                    <Row className="justify-content-left"> 
                                         <Col xs="auto" className="edit-text">
                                         {/* Buffer with spaces to make all field names the same length */}
                                             <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "3.5em"}}>Email&nbsp;</div>
@@ -334,7 +332,7 @@ class myProfile extends Component {
                                         </Col>
                                         <Col xs="auto">
                                         <EdiText
-                                            type='text'
+                                            type='text' 
                                             validation={val => val.length <= MAX_FIELD_LEN}
                                             validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
                                             viewContainerClassName='edit-text input-group'
@@ -357,7 +355,7 @@ class myProfile extends Component {
                                     </Row>
                                 </div>
                                 <div className="d-flex justify-content-left input-group">
-                                <Row className="justify-content-left">
+                                <Row className="justify-content-left"> 
                                     <Col xs="auto" className="edit-text">
                                     {/* Buffer with spaces to make all field names the same length */}
                                         <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "1em"}}>First Name&nbsp;</div>
@@ -366,7 +364,7 @@ class myProfile extends Component {
                                         <EdiText
                                             type='text'
                                             validation={val => val.length <= MAX_FIELD_LEN}
-                                            validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
+                                            validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."} 
                                             viewContainerClassName='edit-text input-group'
                                             viewProps={{
                                                 style: {textAlign: "left", width: "380px", wordWrap: "break-word"}
@@ -387,14 +385,14 @@ class myProfile extends Component {
                                 </Row>
                                 </div>
                                 <div className="d-flex justify-content-left input-group">
-                                <Row className="justify-content-left">
+                                <Row className="justify-content-left"> 
                                     <Col xs="auto" className="edit-text">
                                     {/* Pad to align everything to the longest field*/}
                                         <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "1em"}}>Last Name&nbsp;</div>
                                     </Col>
                                     <Col xs="auto" className="no-gutters">
                                         <EdiText
-                                            type='text'
+                                            type='text' 
                                             validation={val => val.length <= MAX_FIELD_LEN}
                                             validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
                                             viewContainerClassName='edit-text input-group'
@@ -418,14 +416,14 @@ class myProfile extends Component {
                                 </div>
 
                                 <div className="d-flex justify-content-left input-group">
-                                <Row className="justify-content-left" style={{paddingBottom: "10px"}}>
+                                <Row className="justify-content-left" style={{paddingBottom: "10px"}}> 
                                     <Col xs="auto" className="edit-text">
                                     {/* Buffer with spaces to make all field names the same length */}
                                         <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "2em"}}>Location&nbsp;</div>
                                     </Col>
                                     <Col xs="auto" className="no-gutters">
                                         <EdiText
-                                            type='text'
+                                            type='text' 
                                             validation={val => val.length <= MAX_FIELD_LEN}
                                             validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
                                             viewContainerClassName='edit-text input-group'
@@ -454,10 +452,12 @@ class myProfile extends Component {
                 </Container>
                 <br></br><br></br>
 
-                {/*This lists the users artifacts */}
                 <Container className="artifactBox">
                     <p className="tMHeader">Your Artifacts</p>
-                    {/*Renders My Artifacts table */}
+                    <p className="tMHeader"><Button onClick={this.onTableViewToggle}>Toggle View between Table or List</Button></p>
+
+                    {artifactTable}
+
                 </Container>
             </div>
         )
