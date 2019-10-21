@@ -361,6 +361,7 @@ router.get('/profile/all_info/:id', function(req, res) {
                 firstName: user.firstName, 
                 lastName:user.lastName,
                 location:user.location,
+                email: user.email,
                 dateCreated:user.dateCreated,    
             });
         }

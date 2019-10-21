@@ -42,8 +42,8 @@ class DeleteArtifact extends Component{
 
         axios.delete('http://localhost:5000/delete_artifact/' + this.props.match.params.id)
             .then(res => {
-                this.props.history.push('/myprofile');
                 this.props.setUserNotLoading();
+                this.props.history.push('/myprofile');
             })
             .catch(err => {
                 console.log(err);

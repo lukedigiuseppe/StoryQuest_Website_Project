@@ -7,7 +7,7 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import ArtifactBlock from './ArtifactProfile';
+import ArtifactBlock from './ArtifactBlock';
 import Loading from './Loading';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
@@ -60,7 +60,7 @@ class Profile extends Component {
                     dateCreated: res.data.dateCreated,
                 })
                 // get and deal with profile image for display
-                axios.get("http://localhost:5000/api/users/profile/" + this.props.auth.user.email)
+                axios.get("http://localhost:5000/api/users/profile/" + res.data.email)
                 .then(res => {
                     // We then call setState here to assign the information we got back into our state so that we can render it.
                     this.setState({
@@ -147,9 +147,6 @@ class Profile extends Component {
                         <th className="tHeader">Name</th>
                         <th className="tHeader">Your Story</th>
                         <th className="tHeader">Date Made</th>
-                        {/* Two blank ones for the edit and delete buttons */}
-                        <th className="tHeader"></th>
-                        <th className="tHeader"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -165,7 +162,7 @@ class Profile extends Component {
             <div className="profile">
                 {/* Change the header for the home menu */}
                 <Helmet>
-                    <title>Profile of {this.props.auth.user.name}</title>
+                    <title>Profile of {this.state.publicName}</title>
                 </Helmet>
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
                     <Container className="d-none d-lg-flex"><TopMenu /></Container>
@@ -191,7 +188,7 @@ class Profile extends Component {
                 <br></br><br></br>
 
                 <Container className="artifactBox"> 
-                    <p className="tMHeader">{this.props.auth.user.name}'s Artifacts</p>
+                    <p className="tMHeader">{this.state.publicName}'s Artifacts</p>
                     <p className="tMHeader"><Button onClick={this.onTableViewToggle}>Toggle View between Table or List</Button></p>
                     {artifactTable}
                 </Container>
