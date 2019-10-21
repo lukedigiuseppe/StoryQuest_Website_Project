@@ -19,10 +19,32 @@ import {
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import {logoutUser} from "../../actions/authActions";
+import axios from "axios";
 
-const LOGO = '/images/storyQuest.png';
+const LOGO = '/images/cover.png';
 
 class ProfileNavBar extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            image: ""
+        }
+    }
+
+    componentDidMount () {
+            axios.get('/api/users/profile/' + this.props.auth.user.email)
+                .then(res => {
+                    this.setState({
+                        image: res.data
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+    }
+
+
 
     onLogoutClick = (e) => {
         e.preventDefault();
@@ -50,7 +72,7 @@ class ProfileNavBar extends Component {
                             </Col>
 
                             <Col className="d-flex justify-content-xs-center justify-content-lg-center">
-                                <NavbarBrand className="d-inline-block p-1" href="/" style={{ width: 80 }}>
+                                <NavbarBrand className="d-inline-block p-1" href="/" style={{ width: 180}}>
                                     <img src={LOGO} alt="logo" className="position-relative img-fluid rounded-sm" />
                                 </NavbarBrand>
                             </Col>
@@ -58,7 +80,7 @@ class ProfileNavBar extends Component {
                             <Col className="d-none d-lg-flex justify-content-end">
                                 <Nav className="mrx-auto" navbar>
                                     <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
-                                        <DropdownToggle style={{display: "flex", alignItems: "center"}} className="font-weight-bold" nav caret><i className="fa fa-user-circle" style={{fontSize: "36px"}} />{this.props.auth.user.name}</DropdownToggle>
+                                        <DropdownToggle style={{display: "flex", alignItems: "center"}} className="font-weight-bold" nav caret><img style={{height: "40px",width: "40px"}} src={`data:image/jpeg;base64, ${this.state.image}`}/>{this.props.auth.user.name}</DropdownToggle>
                                         <DropdownMenu right>
                                             <DropdownItem href="/myprofile"><Button>My Profile</Button></DropdownItem>
                                             <DropdownItem href="/login"><Button onClick={this.onLogoutClick}>Logout</Button></DropdownItem> 

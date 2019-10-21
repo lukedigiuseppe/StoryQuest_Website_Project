@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Container, Row, Col} from 'reactstrap';
+import {Container, Row, Col, Button} from 'reactstrap';
+// import {Image } from 'react-native';
 import ProfileNavBar from './profileNavBar';
 import MobileMenu2 from './MobileMenu';
 import '../../css/myProfile.css';
@@ -10,10 +11,12 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import EdiText from 'react-editext';
 import Loading from './Loading';
+import ArtifactBlock from './ArtifactProfile';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
 // Used to check if Friend email entered is a valid email
 // import Validator from 'validator';
+const Add = '/images/plus.png';
 
 const Artifact = props => (
     <tr>
@@ -22,6 +25,12 @@ const Artifact = props => (
         </td>
         <td>{props.artifacts.story.substring(0,25)} ...</td>
         <td>{new Date(props.artifacts.dateMade).toDateString()} </td>
+        <td>
+            <Link to={"/edit_artifact/"+props.artifacts._id}>Edit</Link>
+        </td>
+        <td>
+            <Link to={"/delete_artifact/"+props.artifacts._id}>Delete</Link>
+        </td>
     </tr>
 )
 
@@ -41,7 +50,8 @@ class myProfile extends Component {
             dateCreated: "",
             userID:"",
             profileImgData: "",
-            artifacts: []
+            artifacts: [],
+            tableView: false
         }
 
         this.onSavePublicName = this.onSavePublicName.bind(this);
@@ -125,6 +135,17 @@ class myProfile extends Component {
         return this.state.artifacts.map(function(currArtifact, i){
             return <Artifact artifacts={currArtifact} key={i} />;
         })
+    }
+    artifactBlockList() {
+        return this.state.artifacts.map((currArtifact, i) => {
+            return <ArtifactBlock artifactData={currArtifact} key={i} />;
+        });
+    }
+
+    onTableViewToggle = () => {
+        this.setState({
+            tableView: !this.state.tableView
+        });
     }
 
     // Save functions that run whenever the user saves an edit entry. This would POST to the backend to change values
@@ -215,7 +236,33 @@ class myProfile extends Component {
             profileIMG = <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
         }
 
+        // Different artifact table to view depending on user selection
+        var artifactTable;
+        if (this.state.tableView) {
+            // Display table view
+            artifactTable = 
+                <table className="table table-striped justify-content-center" size="sm" >
+                    <thead>
+                    <tr>
+                        <th className="tHeader">Name</th>
+                        <th className="tHeader">Your Story</th>
+                        <th className="tHeader">Date Made</th>
+                        {/* Two blank ones for the edit and delete buttons */}
+                        <th className="tHeader"></th>
+                        <th className="tHeader"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    { this.artifactList() }
+                    </tbody>
+                </table>
+        } else {
+            // Block view by default
+            artifactTable = this.artifactBlockList();
+        }
+
         return(
+
             <div className="myProfile">
                 {/* Change the header for the home menu */}
                 <Helmet>
@@ -230,32 +277,51 @@ class myProfile extends Component {
                     <Row>
                         <Col sm={{ size: 'auto', offset: 1}}>
                             <Container className="picBox">
-                                {profileIMG}
+                                <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+                                <a href="/profile_image">Edit Picture</a>
                                 <div className="d-flex justify-content-center">
-                                    <p className="greeting">Hi {this.state.publicName}!</p>
                                 </div>
                         </Container></Col>
                         <Col sm={{ size: '7', offset: 1.5 }}>
                             <Container className="profileBox">
                                 <div className="d-flex justify-content-left input-group">
+                                    <div className="d-flex justify-content-left input-group">
+                                        <Row className="justify-content-left">
+                                            <Col xs="auto" className="edit-text">
+                                                {/* Buffer with spaces to make all field names the same length */}
+                                                <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "12px"}}>Date Joined&nbsp;</div>
+                                            </Col>
+                                            <Col xs="auto" className="no-gutters">
+                                                <p className="name edit-text">{this.state.dateCreated.slice(0,10)}</p>
+                                            </Col>
+                                        </Row>
+                                    </div>
                                     <Row className="justify-content-left"> 
                                         <Col xs="auto" className="edit-text">
                                         {/* Buffer with spaces to make all field names the same length */}
                                             <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "3.5em"}}>Email&nbsp;</div>
                                         </Col>
                                         <Col xs="auto" className="no-gutters">
-                                            <p className="name edit-text">{this.state.email}</p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                                <div className="d-flex justify-content-left input-group">
-                                    <Row className="justify-content-left"> 
-                                        <Col xs="auto" className="edit-text">
-                                        {/* Buffer with spaces to make all field names the same length */}
-                                            <div style={{borderRight: "2px solid grey", height: "30px", paddingRight: "0.5em"}}>Date Joined&nbsp;</div>
-                                        </Col>
-                                        <Col xs="auto" className="no-gutters">
-                                            <p className="name edit-text">{this.state.dateCreated}</p>
+                                            <EdiText
+                                                type='text'
+                                                validation={val => val.length <= MAX_FIELD_LEN}
+                                                validationMessage={"Please type less than " + MAX_FIELD_LEN + " characters."}
+                                                viewContainerClassName='edit-text input-group'
+                                                viewProps={{
+                                                    style: {textAlign: "left", width: "380px", wordWrap: "break-word"}
+                                                }}
+                                                editButtonClassName='btn-sm btn-secondary'
+                                                editButtonContent='Edit'
+                                                saveButtonContent='Apply'
+                                                saveButtonClassName='btn-sm btn-secondary'
+                                                cancelButtonContent='Cancel'
+                                                cancelButtonClassName='btn-sm btn-primary'
+                                                inputProps={{
+                                                    className: 'justify-content-left'
+                                                }}
+                                                value={this.state.email}
+                                                onSave={this.onSaveEmail}
+                                            />
                                         </Col>
                                     </Row>
                                 </div>
@@ -385,22 +451,13 @@ class myProfile extends Component {
                     </Row>
                 </Container>
                 <br></br><br></br>
+
                 <Container className="artifactBox">
-                <div>
-                    <div className="d-flex justify-content-center"><p className="tMHeader">Your Artifacts</p></div>
-                    <table className="table table-striped justify-content-center" size="sm" >
-                        <thead>
-                        <tr>
-                            <th className="tHeader">Name</th>
-                            <th className="tHeader">Your Story</th>
-                            <th className="tHeader">Date Made</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        { this.artifactList() }
-                        </tbody>
-                    </table>
-                </div>
+                    <p className="tMHeader">Your Artifacts</p>
+                    <p className="tMHeader"><Button onClick={this.onTableViewToggle}>Toggle View between Table or List</Button></p>
+
+                    {artifactTable}
+
                 </Container>
             </div>
         )

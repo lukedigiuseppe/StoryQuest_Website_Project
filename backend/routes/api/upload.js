@@ -69,42 +69,41 @@ router.post('/upload_artifact_image', function(req, res, next) {
                 if (err) {
                     return console.log(err);
                 }
-            });
-            
-            imgStore.upload(NEWPATH, file.name, function(err, file){
+                imgStore.upload(NEWPATH, file.name, function(err, file){
 
-                if (err) {
-                    if (!res.headersSent) {
-                        return res.sendStatus(500);
-                    }
-                }
-
-                // Assign image to the artifact object
-                Artifact.findById(req.headers.artifactid, function(err, artifact) {
                     if (err) {
-                        console.log(err);
                         if (!res.headersSent) {
                             return res.sendStatus(500);
                         }
                     }
-                    
-                    // Assign the ID to the artifact
-                    artifact.images.push(file._id);
-                    artifact.save();
-                    // On successful assignment return response to update Uppy's progress.
-                    if (!res.headersSent) {
-                        return res.status(200).send(file);
-                    }
-                });
-
-                // Delete the file from the backend server once it has been uploaded to MongoDB
-                fs.unlink(NEWPATH, (err) => {
-                    if (err) {
-                        console.error(err);
-                        if (!res.headersSent) {
-                            return res.sendStatus(500);
+    
+                    // Assign image to the artifact object
+                    Artifact.findById(req.headers.artifactid, function(err, artifact) {
+                        if (err) {
+                            console.log(err);
+                            if (!res.headersSent) {
+                                return res.sendStatus(500);
+                            }
                         }
-                    }
+                        
+                        // Assign the ID to the artifact
+                        artifact.images.push(file._id);
+                        artifact.save();
+                        // On successful assignment return response to update Uppy's progress.
+                        if (!res.headersSent) {
+                            return res.status(200).send(file);
+                        }
+                    });
+    
+                    // Delete the file from the backend server once it has been uploaded to MongoDB
+                    fs.unlink(NEWPATH, (err) => {
+                        if (err) {
+                            console.error(err);
+                            if (!res.headersSent) {
+                                return res.sendStatus(500);
+                            }
+                        }
+                    });
                 });
             });
         });

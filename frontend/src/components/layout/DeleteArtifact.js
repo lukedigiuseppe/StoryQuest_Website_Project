@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import {Link}  from 'react-router-dom';
 import {connect} from 'react-redux';
 import PropTypes from "prop-types";
 import Loading from './Loading';
@@ -13,10 +12,11 @@ import {
 } from 'reactstrap';
 
 
-import '../../css/viewArtifact.css';
+import '../../css/deleteArtifact.css';
 import axios from 'axios';
 
 const BANNER = "/images/cover.png";
+const NO_IMAGE = "/images/no-image-placeholder.png";
 
 
 class DeleteArtifact extends Component{
@@ -28,6 +28,7 @@ class DeleteArtifact extends Component{
     
         this.state = {
             name: "",
+            mainIMG: NO_IMAGE
         }
 
         this.yesClick = this.yesClick.bind(this);
@@ -41,8 +42,8 @@ class DeleteArtifact extends Component{
 
         axios.delete('http://localhost:5000/delete_artifact/' + this.props.match.params.id)
             .then(res => {
+                this.props.history.push('/myprofile');
                 this.props.setUserNotLoading();
-                window.location = '/myprofile';
             })
             .catch(err => {
                 console.log(err);
@@ -62,7 +63,22 @@ class DeleteArtifact extends Component{
                 this.setState({
                     name: res.data.name
                 });
-                this.props.setUserNotLoading();
+                // If there is an image
+                if(res.data.images[0]) {
+                    axios.get('/artifact_images/' + this.props.match.params.id + '/' + res.data.images[0])
+                        .then(res => {
+                            this.setState({
+                                mainIMG: `data:image/jpeg;base64,${res.data}`
+                            });
+                            this.props.setUserNotLoading();
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            this.props.setUserNotLoading();
+                        })
+                } else {
+                    this.props.setUserNotLoading();
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -81,31 +97,49 @@ class DeleteArtifact extends Component{
             )
         }
 
+        // Render a loading image if we still haven't got the artifact IMG
+        var artifactIMG;
+
+        if (this.state.mainIMG === NO_IMAGE) {
+            artifactIMG =
+                <Col xs={3} className="image-box">
+                    <img style={{height: "100%",width: "100%"}} alt="" src={this.state.mainIMG} />
+                </Col>
+        } else {
+            artifactIMG =
+                <Col xs={3}>
+                    <img style={{height: "80%", width: "100%"}}alt="" src={this.state.mainIMG} />
+                </Col>
+        }
+
         return(
         <div>
             {/*Helmet*/}
             <Helmet> 
-                    <meta charset="utf-8" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-                    <title>Delete?</title>
-                </Helmet>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+                <title>Delete?</title>
+            </Helmet>
 
+            <Container className="delete-box bg-light rounded-lg">
 
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
-
-                <Container className="register-box bg-light rounded-lg">
-
-                 {/*Back to home*/}
-                 <Row>
-                     <Col xs = "6">
-                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
-                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
-                        </Link>
+                {/*Back to previous page*/}
+                <Row>
+                    <Col xs = "6">
+                        <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                            <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
+                        </Button>
                     </Col>
+                </Row>
+
+                <Row>
+                    <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
+                </Row>
+
+                {/* Artifact image */}
+
+                <Row className="justify-content-center">
+                    {artifactIMG}
                 </Row>
 
                 {/*As if they want to remove this*/}
@@ -141,14 +175,7 @@ class DeleteArtifact extends Component{
 
                     <Col xs = "4"></Col>
                 </Row>
-
-
-
-                
-
-
-                
-                </Container>
+            </Container>
         </div>
         )
     }

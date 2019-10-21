@@ -16,7 +16,7 @@ import {
     DropdownItem,
 } from 'reactstrap';
 
-const LOGO = '/images/storyQuest.png'
+const LOGO = '/images/cover.png'
 
 class TopMenu extends Component {
 
@@ -40,7 +40,7 @@ class TopMenu extends Component {
                             </Col>
                             
                             <Col className="d-flex justify-content-xs-center justify-content-lg-center">
-                                <NavbarBrand className="d-inline-block p-1" href="/" style={{ width: 80 }}>
+                                <NavbarBrand className="d-inline-block p-1" href="/" style={{ width: 180 }}>
                                     <img src={LOGO} alt="logo" className="position-relative img-fluid rounded-sm" />
                                 </NavbarBrand>
                             </Col>

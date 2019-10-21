@@ -3,6 +3,11 @@ import Helmet from 'react-helmet';
 import { Link }  from 'react-router-dom';
 import {WithContext as ReactTags} from 'react-tag-input';
 import ErrorAlert from '../alerts/ErrorAlert';
+import PropTypes from "prop-types";
+import {connect} from 'react-redux';
+
+import ProfileNavBar from '../layout/profileNavBar';
+import TopMenu from '../layout/TopMenu';
 
 
 import {
@@ -18,11 +23,7 @@ import {
 
 
 import '../../css/tags.css';
-import '../../css/addArtifact.css';
 
-
-
-import '../../css/viewArtifact.css';
 import axios from 'axios';
 
 
@@ -228,6 +229,13 @@ class EditArtifact extends Component{
    render(){
 
     const { tags, errors } = this.state;
+
+    var navMenu;
+        if (this.props.auth.isAuthenticated) {
+            navMenu = <ProfileNavBar history={this.props.history} />
+        } else {
+            navMenu = <TopMenu />
+        }
     return(
 
         
@@ -240,21 +248,17 @@ class EditArtifact extends Component{
                     <title>Edit {this.state.name}</title>
                 </Helmet>
 
+                {navMenu}
 
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
 
-                <Container className="register-box bg-light rounded-lg">
+                <Container style ={{transform: 'translate(0%,10%)'}} className="register-box bg-light rounded-lg">
 
                  {/*Form title*/}
                  <Row>
                      <Col xs = "6">
-                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
-                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
-                        </Link>
+                     <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                            <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
+                        </Button>
                     </Col>
 
                     
@@ -267,6 +271,14 @@ class EditArtifact extends Component{
                         <h2 className="text-left" >Edit your Artifact Details</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
+                </Row>
+
+                <Row>
+                <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <Button href= {"/edit_images/" + this.props.match.params.id} size ="lg" block> Delete/Upload Images </Button>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
                 </Row>
 
                 <Form noValidate className="register-form" onSubmit={this.onSubmit}>
@@ -526,4 +538,14 @@ class EditArtifact extends Component{
 
 }
 
-export default (EditArtifact);
+EditArtifact.propTypes = {
+    auth: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+});
+
+export default connect(
+    mapStateToProps
+)(EditArtifact);

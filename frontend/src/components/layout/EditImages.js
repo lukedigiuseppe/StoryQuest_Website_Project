@@ -4,6 +4,11 @@ import PropTypes from "prop-types";
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 
+import {connect} from 'react-redux';
+
+import ProfileNavBar from '../layout/profileNavBar';
+import TopMenu from '../layout/TopMenu';
+
 
 import {
     Container,
@@ -33,12 +38,13 @@ class DeleteImage extends Component {
 
         axios.delete('/delete_image/' + this.props.artifactID + '/' + this.props.image.id)
         .then(res => {
+            // this.props.history.push('/');
+            window.location.reload(true);
             console.log(res);
         })
         .catch(err => {
             console.log(err);
         })
-
     }
     
     render () {
@@ -71,9 +77,9 @@ class EditImages extends Component{
     }
 
 
-    imageList(artifactID) {
+    imageList(artifactID, history) {
         return this.state.images.map(function(currImage, i){
-            return <DeleteImage image={currImage} artifactID = {artifactID}key={i} />;
+            return <DeleteImage image={currImage} artifactID={artifactID} history={history} key={i} />;
         })
     }
 
@@ -116,6 +122,13 @@ class EditImages extends Component{
 
     render(){
 
+        var navMenu;
+        if (this.props.auth.isAuthenticated) {
+            navMenu = <ProfileNavBar history={this.props.history} />
+        } else {
+            navMenu = <TopMenu />
+        }
+
         return(
             <div>
                  {/*Hemet*/}
@@ -125,31 +138,35 @@ class EditImages extends Component{
                     <title>Add/Delete Images</title>
                 </Helmet>
 
+                {navMenu}
 
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
-
-                <Container className="register-box bg-light rounded-lg">
+                <Container style ={{transform: 'translate(0%,35%)'}} className="register-box bg-light rounded-lg">
 
                  {/*Form title*/}
                  <Row>
                      <Col xs = "6">
-                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
-                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
-                        </Link>
+                     <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                            <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
+                        </Button>
+                        
                     </Col>
 
                     
                 </Row>
                 <br></br>
-              
+
                 <Row>
-                        <Col sm = {MARGIN}></Col>
+                <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <Button href= {"/add_image/" + this.props.match.params.id} size ="lg" block> Upload Images </Button>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+                <br></br>
+                <Row>
+                        
                         <Col>
-                        <h2 className="text-left" >Delete and Add Images of your Artifact</h2>
+                        <h2 className="text-left" >Delete Images:</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                 </Row>
@@ -164,7 +181,7 @@ class EditImages extends Component{
                         </tr>
                         </thead>
                         <tbody>
-                        { this.imageList(this.props.match.params.id) }
+                        { this.imageList(this.props.match.params.id, this.props.history) }
                         </tbody>
                     </table>
 
@@ -185,11 +202,14 @@ class EditImages extends Component{
 
 }
 
-
-
-
 EditImages.propTypes = {
-    imageData: PropTypes.object.isRequired
-}
+    auth: PropTypes.object.isRequired,
+};
 
-export default EditImages;
+const mapStateToProps = state => ({
+    auth: state.auth,
+});
+
+export default connect(
+    mapStateToProps
+)(EditImages);
