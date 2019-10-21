@@ -51,7 +51,13 @@ class ProfileImgUpload extends React.Component {
         this.uppy.on('upload-error', (file, error, response) => {
             console.log('error with file:', file.id)
             console.log('error message:', error)
+
         })
+
+        this.uppy.on('complete', (result) => {
+           window.location.href ='/myprofile'
+        })
+
     }
 
     componentWillUnmount () {

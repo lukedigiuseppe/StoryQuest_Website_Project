@@ -140,14 +140,15 @@ class EditImages extends Component{
 
                 {navMenu}
 
-                <Container style ={{transform: 'translate(0%,10%)'}} className="register-box bg-light rounded-lg">
+                <Container style ={{transform: 'translate(0%,35%)'}} className="register-box bg-light rounded-lg">
 
                  {/*Form title*/}
                  <Row>
                      <Col xs = "6">
-                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
-                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
-                        </Link>
+                     <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                            <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
+                        </Button>
+                        
                     </Col>
 
                     

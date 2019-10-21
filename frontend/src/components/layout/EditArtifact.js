@@ -256,9 +256,9 @@ class EditArtifact extends Component{
                  {/*Form title*/}
                  <Row>
                      <Col xs = "6">
-                        <Link to="/" style={{paddingLeft: "40px", paddingTop: "10px", paddingBottom: "20px"}}>
-                        <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Back to Home</i>
-                        </Link>
+                     <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                            <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
+                        </Button>
                     </Col>
 
                     
