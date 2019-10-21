@@ -194,11 +194,4 @@ class EditImages extends Component{
 
 }
 
-
-
-
-EditImages.propTypes = {
-    imageData: PropTypes.object.isRequired
-}
-
 export default EditImages;
