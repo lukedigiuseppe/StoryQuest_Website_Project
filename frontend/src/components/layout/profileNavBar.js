@@ -33,17 +33,16 @@ class ProfileNavBar extends Component {
     }
 
     componentDidMount () {
-            axios.get('/api/users/profile/' + this.props.auth.user.email)
-                .then(res => {
-                    this.setState({
-                        image: res.data
-                    });
-                })
-                .catch(err => {
-                    console.log(err);
-                })
+        axios.get('/api/users/profile/' + this.props.auth.user.email)
+            .then(res => {
+                this.setState({
+                    image: res.data
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
-
 
 
     onLogoutClick = (e) => {

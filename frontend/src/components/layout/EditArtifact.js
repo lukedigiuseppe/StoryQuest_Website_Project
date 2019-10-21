@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import { Link }  from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {WithContext as ReactTags} from 'react-tag-input';
 import ErrorAlert from '../alerts/ErrorAlert';
 import PropTypes from "prop-types";
 import {connect} from 'react-redux';
+import {setUserLoading, setUserNotLoading} from '../../actions/authActions';
 
+import Loading from './Loading';
 import ProfileNavBar from '../layout/profileNavBar';
 import TopMenu from '../layout/TopMenu';
 
@@ -27,11 +29,9 @@ import '../../css/tags.css';
 import axios from 'axios';
 
 
-// Compononent that creates the regsitration page for new users.
-// Need to add code that redirects to another page after pressing submit
+// Compononent that creates the edit artifact page
 
 
-const BANNER = "/images/cover.png";
 const MARGIN = 1;
 const HALF = 6;
 const KeyCodes = {
@@ -131,10 +131,19 @@ class EditArtifact extends Component{
 
         axios.patch('http://localhost:5000/update_artifact/' + this.props.match.params.id, editedArtifact) 
             .then(res => { 
-                console.log(res); 
+                this.props.setUserNotLoading();
+                this.props.history.push('/view_artifact/' + this.props.match.params.id);
             }) 
-            .catch(err => { 
+            .catch(err => {
+                // Bad request some data was wrong
+                if (err.response.status === 400) {
+                    this.setState({
+                        errors: err.response.data
+                    })
+                    console.log(err.response.data);
+                } 
                 console.log(err); 
+                this.props.setUserNotLoading();
             }); 
 
     };
@@ -168,6 +177,7 @@ class EditArtifact extends Component{
 
     componentDidMount() {
 
+        this.props.setUserLoading();
 
         /*Get the artifact information from backend using axios */
        axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
@@ -183,13 +193,10 @@ class EditArtifact extends Component{
                    ownerID: res.data.ownerID,
                    tags: this.tagConvert(res.data.tags.split(" "))
                })
-
-
+               this.props.setUserNotLoading();
            })
-
-
            .catch(err => {
-           
+                this.props.setUserNotLoading();
                console.log(err);
            });
 
@@ -211,335 +218,331 @@ class EditArtifact extends Component{
                                    }
                                ],
                            }));
+                        this.props.setUserNotLoading();
                    })
                    .catch(err => {
+                        this.props.setUserNotLoading();
                        console.log(err);
                    });
            });
        })
        .catch(err => {
+        this.props.setUserNotLoading();
            console.log(err);
        });
-
-
    }
 
 
 
    render(){
 
-    const { tags, errors } = this.state;
+        const { tags, errors } = this.state;
 
-    var navMenu;
+        var navMenu;
         if (this.props.auth.isAuthenticated) {
             navMenu = <ProfileNavBar history={this.props.history} />
         } else {
             navMenu = <TopMenu />
         }
-    return(
 
-        
+        if (this.props.auth.loading) {
+            return <Loading />
+        }
 
-        <div>
-              {/*Hemet*/}
-              <Helmet> 
-                    <meta charset="utf-8" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-                    <title>Edit {this.state.name}</title>
-                </Helmet>
+        return(
 
-                {navMenu}
+            
+
+            <div>
+                {/*Hemet*/}
+                <Helmet> 
+                        <meta charset="utf-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+                        <title>Edit {this.state.name}</title>
+                    </Helmet>
+
+                    {navMenu}
 
 
-                <Container style ={{transform: 'translate(0%,10%)'}} className="register-box bg-light rounded-lg">
+                    <Container style ={{transform: 'translate(0%,10%)'}} className="register-box bg-light rounded-lg">
 
-                 {/*Form title*/}
-                 <Row>
-                     <Col xs = "6">
-                     <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
-                            <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
-                        </Button>
-                    </Col>
-
-                    
-                </Row>
-                <br></br>
-
-                <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <h2 className="text-left" >Edit your Artifact Details</h2>
+                    {/*Form title*/}
+                    <Row>
+                        <Col xs = "6">
+                        <Link to="/myprofile">
+                            <Button style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                                <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
+                            </Button>
+                        </Link>
                         </Col>
-                        <Col sm = {MARGIN}></Col>
-                </Row>
+                    </Row>
+                    <br></br>
 
-                <Row>
-                <Col sm = {MARGIN}></Col>
-                    <Col>
-                    <Button href= {"/edit_images/" + this.props.match.params.id} size ="lg" block> Delete/Upload Images </Button>
-                    </Col>
+                    <Row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col>
+                            <h2 className="text-left" >Edit your Artifact Details</h2>
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                    </Row>
+
+                    <Row>
                     <Col sm = {MARGIN}></Col>
-                </Row>
-
-                <Form noValidate className="register-form" onSubmit={this.onSubmit}>
-
-
-                <Row>
-                        <Col sm = {MARGIN}></Col>
                         <Col>
-                        <h3 className="text-left" >Edit Name:</h3>
+                        <Button href= {"/edit_images/" + this.props.match.params.id} size ="lg" block> Delete/Upload Images </Button>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
-                <FormGroup row>
-
-                    
-
-                    <Col sm = {MARGIN}></Col>
-
-                    <Col sm={HALF -1}>
-                        <Input
-                            onChange={this.onChange}
-                            value={this.state.name}
-                            type="text" 
-                            id="name" 
-                            name ="name"
-                        />
-                        <ErrorAlert errorMsg={errors.name} />
-                    
-                    </Col>
-
-                    <Col sm = {HALF -1}></Col>
-
-                    <Col sm = {MARGIN}></Col>
-                    </FormGroup>
+                    <Form noValidate className="register-form" onSubmit={this.onSubmit}>
 
 
                     <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <h3 className="text-left" >Edit Story</h3>
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
-                    </Row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col>
+                            <h3 className="text-left" >Edit Name:</h3>
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                        </Row>
 
                     <FormGroup row>
-    
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                            <Input 
-                                style = {{height: '200px'}}
-                                onChange={this.onChange}
-                                value={this.state.story}
-                                type="textarea" 
-                                name="story" 
-                                id="story" 
-                                placeholder= "Tell us about its journey"
-                                />
-                            <ErrorAlert errorMsg={errors.story} />
 
-                        </Col>  
+                        
 
                         <Col sm = {MARGIN}></Col>
-                    </FormGroup>
 
-
-                    <Row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col>
-                        <h3 className="text-left" >Edit Category</h3>
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
-                    </Row> 
-                    <FormGroup row>
-                        <Col sm = {MARGIN}></Col>
                         <Col sm={HALF -1}>
-                            <Input 
+                            <Input
                                 onChange={this.onChange}
-                                value={this.state.category}
-                                type="select" 
-                                id="category"
-                                name="category"
-                                >
-                                {/* The first option is the same as the default state */}
-                                <option>Jewlery</option>
-                                <option>Clothes</option>
-                                <option>Tool</option>
-                                <option>Art</option>
-                                <option>Book</option>
-                                <option>Photo</option>
-                                <option>Other</option>
-                        </Input>
-                        <ErrorAlert errorMsg={errors.category} />
+                                value={this.state.name}
+                                type="text" 
+                                id="name" 
+                                name ="name"
+                            />
+                            <ErrorAlert errorMsg={errors.name} />
+                        
                         </Col>
+
+                        <Col sm = {HALF -1}></Col>
+
                         <Col sm = {MARGIN}></Col>
-                    </FormGroup>
+                        </FormGroup>
 
 
-                    <Row>
+                        <Row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col>
+                            <h3 className="text-left" >Edit Story</h3>
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                        </Row>
+
+                        <FormGroup row>
+        
+                            <Col sm = {MARGIN}></Col>
+                            <Col>
+                                <Input 
+                                    style = {{height: '200px'}}
+                                    onChange={this.onChange}
+                                    value={this.state.story}
+                                    type="textarea" 
+                                    name="story" 
+                                    id="story" 
+                                    placeholder= "Tell us about its journey"
+                                    />
+                                <ErrorAlert errorMsg={errors.story} />
+
+                            </Col>  
+
+                            <Col sm = {MARGIN}></Col>
+                        </FormGroup>
+
+
+                        <Row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col>
+                            <h3 className="text-left" >Edit Category</h3>
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                        </Row> 
+                        <FormGroup row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col sm={HALF -1}>
+                                <Input 
+                                    onChange={this.onChange}
+                                    value={this.state.category}
+                                    type="select" 
+                                    id="category"
+                                    name="category"
+                                    >
+                                    {/* The first option is the same as the default state */}
+                                    <option>Jewlery</option>
+                                    <option>Clothes</option>
+                                    <option>Tool</option>
+                                    <option>Art</option>
+                                    <option>Book</option>
+                                    <option>Photo</option>
+                                    <option>Other</option>
+                            </Input>
+                            <ErrorAlert errorMsg={errors.category} />
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                        </FormGroup>
+
+
+                        <Row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col>
+                            <h3 className="text-left" >Edit tags</h3>
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                        </Row>
+
+                        {/*TAGS*/}
+                    
+                        <FormGroup row>
+                            <Col sm = {MARGIN}></Col>
+                            <Col sm={HALF}>
+                            <ReactTags
+                                tags={tags}
+                                delimiters={delimiters}
+                                handleDelete={this.handleDelete}
+                                handleAddition={this.handleAddition}
+                                handleDrag={this.handleDrag}
+                                handleTagClick={this.handleTagClick}
+                            />
+                            <ErrorAlert errorMsg={errors.tag} />
+                            </Col>
+                            <Col sm = {MARGIN}></Col>
+                        </FormGroup>
+
+
+
+                        <Row>
                         <Col sm = {MARGIN}></Col>
                         <Col>
-                        <h3 className="text-left" >Edit tags</h3>
+                        <h3 className="text-left" >Edit Privacy</h3>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                     </Row>
 
-                    {/*TAGS*/}
-                   
-                    <FormGroup row>
-                        <Col sm = {MARGIN}></Col>
-                        <Col sm={HALF}>
-                        <ReactTags
-                            tags={tags}
-                            delimiters={delimiters}
-                            handleDelete={this.handleDelete}
-                            handleAddition={this.handleAddition}
-                            handleDrag={this.handleDrag}
-                            handleTagClick={this.handleTagClick}
-                        />
-                        <ErrorAlert errorMsg={errors.tag} />
+                    {/* For radio buttons ensure name is the same so that users can only select one */}
+                    {/*Choose artifact privacy */}
+                    <Row>
+                        <Col sm = {MARGIN*2}></Col>
+                        <Col sm = {HALF} >
+                        <FormGroup check>
+                            <Label check>
+                                <Input 
+                                type="radio"
+                                    name="isPublic"
+                                    onChange={this.onChange}
+                                    value={this.state.isPublic}
+                                    checked={this.state.isPublic === "private" ? true : false}
+                                    id = "private"
+                                    />{' '}
+                                Private - Only you can view your artifact 
+                            </Label>
+                        </FormGroup>
                         </Col>
-                        <Col sm = {MARGIN}></Col>
-                    </FormGroup>
-
-
+                    </Row>
 
                     <Row>
-                    <Col sm = {MARGIN}></Col>
-                    <Col>
-                    <h3 className="text-left" >Edit Privacy</h3>
-                    </Col>
-                    <Col sm = {MARGIN}></Col>
-                </Row>
-
-                {/* For radio buttons ensure name is the same so that users can only select one */}
-                {/*Choose artifact privacy */}
-                <Row>
-                    <Col sm = {MARGIN*2}></Col>
-                    <Col sm = {HALF} >
-                    <FormGroup check>
-                        <Label check>
-                            <Input 
-                            type="radio"
+                        <Col sm = {MARGIN*2}></Col>
+                        <Col sm = {HALF}>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="radio" 
                                 name="isPublic"
                                 onChange={this.onChange}
                                 value={this.state.isPublic}
-                                id = "private"
+                                checked={this.state.isPublic === "friends" ? true : false}
+                                id = "friends" 
                                 />{' '}
-                            Private - Only you can view your artifact 
-                        </Label>
-                    </FormGroup>
-                    </Col>
-                </Row>
+                                Friends - Your friends can view your artifact 
+                            </Label>
+                        </FormGroup>
+                        </Col>
+                    </Row>
 
-                <Row>
-                    <Col sm = {MARGIN*2}></Col>
-                    <Col sm = {HALF}>
-                    <FormGroup check>
-                        <Label check>
-                            <Input type="radio" 
-                            name="isPublic"
+                    <Row>
+                        <Col sm = {MARGIN*2}></Col>
+                        <Col sm = {HALF}>
+                        <FormGroup check disabled>
+                            <Label check>
+                                <Input type="radio" 
+                                name="isPublic"
+                                onChange={this.onChange}
+                                value={this.state.isPublic}
+                                checked={this.state.isPublic === "public" ? true : false}
+                                id = "public"
+                                />{' '}
+                                Public - Everyone can view your artifact 
+                            </Label>
+                        </FormGroup>
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <ErrorAlert errorMsg={errors.isPublic} />
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <h3 className="text-left" >Edit Date:</h3>
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
+
+
+                    <FormGroup row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col sm={3}>
+                        <Input
                             onChange={this.onChange}
-                            value={this.state.isPublic}
-                            id = "friends" 
-                            />{' '}
-                            Friends - Your friends can view your artifact 
-                        </Label>
+                            value={this.state.dateMade}
+                            type="date"
+                            name="dateMade"
+                            id="dateMade"
+                            />
+                        
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
                     </FormGroup>
-                    </Col>
-                </Row>
 
-                <Row>
-                    <Col sm = {MARGIN*2}></Col>
-                    <Col sm = {HALF}>
-                    <FormGroup check disabled>
-                        <Label check>
-                            <Input type="radio" 
-                            name="isPublic"
-                            onChange={this.onChange}
-                            value={this.state.isPublic}
-                            id = "public"
-                            />{' '}
-                            Public - Everyone can view your artifact 
-                        </Label>
-                    </FormGroup>
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col sm = {MARGIN}></Col>
-                    <Col>
-                    <ErrorAlert errorMsg={errors.isPublic} />
-                    </Col>
-                    <Col sm = {MARGIN}></Col>
-                </Row>
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                            <ErrorAlert errorMsg={errors.dateMade} />
+                        </Col>
+                        <Col sm = {MARGIN}></Col>
+                    </Row>
 
 
-                <Row>
-                    <Col sm = {MARGIN}></Col>
-                    <Col>
-                    <h3 className="text-left" >Edit Date:</h3>
-                    </Col>
-                    <Col sm = {MARGIN}></Col>
-                </Row>
+                    <Row>
+                        <Col sm = {MARGIN}></Col>
+                        <Col>
+                        <Button>Submit</Button>
+                        </Col>
+                    </Row>
 
-
-                <FormGroup row>
-                    <Col sm = {MARGIN}></Col>
-                    <Col sm={3}>
-                    <Input
-                        onChange={this.onChange}
-                        value={this.state.dateMade}
-                        type="date"
-                        name="dateMade"
-                        id="dateMade"
-                        />
-                    
-                    </Col>
-                    <Col sm = {MARGIN}></Col>
-                </FormGroup>
-
-                <Row>
-                    <Col sm = {MARGIN}></Col>
-                    <Col>
-                        <ErrorAlert errorMsg={errors.dateMade} />
-                    </Col>
-                    <Col sm = {MARGIN}></Col>
-                </Row>
-
-
-                <Row>
-                    <Col sm = {MARGIN}></Col>
-                    <Col>
-                    <Button>Submit</Button>
-                    </Col>
-                </Row>
-
-                </Form>
-
-                
-
-
-        
-
-
-                </Container>
-        </div>
-    )
-
-
+                    </Form>
+                    </Container>
+            </div>
+        )
    }
-
-    
-
-
-
-
 }
 
 EditArtifact.propTypes = {
     auth: PropTypes.object.isRequired,
+    setUserLoading: PropTypes.func.isRequired,
+    setUserNotLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -547,5 +550,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    {setUserLoading, setUserNotLoading}
 )(EditArtifact);

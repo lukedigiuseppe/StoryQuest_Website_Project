@@ -10,6 +10,7 @@ import {
     Row,
     Button
 } from 'reactstrap';
+import ErrorAlert from '../alerts/ErrorAlert';
 
 
 import '../../css/deleteArtifact.css';
@@ -28,7 +29,8 @@ class DeleteArtifact extends Component{
     
         this.state = {
             name: "",
-            mainIMG: NO_IMAGE
+            mainIMG: NO_IMAGE,
+            error: undefined
         }
 
         this.yesClick = this.yesClick.bind(this);
@@ -50,6 +52,11 @@ class DeleteArtifact extends Component{
                 if (err.response.status === 404) {
                     this.props.history.push('/404');
                 }
+                if (err.response.status === 401) {
+                    this.setState({
+                        error: err.response.data
+                    })
+                }
                 this.props.setUserNotLoading();
             });
     }
@@ -59,7 +66,6 @@ class DeleteArtifact extends Component{
         // Get the artifact name for display
         axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
             .then(res => {
-                console.log(res.data);
                 this.setState({
                     name: res.data.name
                 });
@@ -174,6 +180,10 @@ class DeleteArtifact extends Component{
 
 
                     <Col xs = "4"></Col>
+                </Row>
+                <br />
+                <Row className="justify-content-center">
+                    <ErrorAlert errorMsg={this.state.error} />
                 </Row>
             </Container>
         </div>

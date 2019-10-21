@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
-import PropTypes from "prop-types";
 import {Link} from 'react-router-dom';
+import PropTypes from "prop-types";
 import axios from 'axios';
-
 import {connect} from 'react-redux';
+import {setUserLoading, setUserNotLoading} from '../../actions/authActions';
 
+import Loading from './Loading';
 import ProfileNavBar from '../layout/profileNavBar';
 import TopMenu from '../layout/TopMenu';
 
@@ -15,16 +16,10 @@ import {
     Col,
     Row,
     Button,
-    Form, 
-    FormGroup, 
-    Label, 
-    Input,
+
 } from 'reactstrap';
 
-const BANNER = "/images/cover.png";
 const MARGIN = 1;
-const HALF = 6;
-
 
 class DeleteImage extends Component {
 
@@ -34,11 +29,10 @@ class DeleteImage extends Component {
     }
 
     onDelete () { 
-        console.log(this.props.image.id)
-
+        // Set the page as loading then reload on completion. 
+        this.props.setUserLoading();
         axios.delete('/delete_image/' + this.props.artifactID + '/' + this.props.image.id)
         .then(res => {
-            // this.props.history.push('/');
             window.location.reload(true);
             console.log(res);
         })
@@ -48,6 +42,11 @@ class DeleteImage extends Component {
     }
     
     render () {
+
+        if (this.props.auth.loading) {
+            return <Loading />
+        }
+
         return (
             <tr>
         
@@ -76,16 +75,23 @@ class EditImages extends Component{
 
     }
 
-
-    imageList(artifactID, history) {
+    // Image list requires the auth to check user loading status, and the two corresponding functions that adjust the user's loading status
+    imageList(artifactID, auth, setUserLoading, setUserNotLoading) {
         return this.state.images.map(function(currImage, i){
-            return <DeleteImage image={currImage} artifactID={artifactID} history={history} key={i} />;
+            return <DeleteImage 
+                        image={currImage} 
+                        artifactID={artifactID} 
+                        auth={auth} 
+                        setUserLoading={setUserLoading} 
+                        setUserNotLoading={setUserNotLoading}
+                        key={i} />;
         })
     }
 
 
 
     componentDidMount() {
+        this.props.setUserLoading();
         axios.get('/artifact/' + this.props.match.params.id)
         .then(res => {
             res.data.images.forEach(imageID => {
@@ -107,16 +113,18 @@ class EditImages extends Component{
                                     imageID
                                 ]
                             }));
+                        this.props.setUserNotLoading();
                     })
                     .catch(err => {
                         console.log(err);
+                        this.props.setUserNotLoading();
                     });
             });
         })
         .catch(err => {
             console.log(err);
+            this.props.setUserNotLoading();
         });
-
 }
 
 
@@ -127,6 +135,11 @@ class EditImages extends Component{
             navMenu = <ProfileNavBar history={this.props.history} />
         } else {
             navMenu = <TopMenu />
+        }
+
+        // Display loading screen if user is still loading
+        if (this.props.auth.loading) {
+            return <Loading />
         }
 
         return(
@@ -140,18 +153,17 @@ class EditImages extends Component{
 
                 {navMenu}
 
-                <Container style ={{transform: 'translate(0%,35%)'}} className="register-box bg-light rounded-lg">
+                <Container style ={{transform: 'translate(0%,10%)', marginTop: "50px", marginBottom: "150px", paddingLeft: "50px", paddingRight: "50px"}} className="register-box bg-light rounded-lg">
 
                  {/*Form title*/}
                  <Row>
                      <Col xs = "6">
-                     <Button onClick={this.props.history.goBack} style={{marginLeft: "40px", marginTop: "10px", marginBottom: "20px"}} color="primary">
+                     <Link to={'/edit_artifact/' + this.props.match.params.id}>
+                        <Button style={{marginTop: "10px", marginBottom: "20px"}} color="primary">
                             <i className="far fa-arrow-alt-circle-left" style={{fontSize: "20px"}}> Go Back</i>
                         </Button>
-                        
+                    </Link>
                     </Col>
-
-                    
                 </Row>
                 <br></br>
 
@@ -181,7 +193,7 @@ class EditImages extends Component{
                         </tr>
                         </thead>
                         <tbody>
-                        { this.imageList(this.props.match.params.id, this.props.history) }
+                        { this.imageList(this.props.match.params.id, this.props.auth, this.props.setUserLoading, this.props.setUserNotLoading) }
                         </tbody>
                     </table>
 
@@ -204,6 +216,8 @@ class EditImages extends Component{
 
 EditImages.propTypes = {
     auth: PropTypes.object.isRequired,
+    setUserLoading: PropTypes.func.isRequired,
+    setUserNotLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -211,5 +225,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    {setUserLoading, setUserNotLoading}
 )(EditImages);

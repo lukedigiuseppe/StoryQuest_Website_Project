@@ -21,6 +21,10 @@ module.exports = function validateEditArtifact(data) {
             errors.name = "Artifact name is not valid. Must be between 1 and " + MAX_LEN + " charcters long.";
         }
     }
+
+    if (Validator.isEmpty(data.story)) {
+        errors.story = "There must be an artifact story. Don't leave it empty, please tell us about it.";
+    }
     
     // Check that if date made is non-empty then make sure that it is a valid date
     if (!Validator.isEmpty(data.dateMade)) {

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Container, Row, Button} from 'reactstrap';
 import TopMenu from './TopMenu'
 import MobileMenu from './MobileMenu';
+import ProfileNavBar from './profileNavBar';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import {connect} from 'react-redux';
@@ -158,6 +159,14 @@ class Profile extends Component {
             artifactTable = this.artifactBlockList();
         }
 
+        // Pick which nav menu display depending on user login status
+        var navMenu;
+        if (this.props.auth.isAuthenticated) {
+            navMenu = <Container className="d-none d-lg-flex"><ProfileNavBar history={this.props.history} /></Container>
+        } else {
+            navMenu = <Container className="d-none d-lg-flex"><TopMenu /></Container>
+        }
+
         return(
             <div className="profile">
                 {/* Change the header for the home menu */}
@@ -165,7 +174,7 @@ class Profile extends Component {
                     <title>Profile of {this.state.publicName}</title>
                 </Helmet>
                 {/* Different navmenu bar to appear depending on whether it is viewed from a small or large screen */}
-                    <Container className="d-none d-lg-flex"><TopMenu /></Container>
+                    {navMenu}
                     <Container className="d-lg-none"><MobileMenu /></Container>
                 <br /><br /><br />
 
