@@ -128,7 +128,7 @@ class EditArtifact extends Component{
             dateMade: this.state.dateMade
         };
 
-        axios.patch('http://localhost:5000/edit_artifact/' + this.props.match.params.id, editedArtifact) 
+        axios.patch('http://localhost:5000/update_artifact/' + this.props.match.params.id, editedArtifact) 
             .then(res => { 
                 console.log(res); 
             }) 
@@ -208,7 +208,7 @@ class EditArtifact extends Component{
                                        caption: "",
                                        header: ""
                                    }
-                               ]
+                               ],
                            }));
                    })
                    .catch(err => {
