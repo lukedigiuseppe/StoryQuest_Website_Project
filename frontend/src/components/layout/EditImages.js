@@ -146,11 +146,19 @@ class EditImages extends Component{
                     
                 </Row>
                 <br></br>
-              
+
                 <Row>
-                        <Col sm = {MARGIN}></Col>
+                <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <Button href= {"/add_image/" + this.props.match.params.id} size ="lg" block> Upload Images </Button>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+                <br></br>
+                <Row>
+                        
                         <Col>
-                        <h2 className="text-left" >Delete and Add Images of your Artifact</h2>
+                        <h2 className="text-left" >Delete Images:</h2>
                         </Col>
                         <Col sm = {MARGIN}></Col>
                 </Row>

@@ -85,7 +85,7 @@ class ArtifactProfile extends Component {
         } else {
             artifactIMG =
                 <Col xs={3}>
-                    <img style={{height: "250px",width: "250px"}}alt="" src={this.state.artifactIMG} />
+                    <img style={{width: "100%"}}alt="" src={this.state.artifactIMG} />
                 </Col>
         }
 

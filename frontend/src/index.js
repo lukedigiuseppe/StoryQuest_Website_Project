@@ -29,6 +29,7 @@ import FourOFour from "./components/layout/FourOFour";
 import ArtifactsList from './components/layout/ArtifactsList';
 import MyArtifacts from './components/layout/MyArtifacts';
 import EditImages from './components/layout/EditImages';
+import AddImage from "./components/media/AddImage";
 
 import Image from "./components/layout/ImageSample";
 import Video from "./components/layout/VideoTest";
@@ -80,6 +81,7 @@ const routing = (
                     <Route exact path="/list/:searchString" component={ArtifactsList} />
                     <Route exact path="/myartifacts" component={MyArtifacts} />
                     <Route exact path="/edit_images/:id" component ={EditImages} />
+                    <Route exact path="/add_image/:id" component ={AddImage} />
 
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />

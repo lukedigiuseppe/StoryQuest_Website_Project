@@ -272,7 +272,7 @@ class EditArtifact extends Component{
                 <Row>
                 <Col sm = {MARGIN}></Col>
                     <Col>
-                    <Link to= {'/edit_images/' + this.props.match.params.id}>Delete/Upload Images</Link>
+                    <Button href= {"/edit_images/" + this.props.match.params.id} size ="lg" block> Delete/Upload Images </Button>
                     </Col>
                     <Col sm = {MARGIN}></Col>
                 </Row>
