@@ -269,6 +269,14 @@ class EditArtifact extends Component{
                         <Col sm = {MARGIN}></Col>
                 </Row>
 
+                <Row>
+                <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <Link to= {'/edit_images/' + this.props.match.params.id}>Delete/Upload Images</Link>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
+                </Row>
+
                 <Form noValidate className="register-form" onSubmit={this.onSubmit}>
 
 
