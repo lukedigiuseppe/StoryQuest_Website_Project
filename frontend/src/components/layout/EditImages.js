@@ -33,12 +33,13 @@ class DeleteImage extends Component {
 
         axios.delete('/delete_image/' + this.props.artifactID + '/' + this.props.image.id)
         .then(res => {
+            // this.props.history.push('/');
+            window.location.reload(true);
             console.log(res);
         })
         .catch(err => {
             console.log(err);
         })
-
     }
     
     render () {
@@ -71,9 +72,9 @@ class EditImages extends Component{
     }
 
 
-    imageList(artifactID) {
+    imageList(artifactID, history) {
         return this.state.images.map(function(currImage, i){
-            return <DeleteImage image={currImage} artifactID = {artifactID}key={i} />;
+            return <DeleteImage image={currImage} artifactID={artifactID} history={history} key={i} />;
         })
     }
 
@@ -164,7 +165,7 @@ class EditImages extends Component{
                         </tr>
                         </thead>
                         <tbody>
-                        { this.imageList(this.props.match.params.id) }
+                        { this.imageList(this.props.match.params.id, this.props.history) }
                         </tbody>
                     </table>
 
