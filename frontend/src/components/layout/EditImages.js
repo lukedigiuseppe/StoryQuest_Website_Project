@@ -4,6 +4,11 @@ import PropTypes from "prop-types";
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 
+import {connect} from 'react-redux';
+
+import ProfileNavBar from '../layout/profileNavBar';
+import TopMenu from '../layout/TopMenu';
+
 
 import {
     Container,
@@ -117,6 +122,13 @@ class EditImages extends Component{
 
     render(){
 
+        var navMenu;
+        if (this.props.auth.isAuthenticated) {
+            navMenu = <ProfileNavBar history={this.props.history} />
+        } else {
+            navMenu = <TopMenu />
+        }
+
         return(
             <div>
                  {/*Hemet*/}
@@ -126,14 +138,9 @@ class EditImages extends Component{
                     <title>Add/Delete Images</title>
                 </Helmet>
 
+                {navMenu}
 
-                <Container className="justify-content-center" fluid>
-                    <Row>
-                        <img src={BANNER} alt="StoryQuest Banner" className="banner-image"/>
-                    </Row>
-                </Container>
-
-                <Container className="register-box bg-light rounded-lg">
+                <Container style ={{transform: 'translate(0%,10%)'}} className="register-box bg-light rounded-lg">
 
                  {/*Form title*/}
                  <Row>
@@ -194,4 +201,14 @@ class EditImages extends Component{
 
 }
 
-export default EditImages;
+EditImages.propTypes = {
+    auth: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+});
+
+export default connect(
+    mapStateToProps
+)(EditImages);
