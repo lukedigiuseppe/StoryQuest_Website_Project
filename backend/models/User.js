@@ -6,7 +6,6 @@ const bcrypt = require("bcryptjs");
 
 const UserSchema = new Schema(
     {
-        // should username and email be the same?
         // For now we only have a email and password be required.
         "email" : {
             type: String,

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Artifact attributes
+// Artifact attributes. Represents that data that we want to store about a single artifact.
 
 const ArtifactSchema = mongoose.Schema(
     {

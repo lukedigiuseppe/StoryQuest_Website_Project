@@ -1,8 +1,10 @@
-// This file contains the setup for encrypting the user ID using the Crypto library
+// This file contains the setup for encrypting private data that is received from the frontend and sent back by the backend
+// using the Crypto library
 
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc';
-// const key = crypto.randomBytes(32);
+// Private key that must be kept secret. It must also be the same between the frontend and backend to ensure that encryption and 
+// decryption will work properly
 const key = "STORYQUESTKEYROCKSTHISWORLDFOREV";
 const iv = crypto.randomBytes(16);
 

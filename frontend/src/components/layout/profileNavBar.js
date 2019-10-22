@@ -79,7 +79,7 @@ class ProfileNavBar extends Component {
                             <Col className="d-none d-lg-flex justify-content-end">
                                 <Nav className="mrx-auto" navbar>
                                     <UncontrolledDropdown className="d-flex align-items-center" nav inNavbar>
-                                        <DropdownToggle style={{display: "flex", alignItems: "center"}} className="font-weight-bold" nav caret><img style={{height: "40px",width: "40px"}} src={`data:image/jpeg;base64, ${this.state.image}`}/>{this.props.auth.user.name}</DropdownToggle>
+                                        <DropdownToggle style={{display: "flex", alignItems: "center"}} className="font-weight-bold" nav caret><img style={{height: "40px",width: "40px"}} alt="" src={`data:image/jpeg;base64, ${this.state.image}`}/>{this.props.auth.user.name}</DropdownToggle>
                                         <DropdownMenu right>
                                             <DropdownItem href="/myprofile"><Button>My Profile</Button></DropdownItem>
                                             <DropdownItem href="/login"><Button onClick={this.onLogoutClick}>Logout</Button></DropdownItem> 

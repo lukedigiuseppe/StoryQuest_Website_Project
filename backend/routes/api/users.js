@@ -215,81 +215,81 @@ router.post('/upload_profile_image', (req, res, next) => {
                 if (err) {
                     return console.log(err);
                 }
-            });
-            
-            imgStore.upload(NEWPATH, file.name, function(err, file){
 
-                if (err) {
-                    if (!res.headersSent) {
-                        return res.sendStatus(500);
-                    }
-                }
+                imgStore.upload(NEWPATH, file.name, function(err, file){
 
-                // Check if user already has an avatarImg
-                if (user.avatarImg) {
-                    const oldAvatarImg = user.avatarImg;
-                    imgStore.deleteImage(oldAvatarImg, (err, result) => {
-                        if (err) {
-                            console.error(err);
-                            return res.status(500).send(err);
-                        }
-
-                        if (result) {
-                            // On success assign new image
-                            user.avatarImg = file._id;
-                            user.save()
-                                .then(() => {
-                                    if (!res.headersSent) {
-                                        return res.status(200).send({message: "Profile image added successfully."});
-                                    }
-                                })
-                                .catch(err => {
-                                    console.err(err);
-                                    if (!res.headersSent) {
-                                        return res.status(500).send(err)
-                                    }
-                                });
-                        } else {
-                            // The old image no longer exists in the database
-                            user.avatarImg = file._id;
-                            user.save()
-                                .then(() => {
-                                    if (!res.headersSent) {
-                                        return res.status(200).send({message: "Profile image added successfully."});
-                                    }
-                                })
-                                .catch(err => {
-                                    console.err(err);
-                                    if (!res.headersSent) {
-                                        return res.status(500).send(err)
-                                    }
-                                });
-                        }
-                    })
-                } else {
-                    user.avatarImg = file._id;
-                    user.save()
-                        .then(() => {
-                            if (!res.headersSent) {
-                                return res.status(200).send({message: "Profile image added successfully."});
-                            }
-                        })
-                        .catch(err => {
-                            console.err(err);
-                            if (!res.headersSent) {
-                                return res.status(500).send(err)
-                            }
-                        });
-                }
-
-                // Delete the file from the backend server once it has been uploaded to MongoDB
-                fs.unlink(NEWPATH, (err) => {
                     if (err) {
-                        console.error(err);
                         if (!res.headersSent) {
                             return res.sendStatus(500);
                         }
                     }
+    
+                    // Check if user already has an avatarImg
+                    if (user.avatarImg) {
+                        const oldAvatarImg = user.avatarImg;
+                        imgStore.deleteImage(oldAvatarImg, (err, result) => {
+                            if (err) {
+                                console.error(err);
+                                return res.status(500).send(err);
+                            }
+    
+                            if (result) {
+                                // On success assign new image
+                                user.avatarImg = file._id;
+                                user.save()
+                                    .then(() => {
+                                        if (!res.headersSent) {
+                                            return res.status(200).send({message: "Profile image added successfully."});
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.err(err);
+                                        if (!res.headersSent) {
+                                            return res.status(500).send(err)
+                                        }
+                                    });
+                            } else {
+                                // The old image no longer exists in the database
+                                user.avatarImg = file._id;
+                                user.save()
+                                    .then(() => {
+                                        if (!res.headersSent) {
+                                            return res.status(200).send({message: "Profile image added successfully."});
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.err(err);
+                                        if (!res.headersSent) {
+                                            return res.status(500).send(err)
+                                        }
+                                    });
+                            }
+                        })
+                    } else {
+                        user.avatarImg = file._id;
+                        user.save()
+                            .then(() => {
+                                if (!res.headersSent) {
+                                    return res.status(200).send({message: "Profile image added successfully."});
+                                }
+                            })
+                            .catch(err => {
+                                console.err(err);
+                                if (!res.headersSent) {
+                                    return res.status(500).send(err)
+                                }
+                            });
+                    }
+    
+                    // Delete the file from the backend server once it has been uploaded to MongoDB
+                    fs.unlink(NEWPATH, (err) => {
+                        if (err) {
+                            console.error(err);
+                            if (!res.headersSent) {
+                                return res.sendStatus(500);
+                            }
+                        }
+                    });
                 });
             });
         });
@@ -340,7 +340,34 @@ router.get('/profile/:email', function(req, res) {
     });
 });
 
+// @route GET api/users/userinfo
+// @desc Gets all of the user's info from MongoDB
+// @access Public
+router.get('/userinfo', (req, res, next) => {
+    passport.authenticate('jwt', passportOpts, (err, user, info) => {
 
+        if (err) {
+            return next(err);
+        }
+
+        if (!user) {
+            return res.status(401).send({message: "Unauthorised user. Please login to view details."});
+        }
+
+        User.findById(user.id, function(err, user) {
+
+            if (err) {
+                return res.status(400).send({message: err});
+            }
+
+            return res.status(200).send(user);
+        });
+    })(req, res, next);
+});
+
+// @route GET api/users/profile/all_info/:id
+// @desc Gets a subset of the user's info from the backend database
+// @access Public
 router.get('/profile/all_info/:id', function(req, res) {
     
     const userid = req.params.id;
@@ -365,10 +392,7 @@ router.get('/profile/all_info/:id', function(req, res) {
                 dateCreated:user.dateCreated,    
             });
         }
-
-
     });
-
 });
 
 module.exports = router;

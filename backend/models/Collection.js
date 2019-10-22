@@ -1,7 +1,8 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
+// This is currently unused, since we ran out of time to implement the collection feature.
 
-var collectionSchema = mongoose.Schema(
+const collectionSchema = mongoose.Schema(
     {
         // should username and email be the same?
         "collectionID": String,

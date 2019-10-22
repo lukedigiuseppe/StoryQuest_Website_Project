@@ -13,12 +13,9 @@ const artifacts = require("./routes/api/artifacts");
 const upload = require("./routes/api/upload");
 const files = require("./routes/api/files");
 
-// Sample route to be removed after dev completes
-const sample = require("./routes/api/sample");
-
 const app = express();
 
-// Set domain restricitions here.
+// Set domain restricitions here. For Cross-Origin Policy.
 app.use(cors());
 
 // Bodyparser middleware
@@ -36,7 +33,7 @@ var name = null;
 if (process.env.NODE_ENV !== "test") {
     db = require("./config/keys").mongoURI;
     name = require("./config/keys").dbName;
-    // Only use morgan logging in dev mode, otherwise it interferes with testing output
+    // Only use morgan logging in all modes other than testing, otherwise it interferes with testing output
     app.use(morgan('combined'));
 } else {
     db = require("./config/keys").testMongoURI;
@@ -69,9 +66,8 @@ app.use("/api/users", users);
 app.use("/", artifacts);
 app.use("/", upload);
 app.use("/", files);
-app.use("/", sample);
 
-// process.env.PORT is Heroku's port if we choose to deploy the APP there
+// process.env.PORT is Heroku's port since we chose to deploy the APP there
 const port = process.env.PORT || 5000
 
 app.listen(port, () => console.log(`Server up and running on port ${port}!`));

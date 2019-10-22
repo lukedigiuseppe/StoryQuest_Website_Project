@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import {Container, Row, Button} from 'reactstrap';
-import TopMenu from './TopMenu'
-import MobileMenu from './MobileMenu';
-import ProfileNavBar from './profileNavBar';
+import TopMenu from '../layout/TopMenu'
+import MobileMenu from '../layout/MobileMenu';
+import ProfileNavBar from '../layout/profileNavBar';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import ArtifactBlock from './ArtifactBlock';
-import Loading from './Loading';
+import ArtifactBlock from '../layout/ArtifactBlock';
+import Loading from '../layout/Loading';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
 import '../../css/profile.css';

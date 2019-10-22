@@ -18,11 +18,10 @@ import App from './App';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import PrivateRoute from "./components/private-route/PrivateRoute";
-import Dashboard from "./components/dashboard/Dashboard";
 import AddArtifact from "./components/layout/AddArtifact";
 import ViewArtifact from "./components/layout/ViewArtifact";
-import Profile from "./components/layout/Profile";
-import MyProfile from "./components/layout/myProfile";
+import Profile from "./components/dashboard/Profile";
+import MyProfile from "./components/dashboard/myProfile";
 import DeleteArtifact from "./components/layout/DeleteArtifact";
 import EditArtifact from "./components/layout/EditArtifact";
 import FourOFour from "./components/layout/FourOFour";
@@ -31,12 +30,7 @@ import MyArtifacts from './components/layout/MyArtifacts';
 import EditImages from './components/layout/EditImages';
 import AddImage from "./components/media/AddImage";
 
-import Image from "./components/layout/ImageSample";
-import Video from "./components/layout/VideoTest";
 import ProfileUpload from "./components/dashboard/ProfileUpload";
-
-// Sample page, delete after you guys are finished with it
-import Sample from "./components/layout/Sample";
 
 // Check for token to keep the user logged in
 
@@ -73,17 +67,12 @@ const routing = (
                     <Route exact path="/view_artifact/:id" component ={ViewArtifact} />
                     <Route exact path="/profile/:id" component={Profile} />
                     <Route exact path="/myprofile" component= {MyProfile} />
-                    <Route exact path="/image" component={Image} />
-                    <Route exact path="/video/:artifactid" component={Video} />
-                    <Route exact path="/sample" component={Sample} />
                     <Route exact path="/delete_artifact/:id" component ={DeleteArtifact} />
                     <Route exact path="/edit_artifact/:id" component ={EditArtifact} />
                     <Route exact path="/list/:searchString" component={ArtifactsList} />
                     <Route exact path="/myartifacts" component={MyArtifacts} />
                     <Route exact path="/edit_images/:id" component ={EditImages} />
                     <Route exact path="/add_image/:id" component ={AddImage} />
-
-                    <PrivateRoute exact path='/dashboard' component={Dashboard} />
                     <PrivateRoute exact path="/profile_image" component={ProfileUpload} />
                     {/* Generic component so that all undefined routes redirect to 404 page. If no other route is matched, then this one will be */}
                     <Route component ={FourOFour} />

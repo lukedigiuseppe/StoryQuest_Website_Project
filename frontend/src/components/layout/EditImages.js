@@ -88,8 +88,6 @@ class EditImages extends Component{
         })
     }
 
-
-
     componentDidMount() {
         this.props.setUserLoading();
         axios.get('/artifact/' + this.props.match.params.id)
@@ -120,6 +118,7 @@ class EditImages extends Component{
                         this.props.setUserNotLoading();
                     });
             });
+            this.props.setUserNotLoading();
         })
         .catch(err => {
             console.log(err);
@@ -176,16 +175,14 @@ class EditImages extends Component{
                 </Row>
                 <br></br>
                 <Row>
-                        
-                        <Col>
-                        <h2 className="text-left" >Delete Images:</h2>
-                        </Col>
-                        <Col sm = {MARGIN}></Col>
+                    <Col>
+                    <h2 className="text-left" >Delete Images:</h2>
+                    </Col>
+                    <Col sm = {MARGIN}></Col>
                 </Row>
 
                 <Row>
-
-                <table className="table table-striped justify-content-center" size="sm" >
+                    <table className="table table-striped justify-content-center" size="sm" >
                         <thead>
                         <tr>
                             <th className="tHeader">Image</th>
@@ -196,22 +193,11 @@ class EditImages extends Component{
                         { this.imageList(this.props.match.params.id, this.props.auth, this.props.setUserLoading, this.props.setUserNotLoading) }
                         </tbody>
                     </table>
-
-
                 </Row>
-
-
-
-
             </Container>
-
-
             </div>
         )
-
-        
     }
-
 }
 
 EditImages.propTypes = {

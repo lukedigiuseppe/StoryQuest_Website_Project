@@ -1,4 +1,5 @@
-// This file contains the upload routes to the server and for linking them to the database
+// This file contains the upload routes to the server and the logic to both store on MongoDB and to link those
+// objects to their corresponding artifacts.
 
 const express = require("express");
 const router = express.Router();
@@ -187,12 +188,12 @@ router.post('/upload_artifact_video', function(req, res, next) {
                                 }
                             }
 
-                    //         // Check if artifact exists
-                    //         if (!artifact) {
-                    //             if (!res.headersSent) {
-                    //                 return res.status(404).send("The artifact for this media object does not exist.");
-                    //             }
-                    //         }
+                            // Check if artifact exists
+                            if (!artifact) {
+                                if (!res.headersSent) {
+                                    return res.status(404).send("The artifact for this media object does not exist.");
+                                }
+                            }
 
                             newMedia.artifactID = req.headers.artifactid;
                             newMedia.save()

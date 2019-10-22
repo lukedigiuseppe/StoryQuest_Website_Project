@@ -32,7 +32,10 @@ class ArtifactsList extends Component {
         if (this.state.searchString) {
             this.props.setUserLoading();
             var data = {searchString: this.state.searchString};
-            this.state.searched = this.state.searchString;
+            // Set the string as the one that was just searched. i.e. User has pressed search button or enter
+            this.setState({
+                searched: this.state.searchString
+            });
             axios.post('http://localhost:5000/searchartifacts', data)
                 .then((res) => {
                     this.setState({
@@ -54,7 +57,10 @@ class ArtifactsList extends Component {
     onSubmit = (e) => {
         e.preventDefault()
         var data = {searchString: this.state.searchString};
-        this.state.searched = this.state.searchString;
+        // Set the string as the one that was just searched. i.e. User has pressed search button or enter
+        this.setState({
+            searched: this.state.searchString
+        })
         axios.post('http://localhost:5000/searchartifacts', data)
             .then((res) => {
                 this.setState({

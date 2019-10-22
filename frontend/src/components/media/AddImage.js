@@ -1,8 +1,6 @@
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {setImgUploaded, setHasImgs} from '../../actions/fileActions';
 
 const React = require('react');
 const Uppy = require('@uppy/core');

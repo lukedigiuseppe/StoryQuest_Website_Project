@@ -1,4 +1,5 @@
-// This model records the servers local relative filepath of a given media object, in particular videos
+// This model records the servers local relative filepath of a given media (usually video) file. And links it the corresponding 
+// artifact that the video was uploaded for
 
 const mongoose = require('mongoose');
 

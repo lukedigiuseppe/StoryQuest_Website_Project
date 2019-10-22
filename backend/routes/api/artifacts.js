@@ -24,7 +24,7 @@ const passportOpts = {
 const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 // @route GET /artifacts
-// @desc View all public artifacts
+// @desc Views all public artifacts in the database
 // @access Public
 router.get('/artifacts', function (req, res) {
     Artifact.find({isPublic: "public"}, function (err, artifact) {
@@ -46,7 +46,7 @@ router.post('/searchartifacts', function(req, res, next) {
         }
 
 
-        // If it is a guest or unregsitered user, they are only allowed to search for public artifacts
+        // If it is a guest or unregistered user, they are only allowed to search for public artifacts
         if (!user) {
             Artifact.find({$text: { $search: req.body.searchString }, isPublic: "public"}, {score: { $meta: `textScore` }} )
                 .sort({score: {$meta: `textScore`}})
@@ -111,7 +111,9 @@ router.post('/searchartifacts', function(req, res, next) {
     })(req, res, next);
 });
 
-// create new artifact
+// @route POST /newArtifacts
+// @desc Creates a new artifact. Only accessible if a user is logged in
+// @access Restricted
 router.post('/newArtifact', (req, res, next) => {
 
     passport.authenticate('jwt', passportOpts, (err, user, info) => {
@@ -191,7 +193,7 @@ router.post('/newArtifact', (req, res, next) => {
 
 // @route GET /artifact/:serial/:passcode
 // @desc View a single artifact based on its serial code. Anyone has access to this route and will gain access to the artifact as long as they have the serial number
-// and passcode for the artifact.
+// and passcode for the artifact. This feature is for people who may want to pass on the artifact to someone else and want them to see the story on our app.
 // @access Public
 router.get('/artifact/:serial/:passcode', (req, res) => {
 
@@ -218,9 +220,9 @@ router.get('/artifacts/:ownerID', (req, res) => {
     var ownerVal = req.params.ownerID;
         Artifact.find({ownerID: ownerVal}, function (err, artifact) {
             if (err) {
-                res.send(err)
+                res.status(500).send(err)
             } else {
-                res.send(artifact);
+                res.status(200).send(artifact);
             }
         })
 });

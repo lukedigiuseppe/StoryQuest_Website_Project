@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Container, Row, Col, Button} from 'reactstrap';
 // import {Image } from 'react-native';
-import ProfileNavBar from './profileNavBar';
-import MobileMenu2 from './MobileMenu';
+import ProfileNavBar from '../layout/profileNavBar';
+import MobileMenu2 from '../layout/MobileMenu';
 import '../../css/myProfile.css';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
@@ -10,13 +10,12 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import EdiText from 'react-editext';
-import Loading from './Loading';
-import ArtifactBlock from './ArtifactProfile';
+import Loading from '../layout/Loading';
+import ArtifactBlock from '../layout/ArtifactProfile';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
 // Used to check if Friend email entered is a valid email
 // import Validator from 'validator';
-const Add = '/images/plus.png';
 
 const Artifact = props => (
     <tr>
@@ -71,7 +70,7 @@ class myProfile extends Component {
             this.props.setUserLoading();
             
             // Make first two requests
-            axios.get('/userinfo')
+            axios.get('/api/users/userinfo')
                 .then(firstRes => {
                     axios.get('/artifacts/' + firstRes.data._id)
                         .then(secondRes => {
@@ -277,11 +276,12 @@ class myProfile extends Component {
                     <Row>
                         <Col sm={{ size: 'auto', offset: 1}}>
                             <Container className="picBox">
-                                <img className ="profilePic" src={`data:image/jpeg;base64,${this.state.profileImgData}`} alt='user profile pic'/>
+                                {profileIMG}
                                 <a href="/profile_image">Edit Picture</a>
                                 <div className="d-flex justify-content-center">
                                 </div>
-                        </Container></Col>
+                            </Container>
+                        </Col>
                         <Col sm={{ size: '7', offset: 1.5 }}>
                             <Container className="profileBox">
                                 <div className="d-flex justify-content-left input-group">
