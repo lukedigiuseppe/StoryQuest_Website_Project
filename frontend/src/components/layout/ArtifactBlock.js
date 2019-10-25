@@ -1,4 +1,4 @@
-// This component renders a single block in the search results page that displays an artifact.
+// This component renders a single block in the search results page that represents a single artifact
 
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
@@ -20,7 +20,7 @@ class ArtifactBlock extends Component {
             artifactStory: this.props.artifactData.story,
             artifactDate: new Date(this.props.artifactData.dateMade).toDateString(),
             artifactID: this.props.artifactData._id,
-            // Get the first image of the artifact only
+            // Get the first image of the artifact only to display for preview
             artifactMainIMG: this.props.artifactData.images[0],
             artifactIMG: NO_IMAGE
         }
@@ -73,7 +73,7 @@ class ArtifactBlock extends Component {
     }
 
     render () {
-        // Render a loading image if we still haven't got the artifact IMG
+        // Render a NO image placeholder if we still haven't got the artifact IMG or if it doesn't exist
         var artifactIMG;
 
         if (this.state.artifactIMG === NO_IMAGE) {
@@ -95,11 +95,10 @@ class ArtifactBlock extends Component {
                 <Row noGutters>
                     {artifactIMG}
 
-
                     <Col xs={7} className="artifact-text text-left" style={{paddingLeft: "10px", paddingRight: "10px", paddingBottom: "10px", paddingTop: "10px"}}>
                         <h2>{this.state.artifactName}</h2>
                         <h3>{this.state.artifactDate}</h3>
-                        {/* This bit of code concatenates the story text if it exceeds 150 characters to make it fit nicer into the box */}
+                        {/* This bit of code cuts the story text if it exceeds 150 characters to make it fit nicer into the box */}
                         <p>{(this.state.artifactStory.length > 150) ? this.state.artifactStory.substring(0,150) + "..." : this.state.artifactStory}</p>
                     </Col>
 

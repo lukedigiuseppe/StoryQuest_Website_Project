@@ -1,3 +1,5 @@
+// This component renders an Uppy Upload box specifically configured for uploading videos of artifacts to the backend.
+
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';

@@ -1,3 +1,5 @@
+// If window size is too small, then this menu will display as it is a more mobile friendly version
+
 import React, {Component} from 'react';
 import {
     Button,

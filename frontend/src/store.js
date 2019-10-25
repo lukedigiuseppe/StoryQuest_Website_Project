@@ -1,3 +1,5 @@
+// This is configuration of the Redux store that is responsible for storing our Global application state
+
 import {createStore, applyMiddleware, compose}  from "redux";
 import thunk from "redux-thunk";
 import rootReducer from "./reducers";

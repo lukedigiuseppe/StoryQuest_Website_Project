@@ -1,3 +1,6 @@
+// This component renders all of the information stored by an artifact in the database like its text, images and videos into
+// a neat and logical way.
+
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {Link}  from 'react-router-dom';

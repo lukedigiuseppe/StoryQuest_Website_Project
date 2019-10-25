@@ -6,3 +6,5 @@
 
 
 The repository containing all code for our artifact recording web application for University of Melbourne IT project Semester 2, 2019.
+
+Link to deployed website: https://story-quest-app.herokuapp.com/

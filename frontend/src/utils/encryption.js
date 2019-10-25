@@ -1,4 +1,4 @@
-// This file contains the setup for encrypting the user ID using the Crypto library
+// This file contains the setup and code for encrypting and decrypting different strings or even buffers using the Crypto library
 
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc';

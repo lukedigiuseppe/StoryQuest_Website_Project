@@ -1,3 +1,5 @@
+// This component renders the main homepage of the app
+
 import React, {Component} from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import {Helmet} from 'react-helmet';

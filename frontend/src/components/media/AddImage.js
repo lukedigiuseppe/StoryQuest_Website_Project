@@ -1,3 +1,6 @@
+// This component renders an Uppy upload box with the purpose of uploading only artifact images. So to access it and for it to be
+// successful you must be logged in and be the owner of the artifact being edited.
+
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';

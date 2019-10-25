@@ -1,3 +1,6 @@
+// This is wrapper component that encases another component. Once it encases that component the user must be logged in or else that encapsulated
+// component will not render
+
 import React from "react";
 import { Route, Redirect } from 'react-router-dom';
 import { connect } from "react-redux";

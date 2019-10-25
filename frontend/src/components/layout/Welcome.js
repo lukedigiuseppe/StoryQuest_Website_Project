@@ -1,3 +1,5 @@
+// This component renders the Welcome section at the bottom of the homepage. 
+
 import React, {Component} from 'react';
 import {Container, Row, Col, Jumbotron, Button} from 'reactstrap';
 

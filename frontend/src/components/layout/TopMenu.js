@@ -1,3 +1,6 @@
+// This component renders a basic navbar with a few links on it for new users to get started using our web app. 
+// So the navbar is made visible only if someone hasn't logged into the inn before we came here.
+
 import React, {Component} from 'react';
 import {
     Button,

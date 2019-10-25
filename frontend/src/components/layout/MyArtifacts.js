@@ -1,4 +1,4 @@
-// This component lists all the artifacts a person has made
+// This component lists all the artifacts a person has made using the ArtifactProfile blocks look
 
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';

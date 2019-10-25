@@ -1,3 +1,4 @@
+// This component renders an Uppy Upload box made specifically to upload a profile image for the user
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';
@@ -54,6 +55,7 @@ class ProfileImgUpload extends React.Component {
 
         })
 
+        // When upload completes successfully redirect to the myprofile page
         this.uppy.on('complete', (result) => {
            window.location.href ='/myprofile'
         })

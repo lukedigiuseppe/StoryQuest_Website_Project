@@ -1,3 +1,5 @@
+// This component renders the public profile view for a user. It can be seen by anyone and also lists all of their publicly available artifacts
+
 import React, {Component} from 'react';
 import {Container, Row, Button} from 'reactstrap';
 import TopMenu from '../layout/TopMenu'
@@ -14,6 +16,7 @@ import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
 import '../../css/profile.css';
 
+// A small component that renders one row of the artifact table when listing out all of the user's artifacts
 const Artifact = props => (
     <tr>
         <td>

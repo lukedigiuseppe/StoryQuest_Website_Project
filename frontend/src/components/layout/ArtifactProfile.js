@@ -1,4 +1,4 @@
-// This component renders a single block in the search results page that displays an artifact.
+// This component renders a single block for the table of artifacts in the private myProfile page
 
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
@@ -73,7 +73,7 @@ class ArtifactProfile extends Component {
     }
 
     render () {
-        // Render a loading image if we still haven't got the artifact IMG
+        // Render a no image placeholder if we still haven't got the artifact IMG
         var artifactIMG;
 
         if (this.state.artifactIMG === NO_IMAGE) {
@@ -97,7 +97,7 @@ class ArtifactProfile extends Component {
                     <Col xs={7} className="artifact-text text-left" style={{paddingLeft: "10px", paddingRight: "10px", paddingBottom: "5px", paddingTop: "5px"}}>
                         <h2>{this.state.artifactName}</h2>
                         <h3>{this.state.artifactDate}</h3>
-                        {/* This bit of code concatenates the story text if it exceeds 150 characters to make it fit nicer into the box */}
+                        {/* This bit of code cuts the story text if it exceeds 150 characters to make it fit nicer into the box */}
                         <p>{(this.state.artifactStory.length > 150) ? this.state.artifactStory.substring(0,150) + "..." : this.state.artifactStory}</p>
                     </Col>
 

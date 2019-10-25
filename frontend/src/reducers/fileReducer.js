@@ -2,6 +2,8 @@
  * to an action. They respond with the new state by passing it to the store which is then read in by the React-UI
  */
 
+//  This reducer file is responsible for updating the state based on the results of the image and video upload
+
 //  Import all actions
 import {
     VIDS_UPLOADED,

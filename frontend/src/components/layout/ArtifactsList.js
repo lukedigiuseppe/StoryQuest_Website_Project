@@ -72,6 +72,7 @@ class ArtifactsList extends Component {
             });
     }
 
+    // Renders the list of artifact blocks for each artifact in the array returned by the response
     artifactBlockList() {
         return this.state.artifacts.map((currArtifact, i) => {
             return <ArtifactBlock artifactData={currArtifact} key={i} />;

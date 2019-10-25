@@ -1,3 +1,5 @@
+// A very simple component that renders an Uppy uploader box for uploading a Profile Image.
+
 import React, {Component} from 'react';
 import ProfileImgUpload from '../media/ProfileImgUpload';
 

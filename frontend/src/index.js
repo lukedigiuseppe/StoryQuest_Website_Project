@@ -1,3 +1,4 @@
+// This is the entry point into the react app. It combines all of the different components together to form a beautiful user interface.
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Route, Switch, BrowserRouter as Router} from 'react-router-dom';

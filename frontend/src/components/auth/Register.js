@@ -1,3 +1,5 @@
+// The component that renders the register form and all corresponding logic to read user input and send it to the backend server
+
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {Link, withRouter}  from 'react-router-dom';
@@ -19,9 +21,6 @@ import {
 import ErrorAlert from '../alerts/ErrorAlert';
 
 import '../../css/register.css';
-
-// Compononent that creates the regsitration page for new users.
-// Need to add code that redirects to another page after pressing submit
 
 const INPUTWIDTH = 10;
 const DESCWIDTH = 2;
@@ -80,15 +79,13 @@ class Register extends Component {
             birthDate: this.state.birthDate
         };
         
-        // Register the user by using the passed in registerUser action from redux
+        // Register the user through the registerUser action in order to update global application state through redux
         this.props.registerUser(newUser, this.props.history);
     };
 
     render() {
 
         const { errors } = this.state;
-
-        // Picks which navbar to use based on whether the user is logged in or not.
 
         return (
             <div>

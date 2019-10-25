@@ -12,7 +12,8 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
-// Pop up window that presents a registration form to the user.
+// Pop up window that presents a registration form to the user. No longer in use but provides a good sample for how to do it
+// Maybe useful for some other feature in the application such as when the user adds a new artifact.
 
 const INPUTWIDTH = 10;
 const DESCWIDTH = 2;

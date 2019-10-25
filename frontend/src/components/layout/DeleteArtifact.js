@@ -1,3 +1,5 @@
+// This component renders the page for deleting an artifact and contains the logic for sending that request to the backend server.
+
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
@@ -25,8 +27,8 @@ class DeleteArtifact extends Component{
 
     constructor(props) {
         super(props);
-         /*Prepare the artifact information */
-    
+        
+        // All the information needed to be displayed for the artifact
         this.state = {
             name: "",
             mainIMG: NO_IMAGE,
@@ -37,7 +39,7 @@ class DeleteArtifact extends Component{
 
     }
 
-    /*If confirmed, delete the artifact and redirect to homepage*/
+    // If confirmed, delete the artifact and redirect back to my profile page
     yesClick() {
         // Set to loading
         this.props.setUserLoading();
@@ -69,7 +71,7 @@ class DeleteArtifact extends Component{
                 this.setState({
                     name: res.data.name
                 });
-                // If there is an image
+                // If there is an image, render it as well
                 if(res.data.images[0]) {
                     axios.get('/artifact_images/' + this.props.match.params.id + '/' + res.data.images[0])
                         .then(res => {
@@ -189,9 +191,6 @@ class DeleteArtifact extends Component{
         </div>
         )
     }
-
-
-
 }
 
 

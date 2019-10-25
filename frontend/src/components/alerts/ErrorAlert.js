@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import isEmpty from 'is-empty';
 
 // This component defines an error alert message. Pass in the error message to be displayed as props. If error message
-// is empty it won't display anything
+// is empty or undefined it won't display anything
 
 class ErrorAlert extends Component {
 

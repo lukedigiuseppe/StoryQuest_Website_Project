@@ -1,3 +1,4 @@
+// Upon an error being received, the errors object in the redux store will be updated accordingly
 import { GET_ERRORS } from "../actions/types";
 
 const initialState = {};

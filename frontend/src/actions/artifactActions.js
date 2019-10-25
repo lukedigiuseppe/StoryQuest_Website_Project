@@ -6,7 +6,8 @@ import {
 } from "./types";
 
 // Axios POST request to backend to create the new artifact. The callback is just an function that takes the response data 
-// and runs on request completion.
+// and runs on request completion. And on error it will dispatch the returned object back to the Redux store holding our 
+// application state
 export const addNewArtifact = (artifactData, callback) => dispatch => {
     axios
         .post('/newArtifact', artifactData)

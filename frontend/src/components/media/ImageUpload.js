@@ -1,3 +1,7 @@
+// This component also renders an Uppy Upload box for uploading artifact images to a specific artifact. 
+// It is primarily different as it has had its own upload and retry buttons hidden. And the upload is then linked to the
+// submit button in the AddArtifact page
+
 import '../../css/uppy.min.css';
 import '@uppy/status-bar/dist/style.css';
 import PropTypes from 'prop-types';

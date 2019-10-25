@@ -1,3 +1,6 @@
+// This component renders a Navbar that is customised to the specific user that has logged in. It also provides different links that are much more
+// heplful to a registered user than the standard navbar
+
 import React, {Component} from 'react';
 import {
     Button,

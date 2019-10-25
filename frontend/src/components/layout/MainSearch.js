@@ -1,3 +1,5 @@
+// This component redners the main search input and submit button. 
+
 import React, {Component} from 'react';
 import {Button, Container, Row, Col, Form, Input} from 'reactstrap';
 

@@ -1,3 +1,5 @@
+// The component that renders the login form and contains all the logic for reading in user input and then posting
+// it to the backend
 import React, {Component} from 'react';
 import {Button, Label, Input, Form} from 'reactstrap';
 import {Helmet} from 'react-helmet';
@@ -62,7 +64,7 @@ class Login extends Component {
             password: this.state.password
         };
         
-        // Redirect is handled by the component (or redux action) so we don't need to use this.props.history
+        // Redirect is handled by the redux action loginUser so we don't need to use this.props.history
         this.props.loginUser(userData);
         this.props.setUserLoading();
     };

@@ -1,3 +1,5 @@
+// This component renders the fields necessary to add a new artifact as well as providing the logic for sending it to the backend server
+
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import { Link }  from 'react-router-dom';
@@ -49,8 +51,8 @@ class AddArtifact extends Component {
 
     constructor(props) {
         super(props);
-            /*Prepare the artifact information */
         this.state = {
+            // State values representing the different required artifact fields from the user
             name: "",
             story: "",
             tags: [
@@ -85,7 +87,6 @@ class AddArtifact extends Component {
         this.setState(state => ({ tags: [...state.tags, tag] }));
     }
     
-   /*Dealing with tags */
     handleDrag(tag, currPos, newPos) {
         const tags = [...this.state.tags];
         const newTags = tags.slice();
@@ -96,7 +97,7 @@ class AddArtifact extends Component {
         // re-render
         this.setState({ tags: newTags });
     }
-    /*Handle clicking tags */
+
     handleTagClick(index) {
         console.log('The tag at index ' + index + ' was clicked');
     }
@@ -109,18 +110,7 @@ class AddArtifact extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        // const pushPage = (this.props.files.vidUploaded && this.props.files.hasVids) || (this.props.files.imgUploaded && this.props.files.hasImgs);
-        // if (pushPage) {
-        //     // Reset the state once upload has completed and push to the video page
-        //     this.props.setVidUploading();
-        //     this.props.setImgUploading();
-        //     this.props.setHasNoImgs();
-        //     this.props.setHasNoVids();
-        //     // Redirect to home page
-        //     this.props.history.push('/');
-        // }
-
-        /*Video/image uploading */
+        // Video/image uploading logic to push the page to home on a video/image upload
         if (this.props.files.imgUploaded && this.props.files.hasImgs) {
             this.props.setImgUploading();
             this.props.setHasNoImgs();
@@ -170,7 +160,7 @@ class AddArtifact extends Component {
     onSubmit = (e) => {
         e.preventDefault();
 
-        // Remove the IDs from the tags, so they can be passed in as an array of strings directly to Mongo
+        // Remove the IDs from the tags, so they can be passed in as an array of strings directly to Mongo for storage
         const TagArray = this.state.tags.map((tag) => tag.text);
 
         // Send the entire state including confirmation fields so that it can be validated at the backend
@@ -184,7 +174,6 @@ class AddArtifact extends Component {
         };
 
         this.props.addNewArtifact(newArtifact, (res) => {
-            console.log(res);
             // Need these to be sequential, so don't do them at the same time.
             this.setState({artifactID: res.data._id});
             // Check if there are imgs if so do imgUpload otherwise do vid upload
@@ -193,8 +182,8 @@ class AddArtifact extends Component {
             } else if (this.props.files.hasVids) {
                 this.setState({doVideoUpload: true});
             }
-            // Push to artifact page on submit only if there were no images or videos being uploaded to the artifact. Give the system
-            // some time to process the images and videos for a better user experience.
+            // Push to artifact page on submit only if there were no images or videos being uploaded to the artifact. Otherwise push to homepage so we
+            // can give the system some time to process the images and videos for a better user experience.
             const pushPage = this.props.files.hasVids || this.props.files.hasImgs;
             if (!pushPage) {
                 this.props.history.push('/view_artifact/' + this.state.artifactID);
@@ -206,8 +195,7 @@ class AddArtifact extends Component {
     render(){
 
         const { tags, errors } = this.state;
-
-        // Pick which nav menu display depending on user login status
+        // Pick which nav menu to display depending on user login status
         var navMenu;
         if (this.props.auth.isAuthenticated) {
             navMenu = <ProfileNavBar history={this.props.history} />

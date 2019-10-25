@@ -1,3 +1,5 @@
+// This component renders the edit artifact page. Specifically it renders each of the text fields for an artifact so the 
+// data in them can be altered.
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {Link} from 'react-router-dom';
@@ -28,10 +30,6 @@ import '../../css/tags.css';
 
 import axios from 'axios';
 
-
-// Compononent that creates the edit artifact page
-
-
 const MARGIN = 1;
 const HALF = 6;
 const KeyCodes = {
@@ -47,7 +45,7 @@ class EditArtifact extends Component{
     constructor(props) {
         super(props);
              
-        /*Prepare the artifact information */
+        // Prepare the artifact information
     
         this.state = {
             name: "",
@@ -72,16 +70,14 @@ class EditArtifact extends Component{
     }
 
 
+    // This function converts the stringified version of the tag array by the backend server back to its original form.
     tagConvert(tags){
-        console.log(tags);
 
         var formatedTags = []
         var i;
         for (i = 0; i < tags.length; i++) {
             formatedTags.push({id:"default", text: tags[i]});
         }
-        console.log(formatedTags);
-
         return formatedTags;
     }
      // Events to handle for the react-tags module
@@ -179,10 +175,9 @@ class EditArtifact extends Component{
 
         this.props.setUserLoading();
 
-        /*Get the artifact information from backend using axios */
+        //  Get the artifact information from backend using axios
        axios.get('http://localhost:5000/artifact/' + this.props.match.params.id )
            .then(res => {
-               console.log(res.data);
                // We then call setState here to assign the information we got back into our state so that we can render it.
                this.setState({
                    name: res.data.name,
@@ -201,7 +196,7 @@ class EditArtifact extends Component{
            });
 
 
-       /*Get, process and package the images so reactstrap can display them */
+       // Get, process and package the images so reactstrap can display them
        axios.get('/artifact/' + this.props.match.params.id)
        .then(res => {
            res.data.images.forEach(imageID => {
@@ -250,8 +245,6 @@ class EditArtifact extends Component{
         }
 
         return(
-
-            
 
             <div>
                 {/*Hemet*/}
@@ -306,8 +299,6 @@ class EditArtifact extends Component{
                         </Row>
 
                     <FormGroup row>
-
-                        
 
                         <Col sm = {MARGIN}></Col>
 

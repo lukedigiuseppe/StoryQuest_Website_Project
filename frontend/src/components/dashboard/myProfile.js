@@ -1,6 +1,8 @@
+// This component renders the private, personal profile view for a user that is only visible to themselves. It contains fields for editing their
+// own information as well as viewing all of their added artifacts.
+
 import React, {Component} from 'react';
 import {Container, Row, Col, Button} from 'reactstrap';
-// import {Image } from 'react-native';
 import ProfileNavBar from '../layout/profileNavBar';
 import MobileMenu2 from '../layout/MobileMenu';
 import '../../css/myProfile.css';
@@ -14,9 +16,11 @@ import Loading from '../layout/Loading';
 import ArtifactBlock from '../layout/ArtifactProfile';
 import { setUserLoading, setUserNotLoading } from "../../actions/authActions";
 
+// TODO Add a field and button for adding friends
 // Used to check if Friend email entered is a valid email
 // import Validator from 'validator';
 
+// A small component that renders one row of the artifact table when listing out all of the user's artifacts
 const Artifact = props => (
     <tr>
         <td>
@@ -130,6 +134,7 @@ class myProfile extends Component {
         }
     }
 
+    // Functions that generate an array of components each representing one of the user's artifacts for rendering
     artifactList() {
         return this.state.artifacts.map(function(currArtifact, i){
             return <Artifact artifacts={currArtifact} key={i} />;
@@ -147,7 +152,7 @@ class myProfile extends Component {
         });
     }
 
-    // Save functions that run whenever the user saves an edit entry. This would POST to the backend to change values
+    // Save functions that run whenever the user saves an edit entry. Each function posts to the backend server to update the user's information
     onSavePublicName(val) {
         this.setState({publicName: val});
         const newData = {
@@ -167,7 +172,6 @@ class myProfile extends Component {
         const newData = {
             firstName: val
         }
-        console.log(newData.firstName);
         axios.patch('/api/users/update', newData)
             .then(res => {
                 console.log(res);

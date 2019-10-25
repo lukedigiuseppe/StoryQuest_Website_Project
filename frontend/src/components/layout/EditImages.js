@@ -1,3 +1,5 @@
+// This component renders both the main image of the artifact as well as pickaxes. 
+
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {Link} from 'react-router-dom';
@@ -22,14 +24,15 @@ import {
 const MARGIN = 1;
 
 class DeleteImage extends Component {
-
+    
     constructor(props) {
         super(props);
         this.onDelete = this.onDelete.bind(this);
     }
 
     onDelete () { 
-        // Set the page as loading then reload on completion. 
+        // Set the page as loading then reload on completion.  Reload the page on complete to update the render so it only displays the remaining existing 
+        // pages
         this.props.setUserLoading();
         axios.delete('/delete_image/' + this.props.artifactID + '/' + this.props.image.id)
         .then(res => {
@@ -49,7 +52,6 @@ class DeleteImage extends Component {
 
         return (
             <tr>
-        
                 <td> <img style={{width: "50%"}} alt="" src={this.props.image.src} /></td>
                 <td>
                     <Button onClick={this.onDelete}>DELETE</Button>
@@ -88,6 +90,7 @@ class EditImages extends Component{
         })
     }
 
+    // When component first loads make sure to call Axios to get all necessary requests and backend data to display
     componentDidMount() {
         this.props.setUserLoading();
         axios.get('/artifact/' + this.props.match.params.id)
